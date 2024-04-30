@@ -1,0 +1,209 @@
+:root {
+    --font-style-1: 'SF Pro Text',-apple-system,BlinkMacSystemFont,Roboto,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';
+}
+
+/* authentication page(login / register page) */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    margin-left: -20px;
+    margin-right: -20px;
+}
+
+.back {
+    color: #0066EE;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.setting {
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.bi-chevron-left {
+    color: rgb(42, 100, 229);
+    font-size: 33px;
+    line-height: 44px;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+.logo1 {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3vw;
+}
+
+.logo1 {
+    width: 45vw;
+    height: auto;
+}
+
+.bold {
+    font-weight: bold;
+    margin: 0;
+}
+
+.login {
+    margin: 20px;
+}
+
+.custom-form input[type="email"],
+.custom-form input[type="password"] {
+    border: none;
+    border-bottom: 1px solid #ced4da;
+    border-radius: 0;
+}
+
+.custom-form input[type="email"]:focus,
+.custom-form input[type="password"]:focus {
+    border-color: #80bdff;
+    box-shadow: none;
+}
+
+.custom-clear-btn {
+    border: none;
+    background-color: transparent;
+    color: #6c757d;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.custom-container {
+    margin-top: 20px;
+}
+
+.login-text {
+    background: linear-gradient(#2277EE, #7722BB);
+    font-weight: lighter;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 7vw;
+    margin-bottom: 20px;
+}
+
+.external-login {
+    font-size: 3vw;
+    font-family: var(--font-style-1);
+    font-weight: 700;
+    color: rgb(104, 104, 104);
+}
+
+.form-label {
+    font-family: var(--font-style-1);
+    font-weight: 700;
+}
+  
+.signup-text {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.signup-card {
+    width: 300px;
+    height: 48px;
+    color: black;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    outline: solid 1px #d9d9d9;
+    border-radius: 10px;
+    cursor: pointer;
+    padding-left: 10px;
+    margin-top: 5vw;
+}
+
+@media screen and (min-width: 768px) {
+    .signup-card {
+        width: 100%;
+    }
+}
+
+.signup-card img {
+    margin-right: 10px;
+    height: 24px;
+}
+
+.signup-card span {
+    font-family: var(--font-style-1);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.form-check-label {
+    font-size: 14px;
+    color: #333;
+}
+
+.custom-footer {
+    width: 100%;
+    height: 83px;
+    background: linear-gradient(to right, #2277EE, #7722BB);
+    color: white;
+    text-align: right;
+    line-height: 83px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding-right: 20px;
+    z-index: 999;
+}
+
+.footer-icon {
+    display: inline-block;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: white;
+    color: #2277EE;
+    font-size: 1.5rem;
+    line-height: 46px;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    opacity: 0.5;
+    margin-left: 10px;
+}
+
+.footer-icon i {
+    color: linear-gradient(to right, #2277EE, #7722BB);
+}
+
+.footer-text span {
+    margin-right: 10px;
+    opacity: 0.5;
+}
+
+body {
+    margin: 0;
+    padding-bottom: 100px;
+}
+
+
+/* homepage */
+
+.homepage-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* 높이 조정 */
+}
+
+.notification,
+.setting {
+    display: inline-block;
+}
