@@ -21,11 +21,12 @@ class App {
   private initializeMiddlewares(): void {
     this.application.use(express.json());
     this.application.use(express.urlencoded({ extended: true }));
-    this.application.use(express.static("public"));
+    this.application.use(express.static(path.join(__dirname, "..", "public")));
+    this.application.use(express.static(path.join(__dirname, 'views', 'css')));
+    this.application.use(express.static(path.join(__dirname, 'views', 'image')));
     this.application.set("view engine", "ejs");
     //this.application.set("views", path.join(__dirname, "views"));
-    this.application.set('views', path.join(__dirname, '/views'));
-
+    this.application.set('views', path.join(__dirname, 'views'));
   }
 
   private initializeControllers(controllers: Controller[]): void {
