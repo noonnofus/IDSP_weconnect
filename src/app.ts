@@ -24,7 +24,7 @@ class App {
     this.application.use(express.static("public"));
     this.application.set("view engine", "ejs");
     //this.application.set("views", path.join(__dirname, "views"));
-    this.application.set('views', path.join(__dirname, 'areas/landing/views'));
+    this.application.set('views', path.join(__dirname, '/views'));
 
   }
 
