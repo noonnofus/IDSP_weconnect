@@ -6,11 +6,11 @@ import { IAuthentication } from '../services/Iauthentication.service';
 class AuthenticationController implements Controller {
   public path = '/'; 
   public router = Router();
-  public service: IAuthentication;
+  // public service: IAuthentication;
 
-  constructor(service: IAuthentication) {
+  constructor() {
     this.initializeRoutes();
-    this.service = service;
+    // this.service = service;
   }
 
   private initializeRoutes(): void {
@@ -30,7 +30,7 @@ class AuthenticationController implements Controller {
   private login(req: Request, res: Response) {
     const {email, password} = req.body;
 
-    const validEmail = this.service.findByEmail(email)
+    // this.service.
   }
 }
 
