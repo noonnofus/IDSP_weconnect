@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/mysql": "^2.15.26",
+    "prisma": "^5.13.0",
     "typescript": "^5.4.4"
   },
   "description": ""

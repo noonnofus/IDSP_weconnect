@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model tb_role {
+  roleId       Int            @id
+  authority    Int?
+  rolename     String?        @db.VarChar(50)
+  tb_user_role tb_user_role[]
+}
+
+model tb_user {
+  userId        Int            @id
+  user_password String?        @db.VarChar(100)
+  meetingId     Int?
+  user_email    String?        @db.VarChar(50)
+  firstname     String?        @db.VarChar(50)
+  lastname      String?        @db.VarChar(50)
+  middlename    String?        @db.VarChar(50)
+  tb_user_role  tb_user_role[]
+}
+
+model tb_user_role {
+  user_roleId Int
+  userId      Int
+  roleId      Int
+  tb_role     tb_role @relation(fields: [roleId], references: [roleId], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_role_TO_tb_user_role_1")
+  tb_user     tb_user @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_user_TO_tb_user_role_1")
+
+  @@id([user_roleId, userId, roleId])
+  @@index([roleId], map: "FK_tb_role_TO_tb_user_role_1")
+  @@index([userId], map: "FK_tb_user_TO_tb_user_role_1")
+}
