@@ -16,9 +16,9 @@ interface DbConfig {
 // 배포 서버 디비 설정
 const dbConfigQoddi: DbConfig = {
 	host: "sql.freedb.tech",
-	user: "freedb_2350_main_Jin",
-	password: "$Bq9CP4C8e8aAWh",
-	database: "freedb_comp2350-week2-A01292717",
+	user: "freedb_weconnect.root",
+	password: "FxCz8xezQwfz?cn",
+	database: "freedb_weconnect",
 	multipleStatements: false,
 	reconnect: true,
 	namedPlaceholders: true
@@ -27,9 +27,9 @@ const dbConfigQoddi: DbConfig = {
 // 로컬 데이터베이스 설정
 const dbConfigLocal: DbConfig = {
 	host: "sql.freedb.tech",
-	user: "freedb_2350_main_Jin",
-	password: "$Bq9CP4C8e8aAWh",
-	database: "freedb_comp2350-week2-A01292717",
+	user: "freedb_weconnect.root",
+	password: "FxCz8xezQwfz?cn",
+	database: "freedb_weconnect",
 	multipleStatements: false,
 	reconnect: true,
 	namedPlaceholders: true
