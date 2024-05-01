@@ -1,5 +1,6 @@
 :root {
     --font-style-1: 'SF Pro Text',-apple-system,BlinkMacSystemFont,Roboto,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';
+    --gradient-color: linear-gradient(to right, #2277EE, #7722BB);
 }
 
 /* authentication page(login / register page) */
@@ -114,17 +115,23 @@
 }
 
 .signup-card {
+    background-color: white;
     width: 300px;
     height: 48px;
     color: black;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    outline: solid 1px #d9d9d9;
     border-radius: 10px;
+    outline: solid 1px #d9d9d9;
     cursor: pointer;
     padding-left: 10px;
     margin-top: 5vw;
+    box-shadow: none;
+}
+
+#signup-btn {
+    text-decoration-line: none;
 }
 
 @media screen and (min-width: 768px) {
@@ -169,7 +176,6 @@
     height: 46px;
     border-radius: 50%;
     background-color: white;
-    color: #2277EE;
     font-size: 1.5rem;
     line-height: 46px;
     cursor: pointer;
@@ -178,6 +184,12 @@
     opacity: 0.5;
     margin-left: 10px;
 }
+
+.btn-white {
+    background-color: white;
+    opacity: 0.5;
+}
+
 
 .footer-icon i {
     color: linear-gradient(to right, #2277EE, #7722BB);
@@ -195,15 +207,121 @@ body {
 
 
 /* homepage */
-
-.homepage-logo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px; /* 높이 조정 */
+div.setting,
+div.notification.me-3 {
+    display: inline-block;
 }
 
-.notification,
-.setting {
-    display: inline-block;
+.homepage-header {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.bg-custom {
+    background-color: rgba(118, 118, 128, 0.12) !important;
+}
+
+.input-group-text {
+    border: none !important;
+}
+
+.form-control {
+    border: none !important;
+}
+
+/* footer */
+.navbar-nav .nav-link {
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    font-size: 12px;
+}
+
+.navbar-nav .nav-text {
+    font-size: 12px;
+}
+
+.navbar-nav .nav-item {
+    margin-right: 15px; /* 아이템 간격 조정 */
+    margin-left: 15px;
+}
+
+.home-footer {
+    border-top: 1px solid rgb(178, 178, 178, 0.5); /* 상단 테두리 설정 */
+    border-left: none; /* 왼쪽 테두리 제거 */
+    border-right: none; /* 오른쪽 테두리 제거 */
+    border-bottom: none; /* 하단 테두리 제거 */
+}
+
+
+/* meeting */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    height: 104px;
+    width: 191px;
+    border: none;
+    background-color: transparent;
+    justify-content: flex-end; /* 텍스트와 이미지 우측 정렬 */
+}
+
+.btn p {
+    margin: 0;
+    margin-left: 30%;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-icon {
+    margin-left: 80%;
+    margin-bottom: 20%;
+    height: 24px; /* 이미지 크기 조절 */
+    width: 24px;
+}
+
+
+
+.meeting_btn-blue {
+    background-color: #007bff !important; /* 파란색 */
+}
+
+.meeting_btn-purple {
+    background-color: #6f42c1 !important; /* 보라색 */
+}
+
+
+/* meeting start modal */
+.modal.fade .modal-dialog {
+    position: fixed;
+    bottom: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    height: auto;
+
+}
+
+.modal.modal-center {
+    text-align: center;
+}
+
+.modal-dialog {
+    height: 60vw !important;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: center !important;
+    align-items: center;
+}
+
+.new-meeting-btn {
+    width: 100%;
+    height: 42px;
 }
