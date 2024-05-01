@@ -12,17 +12,18 @@
 <body class="login">
     <!-- headers -->
   <%- include("./Authentication_header.ejs") %>
-    
-    <!-- Log in form -->
+
+    <!-- Sign up form -->
   <div class="container custom-container">
     <div class="row justify-content-center">
       <div class="col-md-6">
         <div class="login-text">Sign up</div>
-        <form class="custom-form">
+        <form action="/signup" class="custom-form" method="post">
           <div class="mb-3">
             <label for="username" class="form-label">USERNAME</label>
             <div class="input-group">
-              <input type="email" class="form-control" id="username" aria-describedby="emailHelp"
+              <input type="text" class="form-control" id="username" aria-describedby="emailHelp"
+              name="username"
               placeholder="BCITKevin123">
               <button type="button" class="btn custom-clear-btn" onclick="document.getElementById('username').value = '';"><i class="bi bi-x-circle"></i></button>
             </div>
@@ -30,7 +31,8 @@
           <div class="mb-3">
             <label for="email" class="form-label">EMAIL</label>
             <div class="input-group">
-              <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
+              <input type="email" class="form-control" id="email" aria-describedby="emailHelp" 
+              name="email"
               placeholder="BCITKevin123@weconnect.com">
               <button type="button" class="btn custom-clear-btn" onclick="document.getElementById('email').value = '';"><i class="bi bi-x-circle"></i></button>
             </div>
@@ -38,11 +40,15 @@
           <div class="mb-3">
             <label for="password" class="form-label">PASSWORD</label>
             <div class="input-group">
-              <input type="password" class="form-control" id="password"
+              <input type="password" class="form-control" id="password" 
+              name="password"
               placeholder="*******">
               <button type="button" class="btn custom-clear-btn" onclick="document.getElementById('password').value = '';"><i class="bi bi-x-circle"></i></button>
             </div>
           </div>
+            <!-- Log in button -->
+          <% value = "Sign up and log in" %>
+          <%- include("./footer.ejs") %>
         </form>
       </div>
     </div>
@@ -75,10 +81,6 @@
         </div>
     </div>
   </div>
-
-  <!-- Log in button -->
-  <% value = "Sign up and log in" %>
-  <%- include("./footer.ejs") %>
 
 </body>
 </html>

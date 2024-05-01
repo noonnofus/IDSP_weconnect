@@ -1,4 +1,5 @@
 import express from "express";
+import session from "express-session";
 import Controller from "./interfaces/controller.interface";
 import dotenv from "dotenv";
 import path from "node:path";
@@ -44,6 +45,18 @@ class App {
     this.application.use(express.static(path.join(__dirname, "..", "public")));
     this.application.use(express.static(path.join(__dirname, 'views', 'css')));
     this.application.use(express.static(path.join(__dirname, 'views', 'image')));
+    this.application.use(
+      session({
+        secret: 'weconnect_Secret_key',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          httpOnly: true,
+          secure: false,
+          maxAge: 24 * 60 * 60 * 1000,
+        },
+      })
+    )
     this.application.set("view engine", "ejs");
 
     //this.application.set("views", path.join(__dirname, "views"));
