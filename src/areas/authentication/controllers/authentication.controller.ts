@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import Controller from '../../../interfaces/controller.interface';
 import { AuthenticationService } from "../services/authentication.service";
 import { IAuthentication } from '../services/Iauthentication.service';
+import { ISession } from '../../../ISession';
 
 class AuthenticationController implements Controller {
   public path = '/'; 
@@ -16,28 +17,47 @@ class AuthenticationController implements Controller {
   private initializeRoutes(): void {
     this.router.get(`${this.path}login`, this.getLoginPage);
     this.router.get(`${this.path}signup`, this.getRegisterPage);
-    this.router.post(`${this.path}/login`, this.login)
+    this.router.post(`${this.path}login`, this.login);
+    this.router.post(`${this.path}signup`, this.register);
   }
 
   private getLoginPage(req: Request, res: Response): void {
-    res.render("login");
+    res.status(200).render("homepage");
   }
 
   private getRegisterPage(req: Request, res: Response): void {
-    res.render('signup')
+    res.status(200).render('signup')
   }
 
-  private login(req: Request, res: Response) {
+  private login = async (req: Request, res: Response) => {
     try {
       const {email, password} = req.body;
-  
-      this.service.getUserByEmailAndPwd(email, password);
-      res.render("homepage");
+
+      const user = await this.service.getUserByEmailAndPwd(email, password);
+
+      //@ts-ignore
+      req.session.userId = user.userId
+      
+      res.status(200).render("homepage");
     }
     catch (err) {
       if (err) {
-        res.render('login', { err });
+        console.log(err);
+        res.status(500).render('login', { err });
       }
+    }
+  }
+
+  private register = (req: Request, res: Response) => {
+    try {
+      const { username, email, password } = req.body;
+      
+      const newUser = this.service.insertUser(username, email, password);
+      
+      res.status(200).render('homepage', { newUser });
+    }
+    catch(err) {
+      res.status(500).render('signup', { err });
     }
   }
 }

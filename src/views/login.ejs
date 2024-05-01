@@ -18,14 +18,13 @@
     <div class="row justify-content-center">
       <div class="col-md-6">
         <div class="login-text">Log in</div>
-        <%if (error) { %>
-          <%- error %>
-        <% } %>
-        <form class="custom-form">
+        
+        <form action="/login" class="custom-form" method="post">
           <div class="mb-3">
             <label for="email" class="form-label">EMAIL</label>
             <div class="input-group">
-              <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
+              <input type="email" class="form-control" id="email" aria-describedby="emailHelp" 
+              name="email"
               placeholder="BCITKevin123@weconnect.com">
               <button type="button" class="btn custom-clear-btn" onclick="document.getElementById('email').value = '';"><i class="bi bi-x-circle"></i></button>
             </div>
@@ -33,11 +32,15 @@
           <div class="mb-3">
             <label for="password" class="form-label">PASSWORD</label>
             <div class="input-group">
-              <input type="password" class="form-control" id="password"
+              <input type="password" class="form-control" id="password" 
+              name="password"
               placeholder="*******">
               <button type="button" class="btn custom-clear-btn" onclick="document.getElementById('password').value = '';"><i class="bi bi-x-circle"></i></button>
             </div>
           </div>
+           <!-- Log in button -->
+          <% value = "Log in" %>
+          <%- include("./footer.ejs") %>
         </form>
       </div>
     </div>
@@ -62,17 +65,15 @@
   <div class="container mt-4 d-flex justify-content-center">
     <div class="col-md-6 text-center">
       <p class="signup-text">Don't have an account?</p>
-      <div class="signup-card">
+      <a href="/signup" id="signup-btn" class="signup-card">
         <img src="logo - signup.svg" alt="signup logo">
         <span>Sign up</span>
-      </div>
+      </a>
     </div>
   </div>
 
 
-  <!-- Log in button -->
-  <% value = "Log in" %>
-  <%- include("./footer.ejs") %>
+
 
 </body>
 </html>

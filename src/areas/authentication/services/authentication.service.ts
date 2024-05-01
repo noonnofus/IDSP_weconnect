@@ -1,40 +1,48 @@
+import { tb_user } from "@prisma/client";
 import DBClient from "../../../prisma";
 import { IAuthentication } from "./Iauthentication.service";
 import bcrypt from "bcrypt";
 
 
 export class AuthenticationService implements IAuthentication{
-    // db connect logic
     readonly _db: DBClient = DBClient.getInstance();
 
-    constructor (_db: DBClient) {
-        this._db = _db;
-    }
-
-    // async findByEmail(email: string): Promise <User | Error> {
-    //     const user = await this._db.prisma.findUnique({
-    //         where: {
-    //             email: email,
-    //         }
-    //     })
-    //     if (user === null) {
-    //         throw new Error("User not found with the email. Please try again with different email.");
-    //     } else if (user) {
-    //         return user;
-    //     }
-    // }
-
-    async getUserByEmailAndPwd(email: string, password: string): Promise <User | Error> {
-        const userWithEmail = await this._db.prisma.findUnique({
+    async getUserByEmailAndPwd(email: string, password: string): Promise <tb_user | Error> {
+        const user = await this._db.prisma.tb_user.findUnique({
             where: {
                 email: email,
             }
         })
-        const validPwd = bcrypt.compareSync(password, userWithEmail.password);
-        if (validPwd === true) {
-            return false;
+        if (user !== null) {
+            const validPwd = bcrypt.compareSync(password, user.password);
+            if (validPwd === true) {
+                return user;
+            } else {
+                throw new Error("Invalid password. Please try again.")
+            }
         } else {
-            throw new Error("Invalid email or password. Please try again.")
+            throw new Error("Invalid email. Please try again");
+        }
+    }
+
+    async insertUser(username: string, email: string, password: string): Promise <tb_user | Error> {
+        const validEmail = await this._db.prisma.tb_user.findUnique({
+            where: {
+                email: email,
+            }
+        })
+        if (validEmail === null) {
+            const hashed_pwd = await bcrypt.hash(password, 10);
+            const newUser = await this._db.prisma.tb_user.create({
+                data: {
+                    email: email,
+                    password: hashed_pwd,
+                    username: username,
+                }
+            })
+            return newUser;
+        } else {
+            throw new Error("The user with email is already exists. Please try again with another email.")
         }
     }
 }

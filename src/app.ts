@@ -1,7 +1,29 @@
 import express from "express";
+import session from "express-session";
 import Controller from "./interfaces/controller.interface";
 import dotenv from "dotenv";
 import path from "node:path";
+import database from "../databaseConnection";
+
+async function printMySQLVersion() {
+	let sqlQuery = `
+		SHOW VARIABLES LIKE 'version';
+	`;
+	
+	try {
+		const results = await database.query(sqlQuery);
+		console.log("Successfully connected to MySQL");
+		console.log(results[0]);
+		return true;
+	}
+	catch(err) {
+		console.log("Error getting version from MySQL");
+		return false;
+	}
+} 
+
+const success = printMySQLVersion();
+
 
 class App {
   public application: express.Application;
@@ -15,7 +37,6 @@ class App {
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
     this.initializeErrorHandling();
-    //this.initializeLiveReloadServer();
   }
 
   private initializeMiddlewares(): void {
@@ -24,7 +45,20 @@ class App {
     this.application.use(express.static(path.join(__dirname, "..", "public")));
     this.application.use(express.static(path.join(__dirname, 'views', 'css')));
     this.application.use(express.static(path.join(__dirname, 'views', 'image')));
+    this.application.use(
+      session({
+        secret: 'weconnect_Secret_key',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          httpOnly: true,
+          secure: false,
+          maxAge: 24 * 60 * 60 * 1000,
+        },
+      })
+    )
     this.application.set("view engine", "ejs");
+
     //this.application.set("views", path.join(__dirname, "views"));
     this.application.set('views', path.join(__dirname, 'views'));
   }
@@ -37,18 +71,13 @@ class App {
 
   private initializeErrorHandling(): void {
     this.application.use(
-      (
-        error: any,
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-      ) => {
+      (error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
         res.status(500).json({ message: error.message });
       }
     );
   }
 
-  public listen() {
+  public listen(): void {
     this.application.listen(this.port, () => {
       console.log(`Server running on port ${this.port}`);
     });
