@@ -16,7 +16,7 @@ model tb_role {
 
 model tb_user {
   userId       Int            @id @default(autoincrement())
-  email        String @unique         @db.VarChar(100)
+  email        String         @unique(map: "uniqueEmail") @db.VarChar(100)
   password     String         @db.VarChar(100)
   username     String         @db.VarChar(45)
   tb_user_role tb_user_role[]

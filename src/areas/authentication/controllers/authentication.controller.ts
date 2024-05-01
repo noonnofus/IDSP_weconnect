@@ -22,7 +22,7 @@ class AuthenticationController implements Controller {
   }
 
   private getLoginPage(req: Request, res: Response): void {
-    res.status(200).render("homepage");
+    res.status(200).render("login");
   }
 
   private getRegisterPage(req: Request, res: Response): void {
