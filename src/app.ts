@@ -4,6 +4,7 @@ import Controller from "./interfaces/controller.interface";
 import dotenv from "dotenv";
 import path from "node:path";
 import database from "../databaseConnection";
+import http from "http";
 
 async function printMySQLVersion() {
 	let sqlQuery = `
@@ -81,6 +82,9 @@ class App {
     this.application.listen(this.port, () => {
       console.log(`Server running on port ${this.port}`);
     });
+
+    // const server = http.createServer(this.application);
+    
   }
 }
 
