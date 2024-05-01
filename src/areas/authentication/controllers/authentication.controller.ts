@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import Controller from '../../../interfaces/controller.interface';
-import { AuthenticationService } from "../services/authentication.service";
 import { IAuthentication } from '../services/Iauthentication.service';
 import { ISession } from '../../../ISession';
 
@@ -22,7 +21,7 @@ class AuthenticationController implements Controller {
   }
 
   private getLoginPage(req: Request, res: Response): void {
-    res.status(200).render("homepage");
+    res.status(200).render("login");
   }
 
   private getRegisterPage(req: Request, res: Response): void {
@@ -37,8 +36,10 @@ class AuthenticationController implements Controller {
 
       //@ts-ignore
       req.session.userId = user.userId
-      
-      res.status(200).render("homepage");
+
+      console.log(req.session);
+
+      res.status(200).redirect("/home");
     }
     catch (err) {
       if (err) {
