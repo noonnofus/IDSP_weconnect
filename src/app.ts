@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import path from "node:path";
 import database from "../databaseConnection";
 import http from "http";
+import WebSocket from 'ws'; 
 
 async function printMySQLVersion() {
 	let sqlQuery = `
@@ -29,6 +30,8 @@ const success = printMySQLVersion();
 class App {
   public application: express.Application;
   private readonly port: number;
+  private server: http.Server | null = null;
+  private wss: WebSocket.Server | null = null;
 
   constructor(controllers: Controller[]) {
     dotenv.config();
@@ -59,7 +62,6 @@ class App {
       })
     )
     this.application.set("view engine", "ejs");
-
     //this.application.set("views", path.join(__dirname, "views"));
     this.application.set('views', path.join(__dirname, 'views'));
   }
@@ -76,15 +78,70 @@ class App {
         res.status(500).json({ message: error.message });
       }
     );
+  } 
+
+  public startWebSocketServer(): void {
+    if (this.server) return; // 이미 서버가 실행 중인 경우 중복 생성 방지
+  
+    this.server = http.createServer(this.application);
+    this.wss = new WebSocket.Server({ noServer: true }); // 서버를 직접 관리
+  
+    // 'upgrade' 이벤트를 처리하여 특정 경로에서만 웹소켓 연결을 수락
+    if (this.server && this.wss) {
+      this.server.on('upgrade', (request, socket, head) => {
+        // URL 체크 
+        if (this.wss && request.url === '/meeting') {
+          this.wss.handleUpgrade(request, socket, head, (ws) => {
+            this.wss?.emit('connection', ws, request);
+          });
+        } else { 
+          socket.destroy(); // 다른 경로의 요청은 거절
+        }
+      });
+  
+      this.wss.on('connection', (socket) => { 
+        console.log('WebSocket connection established : ');
+        //console.log(socket);
+        socket.send('Hello! Message From Server');
+        socket.on("close", () => console.log("disconnect from the browser"))
+        // 완성되면 지우시오
+        // console.log('Connected to WebSocket server at /meeting');
+  
+        // ws.on('message', (message) => {
+        //   console.log(`received: ${message}`);
+        // });
+  
+        // ws.send('Hello! Message From Server');
+      });
+  
+      this.server.listen(this.port, () => {
+        console.log(`HTTP and WebSocket server running on port ${this.port}`);
+      });
+    } else {
+      console.error('Server or WebSocket Server could not be initialized.');
+    }
+  }
+  
+  
+  public stopWebSocketServer(): void {
+    if (!this.server) return; // 서버가 없는 경우
+    this.wss?.close(() => {
+      console.log("WebSocket server closed");
+    });
+    this.server.close(() => {
+      console.log("HTTP server closed");
+    });
+
+    this.server = null;
+    this.wss = null;
   }
 
   public listen(): void {
-    this.application.listen(this.port, () => {
-      console.log(`Server running on port ${this.port}`);
-    });
-
-    // const server = http.createServer(this.application);
-    
+    if (!this.server) {
+      this.application.listen(this.port, () => {
+        console.log(`HTTP server running on port ${this.port}`);
+      });
+    }
   }
 }
 
