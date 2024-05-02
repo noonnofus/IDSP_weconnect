@@ -1,18 +1,3 @@
-/*const socket = new WebSocket(`ws://${window.location.host}/meeting`);
-
-socket.addEventListener("open", () => { 
-    console.log("Connected to Server");
-})
-
-socket.addEventListener ("message", (message) => {
-    console.log("New message: ", message, "from the server");
-});
-
-socket.addEventListener("close", () => { 
-    console.log("Disconnected from browser"); 
-});
-*/
-
 const socket = io();
 
 const welcome = document.getElementById("welcome");
@@ -23,6 +8,14 @@ room.hidden = true;
 
 let roomName;
 
+const handleMessageSubmit = (event) => {
+  event.preventDefault();
+  const input = room.querySelector("input");
+  socket.emit("new_message", roomName, input.value, () => {
+    addMessage(`You: ${input.value}`, input);
+  });
+  
+}
 
 function showRoom() {
   welcome.hidden = true;
@@ -30,7 +23,7 @@ function showRoom() {
   const h3 = room.querySelector("h3");
   h3.innerHTML = `Room: ${roomName}`;
   const form = room.querySelector("form");
-  form.addEventListener("submit", (event) => { });
+  form.addEventListener("submit", handleMessageSubmit);
   
 }
 
@@ -58,3 +51,5 @@ socket.on("welcome", () => {
 socket.on("bye", () => {
   addMessage("Someone left!");
 });
+
+socket.on("new_message", (msg) => { addMessage(msg) } );
