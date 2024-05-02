@@ -11,7 +11,7 @@ let roomName;
 const handleMessageSubmit = (event) => {
   event.preventDefault();
   const input = room.querySelector("input");
-  socket.emit("new_message", roomName, input.value, () => {
+  socket.emit("new_message", input.value,roomName, () => {
     addMessage(`You: ${input.value}`, input);
   });
   
@@ -24,7 +24,7 @@ function showRoom() {
   h3.innerHTML = `Room: ${roomName}`;
   const form = room.querySelector("form");
   form.addEventListener("submit", handleMessageSubmit);
-  
+
 }
 
 form.addEventListener("submit", (event) => {
