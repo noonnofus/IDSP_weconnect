@@ -23,12 +23,20 @@ class AuthenticationController implements Controller {
     this.router.post(`${this.path}signup`, this.register);
   }
 
+  private getHomePage(req: Request, res: Response): void {
+    res.status(200).render('home')
+  }
+  
   private getRegisterPage(req: Request, res: Response): void {
     res.status(200).render('signup')
   }
 
   private getLoginPage(req: Request, res: Response): void {
     res.status(200).render("login");
+  }
+
+  private getPrelogPage(req: Request, res: Response): void {
+    res.status(200).render('prelog')
   }
 
   private getJoinMeetingPage(req: Request, res: Response): void {
