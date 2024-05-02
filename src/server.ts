@@ -17,4 +17,5 @@ const controllers = [
 ];
 
 const app = new App(controllers);
-app.listen();
+app.startWebSocketServer();
+//app.listen();

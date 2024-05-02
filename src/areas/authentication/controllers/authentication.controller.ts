@@ -44,8 +44,6 @@ class AuthenticationController implements Controller {
       //@ts-ignore
       req.session.user = sessionUser;
 
-      console.log('user session: ', req.session);
-
       res.status(200).redirect("/home");
     }
     catch (err) {

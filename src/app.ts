@@ -5,8 +5,9 @@ import dotenv from "dotenv";
 import path from "node:path";
 import database from "../databaseConnection";
 import http from "http";
-import WebSocket from "ws";
-import bodyParser from "body-parser";
+import WebSocket from 'ws'; 
+import { Server as SocketIOServer } from 'socket.io';
+
 
 async function printMySQLVersion() {
 	let sqlQuery = `
@@ -24,14 +25,15 @@ async function printMySQLVersion() {
 		return false;
 	}
 } 
-
 const success = printMySQLVersion();
 
 
 class App {
   public application: express.Application;
   private readonly port: number;
-
+  private server: http.Server | null = null;
+  private wss: WebSocket.Server | null = null;
+  private io: SocketIOServer | null = null;
   constructor(controllers: Controller[]) {
     dotenv.config();
     this.application = express();
@@ -44,7 +46,7 @@ class App {
 
   private initializeMiddlewares(): void {
     this.application.use(express.json());
-    this.application.use(bodyParser.json());
+    // this.application.use(bodyParser.json());
     this.application.use(express.urlencoded({ extended: true }));
     this.application.use(express.static(path.join(__dirname, "..", "public")));
     this.application.use(express.static(path.join(__dirname, 'views', 'css')));
@@ -63,7 +65,6 @@ class App {
     )
     
     this.application.set("view engine", "ejs");
-
     //this.application.set("views", path.join(__dirname, "views"));
     this.application.set('views', path.join(__dirname, 'views'));
   }
@@ -73,6 +74,7 @@ class App {
       this.application.use(controller.path, controller.router);
     });
   }
+  
 
   private initializeErrorHandling(): void {
     this.application.use(
@@ -80,38 +82,43 @@ class App {
         res.status(500).json({ message: error.message });
       }
     );
-  }
-
-  public listen(): void {
-    // this.application.listen(this.port, () => {
-    //   console.log(`Server running on port ${this.port}`);
-    // });
-
-    const server = http.createServer(this.application);
-    const wss = new WebSocket.Server({ server })
-
-    const sockets: WebSocket[] = [];
-
-    wss.on("connection", (socket, req) => {
-      // figure out tghe uyser that connected
-      sockets.push(socket);
-      console.log("connected to browser");
-      socket.on("close", () => console.log("disconnected from the browser"));
-      // console.log('socket: ', socket);
-      socket.on("message", (message) => {
-        
-        // figure out which user sent the message
-        // sockets.forEach(aSocket => {
-        //   // aSocket.send({message, userId: "1"});
-        //   aSocket.send(message);
-        // });
-      })
-    })
-
+  } 
+ 
+  public startWebSocketServer(): void {
+    if (this.server) return; // 이미 서버가 실행 중인 경우 중복 생성 방지
+  
+    this.server = http.createServer(this.application);
+    this.io = new SocketIOServer(this.server);
+  
+    this.io.on('connection', (socket) => { 
+      console.log('Socket.IO client connected');
+      //console.log(socket);
+      socket.onAny((event) => {
+        console.log(`socket Event : ${event}`);
+      });
+      socket.on("enter_room", (roomname, done) => {
+        socket.join(roomname);
     
-    server.listen(this.port, () => {
-      console.log(`Server running on port ${this.port}`);
-    })
+        console.log(socket.rooms);
+        done();
+        socket.to(roomname).emit("welcome");
+      });
+  
+      socket.on("disconnecting", () => {
+        socket.rooms.forEach((room) => {
+          socket.to(room).emit("bye");
+        });
+      });
+  
+      // 메시지 받기
+      socket.on('message', (message) => {
+        console.log(`Received message from client: ${message}`);
+      });
+    });
+  
+    this.server.listen(this.port, () => {
+      console.log(`HTTP and Socket.IO server running on port ${this.port}`);
+    });
   }
 }
 
