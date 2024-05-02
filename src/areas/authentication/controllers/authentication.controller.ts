@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import Controller from '../../../interfaces/controller.interface';
-import { AuthenticationService } from "../services/authentication.service";
 import { IAuthentication } from '../services/Iauthentication.service';
 import { ISession } from '../../../ISession';
 
@@ -24,14 +23,6 @@ class AuthenticationController implements Controller {
     this.router.post(`${this.path}signup`, this.register);
   }
 
-  private getPrelogPage(req: Request, res: Response): void {
-    res.status(200).render("prelog");
-  }
-
-  private getHomePage(req: Request, res: Response): void {
-    res.status(200).render("homepage");
-  }
-
   private getRegisterPage(req: Request, res: Response): void {
     res.status(200).render('signup')
   }
@@ -52,8 +43,10 @@ class AuthenticationController implements Controller {
 
       //@ts-ignore
       req.session.userId = user.userId
-      
-      res.status(200).render("homepage");
+
+      console.log(req.session);
+
+      res.status(200).redirect("/home");
     }
     catch (err) {
       if (err) {
