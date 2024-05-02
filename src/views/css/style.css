@@ -93,7 +93,7 @@
     font-weight: lighter;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 7vw;
+    font-size: 4vw;
     margin-bottom: 20px;
 }
 
@@ -325,3 +325,68 @@ div.notification.me-3 {
     width: 100%;
     height: 42px;
 }
+
+.prelog {
+    background: linear-gradient( #2277EE, #7722BB);
+}
+
+.prelog-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    padding-top: 200px;
+    padding-bottom:30px
+}
+
+.prelog-text {
+    background: white;
+    font-weight: lighter;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1vw;
+    margin-top: 60px;
+    margin-bottom: 320px;
+    text-align: center;
+}
+
+.prelog-btn {
+    background-color: rgba(255, 255, 255, 0.5); 
+    border: 2px solid white; 
+    border-radius: 10px; 
+    color: white; 
+    padding: 15px 30px; 
+    text-decoration: none; 
+    margin: 0 10px; 
+}
+
+.prelog-btn:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.prelog-btm-text {
+    background: white;
+    font-weight: lighter;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 0.8vw;
+    margin-top: 60px;
+    text-align: center;
+}
+
+.prelog-signup {
+    background: white;
+    font-weight: lighter;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 0.7vw;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.prelog-signup a {
+    color: orange;
+    font-weight: bold;
+    text-decoration: none; 
+}
+

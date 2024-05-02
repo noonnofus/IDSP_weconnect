@@ -15,18 +15,33 @@ class AuthenticationController implements Controller {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}login`, this.getLoginPage);
+    this.router.get(`${this.path}home`, this.getHomePage);
     this.router.get(`${this.path}signup`, this.getRegisterPage);
-    this.router.post(`${this.path}login`, this.login);
+    this.router.get(`${this.path}login`, this.getLoginPage);
+    this.router.get(`${this.path}prelog`, this.getPrelogPage);
+    this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
+    this.router.post(`${this.path}home`, this.login);
     this.router.post(`${this.path}signup`, this.register);
   }
 
-  private getLoginPage(req: Request, res: Response): void {
+  private getPrelogPage(req: Request, res: Response): void {
+    res.status(200).render("prelog");
+  }
+
+  private getHomePage(req: Request, res: Response): void {
     res.status(200).render("homepage");
   }
 
   private getRegisterPage(req: Request, res: Response): void {
     res.status(200).render('signup')
+  }
+
+  private getLoginPage(req: Request, res: Response): void {
+    res.status(200).render("login");
+  }
+
+  private getJoinMeetingPage(req: Request, res: Response): void {
+    res.status(200).render("join_meeting");
   }
 
   private login = async (req: Request, res: Response) => {
