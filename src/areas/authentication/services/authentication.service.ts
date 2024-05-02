@@ -45,4 +45,17 @@ export class AuthenticationService implements IAuthentication{
             throw new Error("The user with email is already exists. Please try again with another email.")
         }
     }
+
+    async getUserById(id: number): Promise<tb_user | Error> {
+        const user = await this._db.prisma.tb_user.findUnique({
+            where: {
+                userId: id,
+            }
+        })
+        if (user) {
+            return user;
+        } else {
+            throw new Error ("There is no user with the id");
+        }
+    }
 }
