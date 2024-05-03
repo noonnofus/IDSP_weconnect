@@ -1,12 +1,15 @@
 import { Router, Request, Response } from "express";
 import Controller from "../../../interfaces/controller.interface";
+import { IMessage } from "../services/Imessage";
 
 class MessageController implements Controller {
     public path = '/'; 
     public router = Router();
+    public service: IMessage;
 
-    constructor() {
+    constructor(service: IMessage) {
         this.initializeRoutes();
+        this.service = service;
     }
 
     private initializeRoutes(): void {
@@ -19,8 +22,11 @@ class MessageController implements Controller {
     }
 
     private getChattingRoom(req: Request, res: Response) {
-        // const chatId = req.params;
         res.status(200).render("chatting");
+    }
+
+    saveToDb(senderEmail: string, receiverEmail: string) {
+        this.service.insertRoom(senderEmail, receiverEmail)
     }
 }
 

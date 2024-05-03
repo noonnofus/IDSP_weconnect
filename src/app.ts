@@ -7,6 +7,8 @@ import database from "../databaseConnection";
 import http from "http";
 import WebSocket from "ws";
 import { Server as SocketIOServer } from "socket.io";
+import MessageController from "./areas/message/controller/message.controller";
+import { MessageService } from "./areas/message/services/message.service";
 
 async function printMySQLVersion() {
   let sqlQuery = `
@@ -50,18 +52,13 @@ class App {
     this.application.use(
       express.static(path.join(__dirname, "views", "image"))
     );
-    this.application.use(
-      session({
-        secret: "weconnect_Secret_key",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          httpOnly: true,
-          secure: false,
-          maxAge: 24 * 60 * 60 * 1000,
-        },
-      })
-    );
+    const sessionMiddleware = session({
+      secret: 'your_secret',
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: 'auto' }
+    });
+    this.application.use(sessionMiddleware);
     this.application.set("view engine", "ejs");
     //this.application.set("views", path.join(__dirname, "views"));
     this.application.set("views", path.join(__dirname, "views"));
@@ -87,20 +84,26 @@ class App {
     );
   }
 
+
+
   public startWebSocketServer(): void {
     if (this.server) return; // 이미 서버가 실행 중인 경우 중복 생성 방지
 
     this.server = http.createServer(this.application);
     this.io = new SocketIOServer(this.server);
 
-    this.io.on("connection", (socket) => {
+    this.io.on("connection", async (socket) => {
       console.log("Socket.IO client connected");
-      //console.log(socket);
+      
       socket.onAny((event) => {
         console.log(`socket Event : ${event}`);
       });
-      socket.on("enter_room", (roomname, done) => {
+      socket.on("enter_room", (roomname, sessionUser, done) => {
         socket.join(roomname);
+        const saveDB = new MessageController(new MessageService());
+        console.log('this is at the enter_room on server', sessionUser)
+        
+        // saveDB.saveToDb()
 
         console.log(socket.rooms);
         done();
@@ -113,8 +116,8 @@ class App {
         });
       });
 
-      socket.on("new_message", (msg, room, done) => {
-        socket.to(room).emit("new_message", msg);
+      socket.on("new_message", (msg, room, username, done) => {
+        socket.to(room).emit("new_message", msg, username);
         done();
       });
     });

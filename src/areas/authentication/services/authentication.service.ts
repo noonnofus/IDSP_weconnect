@@ -58,4 +58,19 @@ export class AuthenticationService implements IAuthentication{
             throw new Error ("There is no user with the id");
         }
     }
+
+    async getUserByUsername(_username: string): Promise<tb_user[] | undefined> {
+        const users = await this._db.prisma.tb_user.findMany({
+            where: {
+                username: {
+                    startsWith: _username
+                }
+            }
+        })
+        if (users) {
+            return users;
+        } else {
+            return undefined;
+        }
+    }
 }

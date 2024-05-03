@@ -19,6 +19,7 @@ class AuthenticationController implements Controller {
     this.router.post(`${this.path}login`, this.login);
     this.router.post(`${this.path}signup`, this.register);
     this.router.post(`${this.path}getUserSession`, this.getUserSession);
+    this.router.post(`${this.path}searchUser`, this.searchUser)
   }
 
   private getLoginPage(req: Request, res: Response): void {
@@ -38,6 +39,8 @@ class AuthenticationController implements Controller {
       const sessionUser = {
         // @ts-ignore
         userId: user.userId,
+        // @ts-ignore
+        userEmail: user.email,
         // @ts-ignore
         username: user.username,
       }
@@ -64,6 +67,8 @@ class AuthenticationController implements Controller {
         // @ts-ignore
         userId: newUser.userId,
         // @ts-ignore
+        userEmail: newUser.email,
+        // @ts-ignore
         username: newUser.username,
       }
       //@ts-ignore
@@ -79,7 +84,7 @@ class AuthenticationController implements Controller {
   private getUserSession = async (req: Request, res: Response) => {
     // @ts-ignore
     const user = JSON.stringify(req.session.user);
-    // console.log('at router: ', user)
+    console.log('at router: ', user)
     if (user) {
       res.status(200).json({
         data: user,
@@ -87,6 +92,20 @@ class AuthenticationController implements Controller {
     } else {
       res.status(404).json({
         error: "User not found.",
+      })
+    }
+  }
+
+  private searchUser = async (req: Request, res: Response) => {
+    const { username } = req.body;
+    const users = await this.service.getUserByUsername(username);
+    if (users !== undefined) {
+      res.status(200).json({
+        data: users,
+      })
+    } else {
+      res.status(200).json({
+        data: "user not found",
       })
     }
   }
