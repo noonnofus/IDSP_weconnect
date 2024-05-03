@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -17,42 +17,57 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
       rel="stylesheet"
     />
-
   </head>
   <body>
     <header><%- include("./homepage_header.ejs") %></header>
-    <main id="m-video">
-      <div id="myStream">
-      <video id="myFace" autoplay playsinline width="400" height="400"></video>
-      <button id = "mute">Mute</button>
-      <button id = "camera">Turn camera off</button>
-      <select id = "cameras">
-        <option value="device">Face Camera</option>
-      </select>
-    <div></div>
+
+    <main>
+
+      <div id="welcome">
+        <form>
+          <input placeholder="room name", required type="text" />
+          <button>Enter Room</button>
+        </form>
+      </div>
+
+      <div id="call">
+        <div id="myStream">
+          <video
+            id="myFace"
+            autoplay
+            playsinline
+            width="400"
+            height="400"
+          ></video>
+          <button id="mute">Mute</button>
+          <button id="camera">Turn camera off</button>
+          <select id="cameras">
+            <option value="device">Face Camera</option>
+          </select>
+        </div>
+      </div>
     </main>
-
-
-    <div id="welcome">
+    <div id="imsi" hidden="true">
+    <div id="C-welcome">
       <form>
-        <input placeholder="room name" required type="text" />
+        <input placeholder="room name", required, type="text" />
         <button>Join</button>
       </form>
     </div>
     <div id="room">
-        <ul>
-          <h3></h3>
-            <form id = "name">
-                <input placeholder="massage">
-                <button>Send</button>
-            </form>
-            <form id = "msg">
-              <input placeholder="massage">
-              <button>Send</button>
-          </form>
-        </ul>
+      <ul>
+        <h3></h3>
+        <form id="name">
+          <input placeholder="massage" />
+          <button>Send</button>
+        </form>
+        <form id="msg">
+          <input placeholder="massage" />
+          <button>Send</button>
+        </form>
+      </ul>
     </div>
-
+  </div>
     <footer><%- include("./homepage_footer.ejs") %></footer>
     <script src="/socket.io/socket.io.js"></script>
     <script src="meeting.js"></script>

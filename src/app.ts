@@ -96,25 +96,37 @@ class App {
       //console.log(socket);
       socket.onAny((event) => {
         console.log(`socket Event : ${event}`);
-      });
-      socket.on("enter_room", (roomname, done) => {
+      }); // 모든 이벤트를 로깅
+      
+      socket.on("join_room", (roomname, done) => {
         socket.join(roomname);
-
-        console.log(socket.rooms);
         done();
         socket.to(roomname).emit("welcome");
       });
-
-      socket.on("disconnecting", () => {
-        socket.rooms.forEach((room) => {
-          socket.to(room).emit("bye");
-        });
+      
+      socket.on("offer", (offer, roomName) => {
+        socket.to(roomName).emit("offer", offer);
       });
 
-      socket.on("new_message", (msg, room, done) => {
-        socket.to(room).emit("new_message", msg);
-        done();
-      });
+      //chat 
+      // socket.on("enter_room", (roomname, done) => {
+      //   socket.join(roomname);
+
+      //   console.log(socket.rooms);
+      //   done();
+      //   socket.to(roomname).emit("welcome");
+      // });
+
+      // socket.on("disconnecting", () => {
+      //   socket.rooms.forEach((room) => {
+      //     socket.to(room).emit("bye");
+      //   });
+      // });
+
+      // socket.on("new_message", (msg, room, done) => {
+      //   socket.to(room).emit("new_message", msg);
+      //   done();
+      // });
     });
 
     this.server.listen(this.port, () => {

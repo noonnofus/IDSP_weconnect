@@ -15,6 +15,12 @@ socket.addEventListener("close", () => {
 
 const socket = io();
 
+
+
+
+
+
+// mdedia stream
 const myFace = document.getElementById("myFace");
 const muteBtn =  document.getElementById("mute");
 const cameraBtn = document.getElementById("camera");
@@ -23,6 +29,9 @@ const camerasSelect = document.getElementById("cameras");
 let myStream;
 let muted = false;
 let cameraOff = false;
+let myPeerConnection;
+
+
 const getCamera = async () => {
   try {
     const device = await navigator.mediaDevices.enumerateDevices();
@@ -37,8 +46,7 @@ const getCamera = async () => {
     console.log(e);
   }
 }
-getCamera();
-const getMedia = async () => {
+const getMedia = async () => { 
   try {
     myStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -49,7 +57,9 @@ const getMedia = async () => {
     console.log(e);
   }
 }
-getMedia();
+getCamera();
+//getMedia(); 시그널링 끝나고 실행시키자
+
 const handleMuteClick = () => {
   myStream.getAudioTracks().forEach((track) => {
     track.enabled = !track.enabled;
@@ -80,6 +90,61 @@ muteBtn.addEventListener("click", handleMuteClick)
 cameraBtn.addEventListener("click", handleCameraClick)
 
 
+//video welcome form 
+const welcome = document.getElementById("welcome");
+const call = document.getElementById("call");
+
+let roomName;
+
+welcomeForm = welcome.querySelector("form");
+
+const initCall = async () => {
+  welcome.hidden = true;
+  call.hidden = false;
+  await initCall(); 
+  makeConnection();
+}
+
+const handleWelcomeSubmit = (event) => {
+  event.preventDefault();
+  const input = welcomeForm.querySelector("input");
+  console.log(`welcomeForm: ${input.value}`);
+  socket.emit("join_room", (input.value), initCall);
+  roomName = input.value;
+  input.value = "";
+}
+
+welcomeForm.addEventListener("submit", handleWelcomeSubmit);
+
+//socket code
+socket.on("welcome", async () => {
+  const offer = await myPeerConnection.createOffer();
+  console.log("someone joined");
+  console.log(offer);
+  myPeerConnection.setLocalDescription(offer);
+  console.log("offer sent");
+  socket.emit("offer", offer, roomName);
+});
+
+socket.on("offer",async (offer) => {
+  console.log("offer received");
+  console.log(offer);
+  await myPeerConnection.setRemoteDescription(offer);
+})
+
+//RTC code
+
+function makeConnection() {
+  myPeerConnection = new RTCPeerConnection();
+  //console.log(myStream.getTracks());
+  myStream.getTracks().forEach((track) => {
+    myPeerConnection.addTrack(track, myStream);
+  });
+
+}
+
+// chat 
+/*
 const welcome = document.getElementById("welcome");
 const form = welcome.querySelector("form");
 const room = document.getElementById("room");
@@ -138,3 +203,4 @@ socket.on("bye", () => {
 });
 
 socket.on("new_message", (msg) => { addMessage(msg) } );
+*/
