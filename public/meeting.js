@@ -152,17 +152,8 @@ socket.on("ice", (ice) => {
   console.log("ice received");
   myPeerConnection.addIceCandidate(ice);
 });
-//RTC code
 
-// function makeConnection() {
-//   myPeerConnection = new RTCPeerConnection();
-//   //console.log(myStream.getTracks());
-//   myPeerConnection.addEventListener("icecandidate", handleIce);
-//   myPeerConnection.addEventListener("addstream", handleAddStream);
-//   myStream.getTracks().forEach((track) => {
-//     myPeerConnection.addTrack(track, myStream);
-//   });
-// }
+//RTC code
 function makeConnection() {
   myPeerConnection = new RTCPeerConnection({
     iceServers: [
@@ -196,64 +187,75 @@ const handleAddTrack = (event) => {
     console.log("Track event: received remote stream");
   }
 };
+
+
 // chat 
-/*
-const welcome = document.getElementById("welcome");
-const form = welcome.querySelector("form");
+const cWelcome = document.getElementById("c-welcome");
+const form = cWelcome.querySelector("form");
 const room = document.getElementById("room");
+const input = room.querySelector("input");
 
 room.hidden = true;
 
-let roomName;
+let c_roomName;
 
-
-
-const handleMessageSubmit = (event) => {
+const handleMessageSubmit = async (event) => {
   event.preventDefault();
+  const user = await getUserSession()
+  const userData = JSON.parse(user.data);
+  console.log('session: ', userData);
   const input = room.querySelector("input");
-  const value = input.value;
-  socket.emit("new_message", input.value,roomName, () => {
-    addMessage(`You: ${value}`, input);
-  input.value = "";
+  socket.emit("new_message", input.value, c_roomName, userData.username, () => {
+    addMessage(`${userData.username}: ${input.value}`, input);
   });
-  
 }
 
 function showRoom() {
   welcome.hidden = true;
   room.hidden = false;
   const h3 = room.querySelector("h3");
-  h3.innerHTML = `Room: ${roomName}`;
-  const msgForm = room.querySelector("#msg");
-  const nameForm = room.querySelector("#name") ;
-  msgForm.addEventListener("submit", handleMessageSubmit);
-
+  h3.innerHTML = `Room: ${c_roomName}`;
+  const form = room.querySelector("form");
+  form.addEventListener("submit", handleMessageSubmit);
 }
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const user = await getUserSession()
+  const userData = JSON.parse(user.data);
+  console.log('session: ', userData);
   const input = form.querySelector("input");
-  socket.emit("enter_room", input.value, showRoom );
-  roomName = input.value;
+  socket.emit("enter_room", input.value, userData, showRoom);
+  c_roomName = input.value;
   input.value = "";
 });
 
 const addMessage = (msg) => {
   const ul = room.querySelector("ul");
   const li = document.createElement("li");
+  input.value = "";
 
-  li.innerText =  msg; 
+  li.innerText = msg;
   ul.appendChild(li);
 }
 
 socket.on("welcome", () => {
   console.log("emit welcome");
-  addMessage("Someone joined!");  
+  addMessage("Someone joined!");
 })
 
 socket.on("bye", () => {
   addMessage("Someone left!");
 });
 
-socket.on("new_message", (msg) => { addMessage(msg) } );
-*/
+socket.on("new_message", (msg, username) => { 
+  addMessage(`${username}: ${msg}`) 
+});
+
+async function getUserSession() {
+  const res = await fetch('/getUserSession', {
+      method: 'POST',
+  });
+  const data = await res.json();
+  return data;
+}

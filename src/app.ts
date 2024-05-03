@@ -7,6 +7,8 @@ import database from "../databaseConnection";
 import http from "http";
 import WebSocket from "ws";
 import { Server as SocketIOServer } from "socket.io";
+import MessageController from "./areas/message/controller/message.controller";
+import { MessageService } from "./areas/message/services/message.service";
 
 async function printMySQLVersion() {
   let sqlQuery = `
@@ -43,24 +45,20 @@ class App {
 
   private initializeMiddlewares(): void {
     this.application.use(express.json());
+    // this.application.use(bodyParser.json());
     this.application.use(express.urlencoded({ extended: true }));
     this.application.use(express.static(path.join(__dirname, "..", "public")));
     this.application.use(express.static(path.join(__dirname, "views", "css")));
     this.application.use(
       express.static(path.join(__dirname, "views", "image"))
     );
-    this.application.use(
-      session({
-        secret: "weconnect_Secret_key",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          httpOnly: true,
-          secure: false,
-          maxAge: 24 * 60 * 60 * 1000,
-        },
-      })
-    );
+    const sessionMiddleware = session({
+      secret: "your_secret",
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: "auto" },
+    });
+    this.application.use(sessionMiddleware);
     this.application.set("view engine", "ejs");
     //this.application.set("views", path.join(__dirname, "views"));
     this.application.set("views", path.join(__dirname, "views"));
@@ -70,7 +68,7 @@ class App {
     controllers.forEach((controller) => {
       this.application.use(controller.path, controller.router);
     });
-  } 
+  }
 
   private initializeErrorHandling(): void {
     this.application.use(
@@ -91,47 +89,52 @@ class App {
     this.server = http.createServer(this.application);
     this.io = new SocketIOServer(this.server);
 
-    this.io.on("connection", (socket) => {
+    this.io.on("connection", async (socket) => {
       console.log("Socket.IO client connected");
+      //console.log(socket);
       socket.onAny((event) => {
         console.log(`socket Event : ${event}`);
       }); // 모든 이벤트를 로깅
-      
+
       socket.on("join_room", (roomname) => {
         socket.join(roomname);
         socket.to(roomname).emit("welcome");
       });
-      
+
       socket.on("offer", (offer, roomName) => {
         socket.to(roomName).emit("offer", offer);
       });
 
       socket.on("answer", (answer, roomName) => {
-        socket.to(roomName).emit("answer", answer); 
+        socket.to(roomName).emit("answer", answer);
       });
 
       socket.on("ice", (ice, roomName) => {
         socket.to(roomName).emit("ice", ice);
       });
-      //chat 
-      // socket.on("enter_room", (roomname, done) => {
-      //   socket.join(roomname);
 
-      //   console.log(socket.rooms);
-      //   done();
-      //   socket.to(roomname).emit("welcome");
-      // });
+      //chat
 
-      // socket.on("disconnecting", () => {
-      //   socket.rooms.forEach((room) => {
-      //     socket.to(room).emit("bye");
-      //   });
-      // });
+      socket.on("enter_room", (roomname, sessionUser, done) => {
+        socket.join(roomname);
+        //const saveDB = new MessageController(new MessageService());
+        //console.log("this is at the enter_room on server", sessionUser);
+        // saveDB.saveToDb()
+        //console.log(socket.rooms);
+        done();
+        socket.to(roomname).emit("welcome");
+      });
 
-      // socket.on("new_message", (msg, room, done) => {
-      //   socket.to(room).emit("new_message", msg);
-      //   done();
-      // });
+      socket.on("disconnecting", () => {
+        socket.rooms.forEach((room) => {
+          socket.to(room).emit("bye");
+        });
+      });
+
+      socket.on("new_message", (msg, room, username, done) => {
+        socket.to(room).emit("new_message", msg, username);
+        done();
+      });
     });
 
     this.server.listen(this.port, () => {
