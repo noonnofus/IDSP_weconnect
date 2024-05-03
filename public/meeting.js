@@ -101,16 +101,17 @@ welcomeForm = welcome.querySelector("form");
 const initCall = async () => {
   welcome.hidden = true;
   call.hidden = false;
-  await initCall(); 
+  await getMedia(); 
   makeConnection();
 }
 
-const handleWelcomeSubmit = (event) => {
+const handleWelcomeSubmit = async (event) => {
   event.preventDefault();
   const input = welcomeForm.querySelector("input");
   console.log(`welcomeForm: ${input.value}`);
-  socket.emit("join_room", (input.value), initCall);
-  roomName = input.value;
+  await initCall();
+  socket.emit("join_room", (input.value));
+  roomName = input.value; 
   input.value = "";
 }
 
@@ -126,23 +127,75 @@ socket.on("welcome", async () => {
   socket.emit("offer", offer, roomName);
 });
 
-socket.on("offer",async (offer) => {
-  console.log("offer received");
-  console.log(offer);
-  await myPeerConnection.setRemoteDescription(offer);
-})
+socket.on("offer", async (offer) => {
+  console.log("Received offer:", offer);
+  try {
+    await myPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await myPeerConnection.createAnswer();
+    await myPeerConnection.setLocalDescription(answer);
+    socket.emit("answer", answer, roomName);
+  } catch (error) {
+    console.error("Error handling offer:", error);
+  }
+});
 
+socket.on("answer", async (answer) => {
+  console.log("Received answer:", answer);
+  try {
+    await myPeerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+  } catch (error) {
+    console.error("Error handling answer:", error);
+  }
+});
+
+socket.on("ice", (ice) => {
+  console.log("ice received");
+  myPeerConnection.addIceCandidate(ice);
+});
 //RTC code
 
+// function makeConnection() {
+//   myPeerConnection = new RTCPeerConnection();
+//   //console.log(myStream.getTracks());
+//   myPeerConnection.addEventListener("icecandidate", handleIce);
+//   myPeerConnection.addEventListener("addstream", handleAddStream);
+//   myStream.getTracks().forEach((track) => {
+//     myPeerConnection.addTrack(track, myStream);
+//   });
+// }
 function makeConnection() {
-  myPeerConnection = new RTCPeerConnection();
-  //console.log(myStream.getTracks());
+  myPeerConnection = new RTCPeerConnection({
+    iceServers: [
+      // STUN/TURN 서버 구성 예시
+      {
+        urls: "stun:stun.l.google.com:19302",
+      },
+      // 추가적인 STUN/TURN 서버를 구성할 수 있습니다.
+    ],
+  });
+  myPeerConnection.addEventListener("icecandidate", handleIce);
+  myPeerConnection.addEventListener("track", handleAddTrack); // 'addstream' 대신 'track' 사용
+
   myStream.getTracks().forEach((track) => {
     myPeerConnection.addTrack(track, myStream);
   });
-
 }
 
+
+const handleIce = (data) => {
+  console.log("got ice candidate : ", data);
+  console.log(data);
+  console.log("sent ice");
+  socket.emit("ice", data.candidate, roomName);
+};
+
+const handleAddTrack = (event) => {
+  const peerFace = document.getElementById("peerFace");
+  if (peerFace.srcObject !== event.streams[0]) {
+    peerFace.srcObject = event.streams[0];
+    console.log("Track event: received remote stream");
+  }
+};
 // chat 
 /*
 const welcome = document.getElementById("welcome");

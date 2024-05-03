@@ -70,7 +70,7 @@ class App {
     controllers.forEach((controller) => {
       this.application.use(controller.path, controller.router);
     });
-  }
+  } 
 
   private initializeErrorHandling(): void {
     this.application.use(
@@ -93,14 +93,12 @@ class App {
 
     this.io.on("connection", (socket) => {
       console.log("Socket.IO client connected");
-      //console.log(socket);
       socket.onAny((event) => {
         console.log(`socket Event : ${event}`);
       }); // 모든 이벤트를 로깅
       
-      socket.on("join_room", (roomname, done) => {
+      socket.on("join_room", (roomname) => {
         socket.join(roomname);
-        done();
         socket.to(roomname).emit("welcome");
       });
       
@@ -108,6 +106,13 @@ class App {
         socket.to(roomName).emit("offer", offer);
       });
 
+      socket.on("answer", (answer, roomName) => {
+        socket.to(roomName).emit("answer", answer); 
+      });
+
+      socket.on("ice", (ice, roomName) => {
+        socket.to(roomName).emit("ice", ice);
+      });
       //chat 
       // socket.on("enter_room", (roomname, done) => {
       //   socket.join(roomname);

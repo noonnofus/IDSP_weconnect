@@ -22,10 +22,9 @@
     <header><%- include("./homepage_header.ejs") %></header>
 
     <main>
-
       <div id="welcome">
         <form>
-          <input placeholder="room name", required type="text" />
+          <input placeholder="room name" , required type="text" />
           <button>Enter Room</button>
         </form>
       </div>
@@ -45,29 +44,36 @@
             <option value="device">Face Camera</option>
           </select>
         </div>
+        <video
+          id="peerFace"
+          autoplay
+          playsinline
+          width="400"
+          height="400"
+        ></video>
       </div>
     </main>
     <div id="imsi" hidden="true">
-    <div id="C-welcome">
-      <form>
-        <input placeholder="room name", required, type="text" />
-        <button>Join</button>
-      </form>
-    </div>
-    <div id="room">
-      <ul>
-        <h3></h3>
-        <form id="name">
-          <input placeholder="massage" />
-          <button>Send</button>
+      <div id="C-welcome">
+        <form>
+          <input placeholder="room name" , required, type="text" />
+          <button>Join</button>
         </form>
-        <form id="msg">
-          <input placeholder="massage" />
-          <button>Send</button>
-        </form>
-      </ul>
+      </div>
+      <div id="room">
+        <ul>
+          <h3></h3>
+          <form id="name">
+            <input placeholder="massage" />
+            <button>Send</button>
+          </form>
+          <form id="msg">
+            <input placeholder="massage" />
+            <button>Send</button>
+          </form>
+        </ul>
+      </div>
     </div>
-  </div>
     <footer><%- include("./homepage_footer.ejs") %></footer>
     <script src="/socket.io/socket.io.js"></script>
     <script src="meeting.js"></script>

@@ -15,11 +15,14 @@ model tb_role {
 }
 
 model tb_user {
-  userId       Int            @id @default(autoincrement())
-  email        String         @unique(map: "uniqueEmail") @db.VarChar(100)
-  password     String         @db.VarChar(100)
-  username     String         @db.VarChar(45)
-  tb_user_role tb_user_role[]
+  userId                                 Int            @id @default(autoincrement())
+  email                                  String         @unique(map: "uniqueEmail") @db.VarChar(100)
+  password                               String         @db.VarChar(100)
+  username                               String         @db.VarChar(45)
+  tb_message                             tb_message[]
+  tb_room_tb_room_senderEmailTotb_user   tb_room[]      @relation("tb_room_senderEmailTotb_user")
+  tb_room_tb_room_receiverEmailTotb_user tb_room[]      @relation("tb_room_receiverEmailTotb_user")
+  tb_user_role                           tb_user_role[]
 }
 
 model tb_user_role {
@@ -31,4 +34,29 @@ model tb_user_role {
 
   @@index([roldId], map: "roldId_idx")
   @@index([userId], map: "userId_idx")
+}
+
+model tb_message {
+  messageId Int       @id @default(autoincrement())
+  message   String?   @db.Text
+  senderId  Int?
+  roomId    String?   @db.VarChar(100)
+  createdAt DateTime? @default(now()) @db.DateTime(0)
+  tb_user   tb_user?  @relation(fields: [senderId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "tb_message_ibfk_1")
+  tb_room   tb_room?  @relation(fields: [roomId], references: [roomId], onDelete: NoAction, onUpdate: NoAction, map: "tb_message_ibfk_2")
+
+  @@index([roomId], map: "roomId")
+  @@index([senderId], map: "senderId")
+}
+
+model tb_room {
+  roomId                                 String       @id @db.VarChar(200)
+  senderEmail                            String?      @db.VarChar(100)
+  receiverEmail                          String?      @db.VarChar(100)
+  tb_message                             tb_message[]
+  tb_user_tb_room_senderEmailTotb_user   tb_user?     @relation("tb_room_senderEmailTotb_user", fields: [senderEmail], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "tb_room_ibfk_1")
+  tb_user_tb_room_receiverEmailTotb_user tb_user?     @relation("tb_room_receiverEmailTotb_user", fields: [receiverEmail], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "tb_room_ibfk_2")
+
+  @@index([receiverEmail], map: "receiverEmail")
+  @@index([senderEmail], map: "senderEmail")
 }
