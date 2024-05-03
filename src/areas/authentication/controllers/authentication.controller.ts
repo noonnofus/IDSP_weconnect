@@ -19,14 +19,14 @@ class AuthenticationController implements Controller {
     this.router.get(`${this.path}login`, this.getLoginPage);
     this.router.get(`${this.path}prelog`, this.getPrelogPage);
     this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
-    this.router.post(`${this.path}home`, this.login);
+    this.router.post(`${this.path}login`, this.login);
     this.router.post(`${this.path}signup`, this.register);
     this.router.post(`${this.path}getUserSession`, this.getUserSession);
     this.router.post(`${this.path}searchUser`, this.searchUser)
   }
 
   private getHomePage(req: Request, res: Response): void {
-    res.status(200).render('home')
+    res.status(200).render('homepage')
   }
   
   private getRegisterPage(req: Request, res: Response): void {
