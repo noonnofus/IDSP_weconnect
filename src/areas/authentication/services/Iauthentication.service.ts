@@ -1,4 +1,4 @@
-import { tb_user } from "@prisma/client";
+import { tb_user, tb_room } from "@prisma/client";
 
 export interface IAuthentication {
     getUserByEmailAndPwd(email: string, password: string): Promise <tb_user | Error>

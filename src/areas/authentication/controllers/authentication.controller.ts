@@ -21,8 +21,8 @@ class AuthenticationController implements Controller {
     this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
     this.router.post(`${this.path}login`, this.login);
     this.router.post(`${this.path}signup`, this.register);
-    this.router.post(`${this.path}getUserSession`, this.getUserSession);
-    this.router.post(`${this.path}searchUser`, this.searchUser)
+    this.router.post(`${this.path}getUserSession`, this.getCurrentUserSession);
+    this.router.post(`${this.path}searchUser`, this.searchUser);
   }
 
   private getHomePage(req: Request, res: Response): void {
@@ -62,6 +62,8 @@ class AuthenticationController implements Controller {
       //@ts-ignore
       req.session.user = sessionUser;
 
+      // @ts-ignore
+
       res.status(200).redirect("/home");
     }
     catch (err) {
@@ -96,10 +98,9 @@ class AuthenticationController implements Controller {
     }
   }
 
-  private getUserSession = async (req: Request, res: Response) => {
+  private getCurrentUserSession = async (req: Request, res: Response) => {
     // @ts-ignore
     const user = JSON.stringify(req.session.user);
-    console.log('at router: ', user)
     if (user) {
       res.status(200).json({
         data: user,

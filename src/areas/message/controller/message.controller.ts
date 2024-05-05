@@ -15,6 +15,7 @@ class MessageController implements Controller {
     private initializeRoutes(): void {
         this.router.get(`${this.path}messages`, this.getMessages);
         this.router.get(`${this.path}chat`, this.getChattingRoom);
+        this.router.post(`${this.path}storeInDb`, this.storeData);
     }
 
     private getMessages(req: Request, res: Response) {
@@ -25,9 +26,15 @@ class MessageController implements Controller {
         res.status(200).render("chatting");
     }
 
-    saveToDb(senderEmail: string, receiverEmail: string) {
-        this.service.insertRoom(senderEmail, receiverEmail)
-    }
+    private storeData = async (req: Request, res: Response) => {
+        const { sender, receiver } = req.body;
+        
+        const room = await this.service.storeRoomInDb(sender, receiver);
+        
+        res.status(200).json({
+          data: room,
+        })
+      }
 }
 
 export default MessageController;

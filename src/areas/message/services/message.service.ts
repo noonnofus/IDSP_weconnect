@@ -7,12 +7,22 @@ import { IMessage } from "./Imessage";
 export class MessageService implements IMessage {
     readonly _db: DBClient = DBClient.getInstance();
 
-    async insertRoom(senderEmail: String, receiverEmail: String): Promise<tb_room> {
-        const room = await this._db.prisma.tb_room.create({
-            data:  {
-                roomId: `${senderEmail}${receiverEmail}`
+    async storeRoomInDb(sender: string, receiver: string): Promise<tb_room> {
+        let room = await this._db.prisma.tb_room.findFirst({
+            where: {
+                OR: [
+                    { roomId: `${sender}${receiver}` },
+                    { roomId: `${receiver}${sender}` }
+                ]
             }
-        })
+        });
+        if (!room) {
+            room = await this._db.prisma.tb_room.create({
+                data: {
+                    roomId: `${sender}${receiver}`
+                }
+            })
+        }
         return room;
     }
 }

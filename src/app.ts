@@ -46,6 +46,7 @@ class App {
   private initializeMiddlewares(): void {
     this.application.use(express.json());
     // this.application.use(bodyParser.json());
+    // this.application.use(bodyParser.json());
     this.application.use(express.urlencoded({ extended: true }));
     this.application.use(express.static(path.join(__dirname, "..", "public")));
     this.application.use(express.static(path.join(__dirname, "views", "css")));
@@ -87,6 +88,7 @@ class App {
 
 
   public startWebSocketServer(): void {
+    const userSocketMap: Record<string, string> = {};
     if (this.server) return; // 이미 서버가 실행 중인 경우 중복 생성 방지
 
     this.server = http.createServer(this.application);
@@ -98,16 +100,50 @@ class App {
       socket.onAny((event) => {
         console.log(`socket Event : ${event}`);
       });
-      socket.on("enter_room", (roomname, sessionUser, done) => {
-        socket.join(roomname);
-        const saveDB = new MessageController(new MessageService());
-        console.log('this is at the enter_room on server', sessionUser)
-        
-        // saveDB.saveToDb()
 
-        console.log(socket.rooms);
-        done();
+      socket.on("join_room", (roomname) => {
+        socket.join(roomname);
+        console.log(socket.id);
+        socket.to(roomname).emit("video_welcome");
+      });
+
+      socket.on("offer", (offer, roomName) => {
+        socket.to(roomName).emit("offer", offer);
+      });
+
+      socket.on("answer", (answer, roomName) => {
+        socket.to(roomName).emit("answer", answer);
+      });
+
+      socket.on("ice", (ice, roomName) => {
+        socket.to(roomName).emit("ice", ice);
+      });
+
+      //chat
+      socket.on("connect_socket", ({ roomname }, cb) => {
+        console.log(roomname);
+        userSocketMap[roomname] = socket.id;
+        cb({ success: true });
+      })
+
+      socket.on("get_room", (cb) => {
+        const roomname = Object.keys(userSocketMap).find(key => userSocketMap[key] === socket.id);
+
+        cb({ success: true, data: roomname})
+      })
+
+      socket.on("enter_room", (roomname) => {
+        // const userSocketId = userSocketMap[roomname];
+        // console.log(userSocketMap);
+        // console.log('found id: ', roomname);
+        // console.log('id from server: ', socket.id);
+        // console.log('userSocketId: ', userSocketId);
+        console.log(roomname);
+        socket.join(roomname);
         socket.to(roomname).emit("welcome");
+        // if (userSocketId) {
+        //   console.log(userSocketId);
+        // }
       });
 
       socket.on("disconnecting", () => {

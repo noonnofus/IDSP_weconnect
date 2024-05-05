@@ -20,24 +20,17 @@
   </head>
   <body>
     <header><%- include("./homepage_header.ejs") %></header>
-    <div id="welcome">
-      <form>
-        <input placeholder="room name" required type="text" />
-        <button>Join</button>
-      </form>
-    </div>
     <div id="room">
         <ul>
           <h3></h3>
-            <form>
-                <input placeholder="massage">
+            <form id="msg">
+                <input placeholder="Send a message...">
                 <button>Send</button>
             </form>
         </ul>
     </div>
-
     <footer><%- include("./homepage_footer.ejs") %></footer>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="meeting.js"></script>
+    <script src="chatting.js"></script>
   </body>
 </html>

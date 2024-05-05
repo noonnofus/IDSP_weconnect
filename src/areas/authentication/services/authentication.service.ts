@@ -1,4 +1,4 @@
-import { tb_user } from "@prisma/client";
+import { tb_user, tb_room } from "@prisma/client";
 import DBClient from "../../../prisma";
 import { IAuthentication } from "./Iauthentication.service";
 import bcrypt from "bcrypt";
