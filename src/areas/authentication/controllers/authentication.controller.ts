@@ -19,8 +19,13 @@ class AuthenticationController implements Controller {
     this.router.get(`${this.path}login`, this.getLoginPage);
     this.router.get(`${this.path}prelog`, this.getPrelogPage);
     this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
+    this.router.get(`${this.path}settings`, this.getSettings);
     this.router.post(`${this.path}home`, this.login);
     this.router.post(`${this.path}signup`, this.register);
+  }
+
+  private getHomePage(req: Request, res: Response): void {
+    res.status(200).render("homepage");
   }
 
   private getRegisterPage(req: Request, res: Response): void {
@@ -33,6 +38,14 @@ class AuthenticationController implements Controller {
 
   private getJoinMeetingPage(req: Request, res: Response): void {
     res.status(200).render("join_meeting");
+  }
+
+  private getPrelogPage(req: Request, res: Response): void {
+    res.status(200).render('prelog')
+  }
+
+  private getSettings(req: Request, res: Response): void {
+    res.status(200).render('settings')
   }
 
   private login = async (req: Request, res: Response) => {
