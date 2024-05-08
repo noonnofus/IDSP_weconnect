@@ -17,9 +17,19 @@ class MeetingController implements Controller {
         this.router.get(`${this.path}home`, this.getHomepage);
         this.router.get(`${this.path}meeting`, this.getMeetingPage);
         this.router.post(`${this.path}meeting`, this.makeRoom)
+        this.router.post(`${this.path}validMeetingId`, this.validMeetingId)
+    }
+
+    private validMeetingId(req: Request, res: Response) {
+        const meetingId = req.body.meetingId;
+        console.log(meetingId);
+        
+        res.status(200).json({success: true});
     }
 
     private getHomepage(req: Request, res: Response) {
+        console.log("hit getHomepage");
+        console.log(req.session.id);
         res.status(200).render("homepage");
     }
 
@@ -28,7 +38,7 @@ class MeetingController implements Controller {
     }
 
     private makeRoom(req: Request, res: Response) {
-        
+        res.status(200).render("createMeeting");
     }
 }
 

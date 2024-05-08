@@ -47,6 +47,7 @@ export class AuthenticationService implements IAuthentication{
     }
 
     async getUserById(id: number): Promise<tb_user | Error> {
+        console.log("hit getUserById");
         const user = await this._db.prisma.tb_user.findUnique({
             where: {
                 userId: id,

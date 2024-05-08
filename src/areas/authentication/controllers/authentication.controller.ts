@@ -25,8 +25,22 @@ class AuthenticationController implements Controller {
     this.router.post(`${this.path}searchUser`, this.searchUser)
   }
 
-  private getHomePage(req: Request, res: Response): void {
-    res.status(200).render('homepage')
+  private getHomePage = async (req: Request, res: Response): Promise<void> => {
+    console.log("hit getHompage");
+    // @ts-ignore
+    if(req.session.user?.userId !== undefined) {
+    // @ts-ignore
+    const userId = req.session.user.userId;
+    console.log(`userId: ${userId}`);
+    //console.log(req.session);
+    //@ts-ignore
+    const loggedInUser = await this.service.getUserById(userId);
+    console.log(`loged In : `);
+    console.log(loggedInUser);
+    res.status(200).render('homepage', { loggedInUser })
+    } else {
+      res.status(200).redirect('/login')
+    }
   }
   
   private getRegisterPage(req: Request, res: Response): void {

@@ -36,6 +36,7 @@
   "devDependencies": {
     "@types/express-session": "^1.18.0",
     "@types/mysql": "^2.15.26",
+    "@types/socket.io-client": "^3.0.0",
     "@types/ws": "^8.5.10",
     "prisma": "^5.13.0",
     "typescript": "^5.4.4"
