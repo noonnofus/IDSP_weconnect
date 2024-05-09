@@ -21,6 +21,8 @@ class AuthenticationController implements Controller {
     this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
 
     this.router.get(`${this.path}settings`, this.getSettings);
+    this.router.get(`${this.path}accountSettings`, this.getAccountSettings);
+    this.router.get(`${this.path}resetPassword`, this.getResetPassword);
     this.router.post(`${this.path}home`, this.login);
     this.router.post(`${this.path}login`, this.login);
 
@@ -67,6 +69,14 @@ class AuthenticationController implements Controller {
 
   private getSettings(req: Request, res: Response): void {
     res.status(200).render('settings')
+  }
+
+  private getAccountSettings(req: Request, res: Response): void {
+    res.status(200).render('account_settings')
+  }
+
+  private getResetPassword(req: Request, res: Response): void {
+    res.status(200).render('reset_password')
   }
 
   private login = async (req: Request, res: Response) => {

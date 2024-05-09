@@ -405,7 +405,6 @@ div.notification.me-3 {
     margin-bottom: 20px;
 }
 
-/* Toggle button styles */
 .toggle {
     display: block;
     margin-bottom: 10px;
@@ -423,7 +422,7 @@ div.notification.me-3 {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    right: 5px; /* Adjust as needed */
+    right: 5px; 
     width: 40px;
     height: 20px;
     background-color: #ccc;
@@ -435,17 +434,17 @@ div.notification.me-3 {
     content: "";
     position: absolute;
     top: 50%;
-    left: 10px; /* Adjust as needed */
+    left: 10px;
     transform: translate(-50%, -50%);
     width: 16px;
     height: 16px;
     background-color: white;
     border-radius: 50%;
-    transition: left 0.4s; /* Use left transition */
+    transition: left 0.4s; 
 }
 
 .toggle-input:checked + .toggle-slider .toggle-ball {
-    left: 30px; /* Adjust as needed */
+    left: 30px; 
 } 
 
 .toggle-input:checked + .toggle-slider {
@@ -454,7 +453,7 @@ div.notification.me-3 {
 
 
 .settings-group button {
-    margin-bottom: 10px; /* Adjust as needed */
+    margin-bottom: 10px; 
     width: 700px;
     height: 50px;
     text-align: left;
@@ -462,7 +461,21 @@ div.notification.me-3 {
     border: none;
     padding: 10px 20px;
 }
-/* CSS for dark mode */
+
+.settings-group input {
+    margin-bottom: 10px;
+    width: 700px;
+    height: 50px;
+    text-align: left;
+    border-radius: 15px; 
+    border: none;
+    padding: 10px 20px;
+}
+.settings-group button:hover {
+    background: linear-gradient(to right, #2196F3, #9C27B0);
+    color: white
+}
+
 .dark-mode {
     filter: invert(100%);
     background-color: #222;
@@ -681,3 +694,46 @@ footer {
     /* display:flex; */
     flex-direction: column-reverse;
 }
+
+.account-settings-group button {
+    margin-bottom: 10px; /* Adjust as needed */
+    width: 300px;
+    height: 50px;
+    text-align: center;
+    border-radius: 15px; 
+    border: none;
+    padding: 10px 20px;
+    background: linear-gradient(to right, #2196F3, #9C27B0);
+    color: #fff; /* Button text color */
+    cursor: pointer;
+}
+.account-settings-group button:hover {
+    background: linear-gradient(to left, #2196F3, #9C27B0); 
+}
+
+.centered-container {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    padding-top: 50px; /* Adjust as needed */
+}
+
+.save-settings-group button{
+    margin-bottom: 10px;
+    width: 300px;
+    height: 50px;
+    text-align: center;
+    border-radius: 15px; 
+    border: none;
+    padding: 10px 20px;
+    position: relative; 
+    overflow: hidden; 
+    background: linear-gradient(to right, #2196F3, #9C27B0);
+    color: #fff; 
+    cursor: pointer;
+}
+
+.save-settings-group button:hover {
+    background: linear-gradient(to left, #2196F3, #9C27B0);
+}
+
