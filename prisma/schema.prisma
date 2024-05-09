@@ -7,11 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model tb_meetingroom {
+  roomId      Int      @id @default(autoincrement())
+  hostId      Int
+  isPrivate   Boolean  @db.Bit(1)
+  description String?  @db.VarChar(50)
+  isFinished  Boolean? @default(dbgenerated("b'0'")) @db.Bit(1)
+  tb_user     tb_user  @relation(fields: [hostId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "hostId_userId")
+
+  @@index([hostId], map: "hostId_userId_idx")
+}
+
+model tb_message {
+  messageId Int      @id @default(autoincrement())
+  roomId    Int
+  senderId  Int
+  message   String   @db.Text
+  createdAt DateTime @default(now()) @db.DateTime(0)
+}
+
 model tb_role {
   roldId       Int            @id @default(autoincrement())
   authority    String         @db.VarChar(50)
   rolename     String         @db.VarChar(50)
   tb_user_role tb_user_role[]
+}
+
+model tb_room {
+  roomId                              Int       @id @default(autoincrement())
+  senderId                            Int
+  receiverId                          Int
+  last_time                           DateTime? @db.DateTime(0)
+  roomname                            String    @unique(map: "roomname_UNIQUE") @db.VarChar(100)
+  last_message                        String?   @db.VarChar(50)
+  tb_user_tb_room_receiverIdTotb_user tb_user   @relation("tb_room_receiverIdTotb_user", fields: [receiverId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "receiverId")
+  tb_user_tb_room_senderIdTotb_user   tb_user   @relation("tb_room_senderIdTotb_user", fields: [senderId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "senderId")
+
+  @@index([receiverId], map: "receiverId")
+  @@index([senderId], map: "senderId")
 }
 
 model tb_user {
@@ -35,37 +68,4 @@ model tb_user_role {
 
   @@index([roldId], map: "roldId_idx")
   @@index([userId], map: "userId_idx")
-}
-
-model tb_message {
-  messageId Int      @id @default(autoincrement())
-  roomId    Int
-  senderId  Int
-  message   String   @db.Text
-  createdAt DateTime @default(now()) @db.DateTime(0)
-}
-
-model tb_room {
-  roomId                              Int       @id @default(autoincrement())
-  senderId                            Int
-  receiverId                          Int
-  last_time                           DateTime? @db.DateTime(0)
-  roomname                            String    @unique(map: "roomname_UNIQUE") @db.VarChar(100)
-  last_message                        String?   @db.VarChar(50)
-  tb_user_tb_room_receiverIdTotb_user tb_user   @relation("tb_room_receiverIdTotb_user", fields: [receiverId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "receiverId")
-  tb_user_tb_room_senderIdTotb_user   tb_user   @relation("tb_room_senderIdTotb_user", fields: [senderId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "senderId")
-
-  @@index([receiverId], map: "receiverId")
-  @@index([senderId], map: "senderId")
-}
-
-model tb_meetingroom {
-  roomId      Int      @id @default(autoincrement())
-  hostId      Int
-  isPrivate   Boolean  @db.Bit(1)
-  description String?  @db.VarChar(50)
-  isFinished  Boolean? @default(dbgenerated("b'0'")) @db.Bit(1)
-  tb_user     tb_user  @relation(fields: [hostId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "hostId_userId")
-
-  @@index([hostId], map: "hostId_userId_idx")
 }
