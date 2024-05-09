@@ -1,4 +1,4 @@
-import { tb_user } from "@prisma/client";
+import { tb_user, tb_room } from "@prisma/client";
 import DBClient from "../../../prisma";
 import { IAuthentication } from "./Iauthentication.service";
 import bcrypt from "bcrypt";
@@ -43,6 +43,35 @@ export class AuthenticationService implements IAuthentication{
             return newUser;
         } else {
             throw new Error("The user with email is already exists. Please try again with another email.")
+        }
+    }
+
+
+    async getUserById(id: number): Promise<tb_user | null> {
+        const user = await this._db.prisma.tb_user.findUnique({
+            where: {
+                userId: id,
+            }
+        })
+        if (user) {
+            return user;
+        } else {
+            return null;
+        }
+    }
+
+    async getUserByUsername(_username: string): Promise<tb_user[] | undefined> {
+        const users = await this._db.prisma.tb_user.findMany({
+            where: {
+                username: {
+                    startsWith: _username
+                }
+            }
+        })
+        if (users) {
+            return users;
+        } else {
+            return undefined;
         }
     }
 }

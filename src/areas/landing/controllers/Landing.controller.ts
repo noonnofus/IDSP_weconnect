@@ -14,7 +14,7 @@ class AuthenticationController implements Controller {
   }
 
   private getLandingPage(req: Request, res: Response): void {
-    res.render("index");
+    res.render("prelog");
   }
 }
 
