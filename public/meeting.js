@@ -1,9 +1,4 @@
-
-
-
-
-
-
+const socket = io();
 
 // mdedia stream
 const myFace = document.getElementById("myFace");
@@ -15,34 +10,54 @@ let myStream;
 let muted = false;
 let cameraOff = false;
 let myPeerConnection;
-
+let myDataChannel;
 
 const getCamera = async () => {
   try {
     const device = await navigator.mediaDevices.enumerateDevices();
     const cameras = device.filter((device) => device.kind === "videoinput");
-    cameras.forEach((camera) => {
+    //console.log(myStream.getVideoTracks());
+    const currentCamera = myStream.getVideoTracks()[0];
+    cameras.forEach(( camera ) => {
       const option = document.createElement("option");
       option.value = camera.deviceId;
       option.innerText = camera.label;
+      if(currentCamera.label === camera.label) {
+        option.selected = true;
+      }
       camerasSelect.appendChild(option);
     });
   } catch(e) {
     console.log(e);
   }
 }
-const getMedia = async () => { 
-  try {
-    myStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: true,
-    });
+
+const getMedia = async (deviceId) => { 
+  const initialConstrains = {
+    audio: true,
+    video: { facingMode: "user" },
+  };
+
+  const cameraConstrains = {
+    audio: true,
+    video: { deviceId: { exact: deviceId } },
+  }
+
+  try { 
+    myStream = await navigator.mediaDevices.getUserMedia(
+      deviceId ? cameraConstrains : initialConstrains
+    );
     myFace.srcObject = myStream;
+    if(!deviceId) {
+      await getCamera();
+    }
+
+
   } catch(e) {
     console.log(e);
   }
 }
-getCamera();
+ //getCamera();
 //getMedia(); 시그널링 끝나고 실행시키자
 
 const handleMuteClick = () => {
@@ -58,21 +73,6 @@ const handleMuteClick = () => {
  }
 }
 
-camerasSelect.addEventListener('change', async () => {
-  const selectedCamera = camerasSelect.value;
-  const constraints = {
-    audio: true,
-    video: { deviceId: { exact: selectedCamera } }
-  };
-
-  try {
-    myStream = await navigator.mediaDevices.getUserMedia(constraints);
-    myFace.srcObject = myStream;
-  } catch (error) {
-    console.error('Error selecting camera:', error);
-  }
-});
-
 const handleCameraClick = () => {
   myStream.getVideoTracks().forEach((track) => {
     track.enabled = !track.enabled;
@@ -86,14 +86,27 @@ const handleCameraClick = () => {
   }
 }
 
-muteBtn.addEventListener("click", handleMuteClick)
-cameraBtn.addEventListener("click", handleCameraClick)
+const handleCameraChange = async () => {
+  //console.log(camerasSelect.value);
+  await getMedia(camerasSelect.value);
+  if(myPeerConnection) {
+    const videoTrack = myStream.getVideoTracks()[0];  
+    //console.log(myPeerConnection.getSenders());
+    const videoSender = myPeerConnection.getSenders().find((sender) => sender.track.kind === "video"); 
+    console.log(videoSender); 
+    videoSender.replaceTrack(videoTrack);
+  }
+}
+
+muteBtn.addEventListener("click", handleMuteClick);
+cameraBtn.addEventListener("click", handleCameraClick);
+camerasSelect.addEventListener("input", handleCameraChange);
 
 
 //video welcome form 
 const welcome = document.getElementById("welcome");
 const call = document.getElementById("call");
-
+call.hidden = true;
 let roomName;
 
 welcomeForm = welcome.querySelector("form");
@@ -102,8 +115,25 @@ const initCall = async () => {
   welcome.hidden = true;
   call.hidden = false;
   await getMedia(); 
+  setupInitialMediaSettings();
   makeConnection();
 }
+
+const setupInitialMediaSettings = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const audio = urlParams.get('audio') === 'on';
+  const video = urlParams.get('video') === 'on';
+
+  // 오디오 설정을 확인하고 필요한 경우 토글
+  if (audio !== !muted) {
+    handleMuteClick();
+  }
+
+  // 비디오 설정을 확인하고 필요한 경우 토글
+  if (video !== !cameraOff) {
+    handleCameraClick();
+  }
+};
 
 const handleWelcomeSubmit = async (event) => {
   event.preventDefault();
@@ -118,17 +148,28 @@ const handleWelcomeSubmit = async (event) => {
 welcomeForm.addEventListener("submit", handleWelcomeSubmit);
 
 //socket code
-socket.on("video_welcome", async () => {
+socket.on("welcome", async () => {
+  //data channel send 
+  myDataChannel = myPeerConnection.createDataChannel("chat");
+  myDataChannel.addEventListener("message", console.log);
+  //console.log("mada data channel");
+
   const offer = await myPeerConnection.createOffer();
   console.log("someone joined");
-  // console.log(offer);
+  console.log(offer);
   myPeerConnection.setLocalDescription(offer);
   console.log("offer sent");
   socket.emit("offer", offer, roomName);
 });
 
 socket.on("offer", async (offer) => {
-  console.log("Received offer:", offer);
+  //data Channel receive 
+  myPeerConnection.addEventListener("datachannel", (event) => {
+    myDataChannel = event.channel;
+    myDataChannel.addEventListener("message", console.log);
+  });
+  //console.log("Received offer:", offer);
+
   try {
     await myPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await myPeerConnection.createAnswer();
@@ -137,7 +178,9 @@ socket.on("offer", async (offer) => {
   } catch (error) {
     console.error("Error handling offer:", error);
   }
+
 });
+
 
 socket.on("answer", async (answer) => {
   console.log("Received answer:", answer);
@@ -157,11 +200,9 @@ socket.on("ice", (ice) => {
 function makeConnection() {
   myPeerConnection = new RTCPeerConnection({
     iceServers: [
-      // STUN/TURN 서버 구성 예시
       {
         urls: "stun:stun.l.google.com:19302",
       },
-      // 추가적인 STUN/TURN 서버를 구성할 수 있습니다.
     ],
   });
   myPeerConnection.addEventListener("icecandidate", handleIce);
@@ -188,82 +229,30 @@ const handleAddTrack = (event) => {
   }
 };
 
+window.onload = function() {
+  // URL에서 쿼리 매개변수 추출
+  const urlParams = new URLSearchParams(window.location.search);
+  const meetingId = urlParams.get('meetingId');
 
-// chat 
-const cWelcome = document.getElementById("c-welcome");
-const form = cWelcome.querySelector("form");
-const room = document.getElementById("room");
-const input = room.querySelector("input");
+  console.log(`meetingId: ${meetingId}`);
+  // input 요소를 찾고 meetingId 값으로 설정
+  const roomInput = document.getElementById('roomInput');
+  //console.log(`roomInput: `);
+  //console.log(roomInput);
+  if (roomInput && meetingId) {
+    roomInput.value = meetingId;
+    // 폼을 찾아 제출
+    const form = document.querySelector('#roomForm');
+    //form.submit();
+    const fakeEvent = { preventDefault: () => {} };
+    handleWelcomeSubmit(fakeEvent);
+  }
 
-room.hidden = true;
-
-let c_roomName;
-const handleMessageSubmit = async (event) => {
-  event.preventDefault();
-  const user = await getUserSession()
-  const userData = JSON.parse(user.data);
-  console.log('session: ', userData);
-  const input = room.querySelector("input");
-  socket.emit("new_message", input.value, roomName, userData.username, () => {
-    addMessage(`${userData.username}: ${input.value}`, input);
-  });
 }
+const copyToClipboard = () => {
+  const textToCopy = document.getElementById('textToCopy');
+  textToCopy.select();  // 텍스트 필드 선택
+  document.execCommand('copy');  // 클립보드에 복사
+};
 
-function showRoom() {
-  welcome.hidden = true;
-  room.hidden = false;
-  const h3 = room.querySelector("h3");
-  h3.innerHTML = `Room: ${c_roomName}`;
-  const form = room.querySelector("form");
-  form.addEventListener("submit", handleMessageSubmit);
-}
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const user = await getUserSession()
-  console.log('session: ', user);
-  const userData = JSON.parse(user.data);
-  console.log('session: ', userData);
-  const input = form.querySelector("input");
-  socket.emit("enter_room", input.value, userData, showRoom);
-  roomName = input.value;
-  input.value = "";
-});
-
-const addMessage = (msg) => {
-  const ul = room.querySelector("ul");
-  const li = document.createElement("li");
-  input.value = "";
-
-  li.innerText = msg;
-  ul.appendChild(li);
-}
-
-socket.on("welcome", () => {
-  console.log("emit welcome");
-  addMessage("Someone joined!");
-})
-
-socket.on("bye", () => {
-  addMessage("Someone left!");
-});
-
-async function getUserSession() {
-  const res = await fetch('/getUserSession', {
-      method: 'POST',
-  });
-  const data = await res.json();
-  return data;
-}
-
-socket.on("new_message", (msg, username) => { 
-  addMessage(`${username}: ${msg}`)
-});
-
-async function getUserSession() {
-  const res = await fetch('/getUserSession', {
-      method: 'POST',
-  });
-  const data = await res.json();
-  return data;
-}
+document.getElementById('copyButton').addEventListener('click', copyToClipboard);

@@ -46,7 +46,6 @@ class App {
   private initializeMiddlewares(): void {
     this.application.use(express.json());
     // this.application.use(bodyParser.json());
-    // this.application.use(bodyParser.json());
     this.application.use(express.urlencoded({ extended: true }));
     this.application.use(express.static(path.join(__dirname, "..", "public")));
     this.application.use(express.static(path.join(__dirname, "views", "css")));
@@ -98,12 +97,11 @@ class App {
       
       socket.onAny((event) => {
         console.log(`socket Event : ${event}`);
-      });
+      }); // 모든 이벤트를 로깅
 
       socket.on("join_room", (roomname) => {
         socket.join(roomname);
-        console.log(socket.id);
-        socket.to(roomname).emit("video_welcome");
+        socket.to(roomname).emit("welcome");
       });
 
       socket.on("offer", (offer, roomName) => {
@@ -116,10 +114,8 @@ class App {
 
       socket.on("ice", (ice, roomName) => {
         socket.to(roomName).emit("ice", ice);
-      });
-      
+      });     
       //chat
-
       socket.on("send_roomId", (data) => {
         // @ts-ignore
         this.io.to(data.roomId).emit(data);
@@ -140,6 +136,7 @@ class App {
           socket.to(room).emit("bye");
         });
       });
+
 
       socket.on("new_message", (msg, roomId, sender, done) => {
         const sortedId = roomId.split('').sort().join('');

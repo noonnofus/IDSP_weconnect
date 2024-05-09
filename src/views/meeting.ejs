@@ -21,53 +21,54 @@
   <body>
     <header><%- include("./homepage_header.ejs") %></header>
 
-    <main>
-      <div id="welcome">
-        <form>
-          <input placeholder="room name" , required type="text" />
-          <button>Enter Room</button>
-        </form>
+    <main class="container py-4">
+      <div class="row justify-content-center" id="welcome">
+        <div class="col-md-6">
+          <form class="input-group mb-3" id="roomForm">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="room name"
+              id="roomInput"
+              required
+            />
+            <button class="btn btn-primary" type="submit">Enter Room</button>
+          </form>
+        </div>
       </div>
 
-      <div id="call">
-        <div id="myStream">
+      <div class="row justify-content-center" id="call">
+        <button id="copyButton">Copy room ID</button>
+        <h2><%= meetingId %></h2>
+        <input type="text" value="<%= meetingId %>" id="textToCopy" class="btn btn-secondary" hidden />
+        <div class="col-md-6 text-center mb-3">
+
           <video
             id="myFace"
             autoplay
             playsinline
-            width="400"
-            height="400"
+            class="w-100"
+            style="max-width: 400px; height: 400px"
           ></video>
-          <button id="mute">Mute</button>
-          <button id="camera">Turn camera off</button>
-          <select id="cameras">
-            <option value="device">Face Camera</option>
-          </select>
+          <div class="btn-group mt-2">
+            <button id="mute" class="btn btn-secondary">Mute</button>
+            <button id="camera" class="btn btn-secondary">
+              Turn camera off
+            </button>
+            <select id="cameras" class="form-select"></select>
+          </div>
         </div>
-        <video
-          id="peerFace"
-          autoplay
-          playsinline
-          width="400"
-          height="400"
-        ></video>
+        <div class="col-md-6 text-center">
+          <video
+            id="peerFace"
+            autoplay
+            playsinline
+            class="w-100"
+            style="max-width: 400px; height: 400px"
+          ></video>
+        </div>
       </div>
     </main>
-      <div id="c-welcome">
-        <form>
-          <input placeholder="room name" , required, type="text" />
-          <button>Join</button>
-        </form>
-      </div>
-      <div id="room">
-        <ul>
-          <h3></h3>
-          <form id="msg">
-            <input placeholder="massage"/>
-            <button>Send</button>
-          </form>
-        </ul>
-      </div>
     <footer><%- include("./homepage_footer.ejs") %></footer>
     <script src="/socket.io/socket.io.js"></script>
     <script src="meeting.js"></script>
