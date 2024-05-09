@@ -46,6 +46,7 @@ class App {
   private initializeMiddlewares(): void {
     this.application.use(express.json());
     // this.application.use(bodyParser.json());
+    // this.application.use(bodyParser.json());
     this.application.use(express.urlencoded({ extended: true }));
     this.application.use(express.static(path.join(__dirname, "..", "public")));
     this.application.use(express.static(path.join(__dirname, "views", "css")));
@@ -98,17 +99,41 @@ class App {
       socket.onAny((event) => {
         console.log(`socket Event : ${event}`);
       });
-      socket.on("enter_room", (roomname, sessionUser, done) => {
-        socket.join(roomname);
-        const saveDB = new MessageController(new MessageService());
-        console.log('this is at the enter_room on server', sessionUser)
-        
-        // saveDB.saveToDb()
 
-        console.log(socket.rooms);
-        done();
-        socket.to(roomname).emit("welcome");
+      socket.on("join_room", (roomname) => {
+        socket.join(roomname);
+        console.log(socket.id);
+        socket.to(roomname).emit("video_welcome");
       });
+
+      socket.on("offer", (offer, roomName) => {
+        socket.to(roomName).emit("offer", offer);
+      });
+
+      socket.on("answer", (answer, roomName) => {
+        socket.to(roomName).emit("answer", answer);
+      });
+
+      socket.on("ice", (ice, roomName) => {
+        socket.to(roomName).emit("ice", ice);
+      });
+      
+      //chat
+
+      socket.on("send_roomId", (data) => {
+        // @ts-ignore
+        this.io.to(data.roomId).emit(data);
+      })
+
+      socket.on("enter_room", async (roomId) => {
+        try {
+          const sortedId = roomId.split('').sort().join('');
+          socket.join(sortedId);
+        } catch (err) {
+          console.error(err);
+        }
+      });
+      
 
       socket.on("disconnecting", () => {
         socket.rooms.forEach((room) => {
@@ -116,8 +141,9 @@ class App {
         });
       });
 
-      socket.on("new_message", (msg, room, username, done) => {
-        socket.to(room).emit("new_message", msg, username);
+      socket.on("new_message", (msg, roomId, sender, done) => {
+        const sortedId = roomId.split('').sort().join('');
+        socket.to(sortedId).emit("new_message", msg, sender);
         done();
       });
     });

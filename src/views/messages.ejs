@@ -14,18 +14,16 @@
         <%- include("./homepage_header.ejs") %>
     </header>
 
-    <p>Messages</p>
+    <div class="msg-container">
+        <p class="login-text">Messages</p>
+        <div class="messages">
 
-    <div class="container">
-        <!-- all the chatting rooms here -->
-        <form id="message">
-            <input type="text" placeholder="wirte a messsage">
-            <button type="submit">Send</button>
-        </form>
+        </div>
     </div>
 
     <footer>
         <%- include("./homepage_footer.ejs") %>
     </footer>
+    <script src="messages.js"></script>
 </body>
 </html>
