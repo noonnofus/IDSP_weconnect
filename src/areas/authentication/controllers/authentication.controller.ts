@@ -57,10 +57,6 @@ class AuthenticationController implements Controller {
     res.status(200).render("login");
   }
 
-  private getPrelogPage(req: Request, res: Response): void {
-    res.status(200).render('prelog')
-  }
-
   private getJoinMeetingPage(req: Request, res: Response): void {
     res.status(200).render("join_meeting");
   }
