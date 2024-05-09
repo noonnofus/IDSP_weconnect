@@ -2,7 +2,7 @@
     <div class="row align-items-center">
         <div class="col-3"></div>
         <div class="col-6 text-center">
-            <div class="homepage-logo-container">
+            <div class="homepage-logo-container" onclick="goToHomePage()">
                 <img src="logo - weconnect.svg" class="logo1" alt="logo img">
             </div>
         </div>
@@ -10,7 +10,7 @@
             <div class="notification me-3">
                 <img src="Bell_pin_light.svg" alt="notification_icon">
             </div>
-            <div class="setting">
+            <div class="setting" onclick="goToSettingsPage()">
                 <img src="Setting.svg" alt="setting_icon">
             </div>
         </div>
@@ -32,4 +32,11 @@
     </form>
 </nav>
 
-
+<script>
+    function goToHomePage() {
+      window.location.href = 'home';
+  }
+    function goToSettingsPage() {
+        window.location.href = 'settings';
+    }
+</script>

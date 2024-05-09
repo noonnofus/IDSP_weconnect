@@ -17,7 +17,7 @@
     <div class="container custom-container">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="settings-text">Settings</div>
+                <div class="settings-text exclude-invert">Settings</div>
                 <div>
                     <h5>Account Settings</h5>
                 </div>
@@ -36,7 +36,7 @@
                     <button>
                     <label class="toggle">
                         Show Notifications
-                        <input type="checkbox" id="notificationsToggle" class="toggle-input" onchange="toggleNotifications()" checked>
+                        <input type="checkbox" id="notificationsToggle" class="toggle-input exclude-invert" onchange="toggleNotifications()" checked>
                         <span class="toggle-slider">
                             <span class="toggle-ball"></span>
                         </span>
@@ -80,5 +80,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleLightDarkMode() {
+            var body = document.body;
+            body.classList.toggle("dark-mode");
+            console.log("hello")
+        }
+    </script>
 </body>
 </html>

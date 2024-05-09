@@ -450,6 +450,22 @@ div.notification.me-3 {
 .settings-group button {
     margin-bottom: 10px; /* Adjust as needed */
     width: 700px;
-    height:50px;
+    height: 50px;
     text-align: left;
+    border-radius: 15px; 
+    border: none;
+    padding: 10px 20px;
+}
+/* CSS for dark mode */
+.dark-mode {
+    filter: invert(100%);
+    background-color: #222;
+    color: #fff;
+
+}
+
+.settings-text,
+.toggle-slider,
+.toggle-ball {
+    filter: brightness(100%);
 }
