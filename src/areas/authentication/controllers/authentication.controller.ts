@@ -23,6 +23,7 @@ class AuthenticationController implements Controller {
     this.router.post(`${this.path}signup`, this.register);
     this.router.post(`${this.path}getUserSession`, this.getCurrentUserSession);
     this.router.post(`${this.path}searchUser`, this.searchUser);
+    this.router.post(`${this.path}getUserByUserId`, this.getUserByUserId);
   }
 
   private getHomePage(req: Request, res: Response): void {
@@ -122,6 +123,24 @@ class AuthenticationController implements Controller {
     } else {
       res.status(200).json({
         data: "user not found",
+      })
+    }
+  }
+
+  private getUserByUserId = async (req: Request, res: Response) => {
+    // @ts-ignore
+    const { userId } = req.body;
+
+    const user = await this.service.getUserById(userId);
+    if (user === null) {
+      res.status(404).json({
+        success: false,
+        error: "user with id Not Found."
+      })
+    } else {
+      res.status(200).json({
+        success: true,
+        data: user
       })
     }
   }

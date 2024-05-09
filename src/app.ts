@@ -88,7 +88,6 @@ class App {
 
 
   public startWebSocketServer(): void {
-    const userSocketMap: Record<string, string> = {};
     if (this.server) return; // 이미 서버가 실행 중인 경우 중복 생성 방지
 
     this.server = http.createServer(this.application);
@@ -118,33 +117,23 @@ class App {
       socket.on("ice", (ice, roomName) => {
         socket.to(roomName).emit("ice", ice);
       });
-
+      
       //chat
-      socket.on("connect_socket", ({ roomname }, cb) => {
-        console.log(roomname);
-        userSocketMap[roomname] = socket.id;
-        cb({ success: true });
+
+      socket.on("send_roomId", (data) => {
+        // @ts-ignore
+        this.io.to(data.roomId).emit(data);
       })
 
-      socket.on("get_room", (cb) => {
-        const roomname = Object.keys(userSocketMap).find(key => userSocketMap[key] === socket.id);
-
-        cb({ success: true, data: roomname})
-      })
-
-      socket.on("enter_room", (roomname) => {
-        // const userSocketId = userSocketMap[roomname];
-        // console.log(userSocketMap);
-        // console.log('found id: ', roomname);
-        // console.log('id from server: ', socket.id);
-        // console.log('userSocketId: ', userSocketId);
-        console.log(roomname);
-        socket.join(roomname);
-        socket.to(roomname).emit("welcome");
-        // if (userSocketId) {
-        //   console.log(userSocketId);
-        // }
+      socket.on("enter_room", async (roomId) => {
+        try {
+          const sortedId = roomId.split('').sort().join('');
+          socket.join(sortedId);
+        } catch (err) {
+          console.error(err);
+        }
       });
+      
 
       socket.on("disconnecting", () => {
         socket.rooms.forEach((room) => {
@@ -152,8 +141,9 @@ class App {
         });
       });
 
-      socket.on("new_message", (msg, room, username, done) => {
-        socket.to(room).emit("new_message", msg, username);
+      socket.on("new_message", (msg, roomId, sender, done) => {
+        const sortedId = roomId.split('').sort().join('');
+        socket.to(sortedId).emit("new_message", msg, sender);
         done();
       });
     });

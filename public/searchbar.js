@@ -13,37 +13,26 @@ searchbar.addEventListener("input", async (ev) => {
         const currentUser = JSON.parse(currentUserStr)
     
         userResult.forEach(user => {
-            createModal(user);
+            createModal(currentUser, user);
         });
         
         document.querySelectorAll('.user-link').forEach(element => {
-            element.addEventListener("click", async (event) => {
-                // event.preventDefault();
+            element.addEventListener("click", async () => {
                 const sender = currentUser.userEmail;
                 const receiver = userResult.find(u => u.username === element.textContent).email;
-                const makeRoom = await storeRoomInDb(sender, receiver);
-                await new Promise(res => {
-                console.log(makeRoom.roomId);
-                // socket.emit("connect_socket", {roomname: makeRoom.roomId}, (res) => {
-                //     // if (res.success) {
-                //     //     console.log(makeRoom.roomId);
-                //     // }
-                // });
-                    socket.emit("enter_room", makeRoom.roomId);
-                    res();
-                })
-                window.location.href = "chat";
+                await storeRoomInDb(sender, receiver);
             });
         });
     }
 })
 
-function createModal(user) {
+function createModal(currentUser, user) {
     const modal = document.querySelector('.modal-body');
     const newDiv = document.createElement('div');
     newDiv.innerHTML = `
-    <form src="chat" class="user-link">${user.username}</form>
+    <a href="/chat?sender=${currentUser.userId}&receiver=${user.userId}" class="user-link">${user.username}</a>
     `
+
     newDiv.classList.add("user-result");
     modal.append(newDiv);
 }
@@ -84,3 +73,5 @@ function clearModal() {
     const modal = document.querySelector('.modal-body');
     modal.innerHTML = '';
 }
+
+// export default socket;
