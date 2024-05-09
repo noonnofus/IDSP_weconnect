@@ -16,6 +16,7 @@ let allMsg;
 async function enterRoom() {
   const roomname = await getUserByUserId(sender, receiver);
   allMsg = await getMsgFromDb(roomname);
+  console.log(allMsg);
   
   socket.emit("enter_room", roomname);
   if (allMsg !== null) {

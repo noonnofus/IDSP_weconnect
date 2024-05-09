@@ -1,4 +1,4 @@
-const socket = io();
+// const socket = io();
 
 // mdedia stream
 const myFace = document.getElementById("myFace");

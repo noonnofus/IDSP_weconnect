@@ -48,10 +48,6 @@ class MeetingController implements Controller {
     private makeRoom(req: Request, res: Response) {
         res.status(200).render("createMeeting");
     }
-
-    private makeRoom(req: Request, res: Response) {
-        
-    }
 }
 
 export default MeetingController;

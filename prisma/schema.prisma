@@ -23,6 +23,7 @@ model tb_user {
   tb_meetingroom                      tb_meetingroom[]
   tb_room_tb_room_receiverIdTotb_user tb_room[]        @relation("tb_room_receiverIdTotb_user")
   tb_room_tb_room_senderIdTotb_user   tb_room[]        @relation("tb_room_senderIdTotb_user")
+  tb_user_role                        tb_user_role[]
 }
 
 model tb_user_role {
@@ -68,4 +69,3 @@ model tb_meetingroom {
 
   @@index([hostId], map: "hostId_userId_idx")
 }
-

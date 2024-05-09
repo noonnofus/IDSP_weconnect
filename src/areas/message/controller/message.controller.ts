@@ -120,6 +120,7 @@ class MessageController implements Controller {
             const room = await this.service.getRoomByRoomname(sortedId);
             if (room !== undefined) {
                 const msgs = await this.service.getMsgByRoomId(room.roomId);
+                console.log('msgs: ', msgs);
                 if (msgs !== null) {
                     res.status(200).json({
                         data: msgs,
