@@ -21,8 +21,9 @@ class AuthenticationController implements Controller {
     this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
     this.router.post(`${this.path}login`, this.login);
     this.router.post(`${this.path}signup`, this.register);
-    this.router.post(`${this.path}getUserSession`, this.getUserSession);
-    this.router.post(`${this.path}searchUser`, this.searchUser)
+    this.router.post(`${this.path}getUserSession`, this.getCurrentUserSession);
+    this.router.post(`${this.path}searchUser`, this.searchUser);
+    this.router.post(`${this.path}getUserByUserId`, this.getUserByUserId);
   }
 
   private getHomePage = async (req: Request, res: Response): Promise<void> => {
@@ -41,7 +42,9 @@ class AuthenticationController implements Controller {
     } else {
       res.status(200).redirect('/login')
     }
+  
   }
+
   
   private getRegisterPage(req: Request, res: Response): void {
     res.status(200).render('signup')
@@ -110,10 +113,9 @@ class AuthenticationController implements Controller {
     }
   }
 
-  private getUserSession = async (req: Request, res: Response) => {
+  private getCurrentUserSession = async (req: Request, res: Response) => {
     // @ts-ignore
     const user = JSON.stringify(req.session.user);
-    console.log('at router: ', user)
     if (user) {
       res.status(200).json({
         data: user,
@@ -135,6 +137,24 @@ class AuthenticationController implements Controller {
     } else {
       res.status(200).json({
         data: "user not found",
+      })
+    }
+  }
+  
+  private getUserByUserId = async (req: Request, res: Response) => {
+    // @ts-ignore
+    const { userId } = req.body;
+
+    const user = await this.service.getUserById(userId);
+    if (user === null) {
+      res.status(404).json({
+        success: false,
+        error: "user with id Not Found."
+      })
+    } else {
+      res.status(200).json({
+        success: true,
+        data: user
       })
     }
   }

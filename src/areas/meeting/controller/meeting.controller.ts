@@ -17,6 +17,7 @@ class MeetingController implements Controller {
         this.router.get(`${this.path}home`, this.getHomepage);
         this.router.get(`${this.path}meeting`, this.getMeetingPage);
         this.router.post(`${this.path}meeting`, this.makeRoom)
+
         this.router.post(`${this.path}validMeetingId`, this.validMeetingId)
     }
 
@@ -46,6 +47,10 @@ class MeetingController implements Controller {
 
     private makeRoom(req: Request, res: Response) {
         res.status(200).render("createMeeting");
+    }
+
+    private makeRoom(req: Request, res: Response) {
+        
     }
 }
 

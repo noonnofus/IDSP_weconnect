@@ -18,26 +18,38 @@
       rel="stylesheet"
     />
   </head>
-  <body>
-    <header><%- include("./homepage_header.ejs") %></header>
-    <div id="welcome">
-      <form>
-        <input placeholder="room name" required type="text" />
-        <button>Join</button>
-      </form>
+  <body class="chatting_room">
+    <header>
+      <%- include("./homepage_header.ejs") %>
+    </header>
+    <div class="chatting_receiver_container">
+      <div class="chatting_receiver">
+          <img src="<%- receiveUser.profilePic %>" alt="receiver profile img" class="receiver_profile_img">
+          <h5><%- receiveUser.username %></h5>
+      </div>
     </div>
-    <div id="room">
-        <ul>
-          <h3></h3>
-            <form>
-                <input placeholder="massage">
-                <button>Send</button>
-            </form>
-        </ul>
+    <div class="line-container">
+      <div class="chatting_line"></div>
+    </div>
+    
+    
+    <div class="chat-section">
+      <!-- where msgs go -->
     </div>
 
-    <footer><%- include("./homepage_footer.ejs") %></footer>
+    
+    <div class="chat-input-container">
+      <div class="chat-input" id="room">
+        <form id="msg">
+            <input placeholder="Send a message...">
+            <img src="chatting_send.svg" alt="Send">
+        </form>
+      </div>
+    </div>
+    <footer>
+      <%- include("./homepage_footer.ejs") %>
+    </footer>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="meeting.js"></script>
+    <script src="chatting.js"></script>
   </body>
 </html>

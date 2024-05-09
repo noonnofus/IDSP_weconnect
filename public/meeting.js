@@ -31,6 +31,7 @@ const getCamera = async () => {
     console.log(e);
   }
 }
+
 const getMedia = async (deviceId) => { 
   const initialConstrains = {
     audio: true,
@@ -51,13 +52,13 @@ const getMedia = async (deviceId) => {
       await getCamera();
     }
 
+
   } catch(e) {
     console.log(e);
   }
 }
  //getCamera();
 //getMedia(); 시그널링 끝나고 실행시키자
-
 
 const handleMuteClick = () => {
   myStream.getAudioTracks().forEach((track) => {
@@ -179,6 +180,7 @@ socket.on("offer", async (offer) => {
   }
 
 });
+
 
 socket.on("answer", async (answer) => {
   console.log("Received answer:", answer);
