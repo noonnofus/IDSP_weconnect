@@ -38,6 +38,9 @@
       </div>
 
       <div class="row justify-content-center" id="call">
+        <button id="copyButton">Copy room ID</button>
+        <h2><%= meetingId %></h2>
+        <input type="text" value="<%= meetingId %>" id="textToCopy" class="btn btn-secondary" hidden />
         <div class="col-md-6 text-center mb-3">
           <video
             id="myFace"

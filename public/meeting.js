@@ -114,8 +114,25 @@ const initCall = async () => {
   welcome.hidden = true;
   call.hidden = false;
   await getMedia(); 
+  setupInitialMediaSettings();
   makeConnection();
 }
+
+const setupInitialMediaSettings = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const audio = urlParams.get('audio') === 'on';
+  const video = urlParams.get('video') === 'on';
+
+  // 오디오 설정을 확인하고 필요한 경우 토글
+  if (audio !== !muted) {
+    handleMuteClick();
+  }
+
+  // 비디오 설정을 확인하고 필요한 경우 토글
+  if (video !== !cameraOff) {
+    handleCameraClick();
+  }
+};
 
 const handleWelcomeSubmit = async (event) => {
   event.preventDefault();
@@ -214,11 +231,12 @@ window.onload = function() {
   // URL에서 쿼리 매개변수 추출
   const urlParams = new URLSearchParams(window.location.search);
   const meetingId = urlParams.get('meetingId');
+
   console.log(`meetingId: ${meetingId}`);
   // input 요소를 찾고 meetingId 값으로 설정
   const roomInput = document.getElementById('roomInput');
-  console.log(`roomInput: `);
-  console.log(roomInput);
+  //console.log(`roomInput: `);
+  //console.log(roomInput);
   if (roomInput && meetingId) {
     roomInput.value = meetingId;
     // 폼을 찾아 제출
@@ -227,4 +245,12 @@ window.onload = function() {
     const fakeEvent = { preventDefault: () => {} };
     handleWelcomeSubmit(fakeEvent);
   }
+
 }
+const copyToClipboard = () => {
+  const textToCopy = document.getElementById('textToCopy');
+  textToCopy.select();  // 텍스트 필드 선택
+  document.execCommand('copy');  // 클립보드에 복사
+};
+
+document.getElementById('copyButton').addEventListener('click', copyToClipboard);

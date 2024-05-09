@@ -90,20 +90,6 @@
                 alt=""
               /><%= loggedInUser.username %>
             </div>
-            <div class="form-group mb-3">
-              <div class="form-group mb-3">
-                <label>Meeting Id</label>
-                <label id="lb_meetingId"></label>
-              </div>
-              <div class="form-group mb-3">
-                <label>Turn on Audio</label>
-                <label class="switch"> <input type="checkbox" /> </label>
-              </div>
-              <div class="form-group mb-3">
-                <label>Turn on video</label>
-                <label class="switch"> <input type="checkbox" /> </label>
-              </div>
-            </div>
             <div class="modal-footer">
               <form action="/meeting" method="get">
                 <input
@@ -118,9 +104,23 @@
                 <input
                   id="userId"
                   name="id"
-                  value="<%=loggedInUser.userId %>"
-                 hidden
+                  value="<%= loggedInUser.userId %>"
+                  hidden
                 />
+                <div class="form-group mb-3">
+                  <div class="form-group mb-3">
+                    <label>Meeting Id :</label>
+                    <label id="lb_meetingId"></label>
+                  </div>
+                  <div class="form-group mb-3">
+                    <label>Turn on Audio</label>
+                    <label class="switch"> <input type="checkbox" name="audio" /> </label>
+                  </div>
+                  <div class="form-group mb-3">
+                    <label>Turn on Video</label>
+                    <label class="switch"> <input type="checkbox" name="video" /> </label>
+                  </div>
+                </div>
                 <button type="submit" class="btn btn-primary new-meeting-btn">
                   Start Meeting
                 </button>

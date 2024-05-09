@@ -28,13 +28,20 @@ class MeetingController implements Controller {
     }
 
     private getHomepage(req: Request, res: Response) {
-        console.log("hit getHomepage");
-        console.log(req.session.id);
+        //console.log(req.session.id);
         res.status(200).render("homepage");
     }
 
     private getMeetingPage(req: Request, res: Response) {
-        res.status(200).render("meeting");
+        const meetingId = req.query.meetingId;
+        const userId = req.query.id;
+        const audio = req.query.audio === 'on' ? true : false;
+        const video = req.query.video === 'on' ? true : false;
+        console.log(audio, video);
+        console.log('Meeting ID:', meetingId, 'User ID:', userId);
+        console.log(`Audio: ${audio}, Video: ${video}`);
+
+        res.status(200).render("meeting", {meetingId, audio, video});
     }
 
     private makeRoom(req: Request, res: Response) {
