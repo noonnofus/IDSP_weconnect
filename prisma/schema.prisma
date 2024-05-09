@@ -7,33 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model tb_role {
-  roldId       Int            @id @default(autoincrement())
-  authority    String         @db.VarChar(50)
-  rolename     String         @db.VarChar(50)
-  tb_user_role tb_user_role[]
-}
+model tb_meetingroom {
+  roomId      Int      @id @default(autoincrement())
+  hostId      Int
+  isPrivate   Boolean  @db.Bit(1)
+  description String?  @db.VarChar(50)
+  isFinished  Boolean? @default(dbgenerated("b'0'")) @db.Bit(1)
+  tb_user     tb_user  @relation(fields: [hostId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "hostId_userId")
 
-model tb_user {
-  userId                              Int              @id @default(autoincrement())
-  email                               String           @unique(map: "uniqueEmail") @db.VarChar(100)
-  password                            String           @db.VarChar(100)
-  username                            String           @db.VarChar(45)
-  profilePic                          String           @default("profile_default_img.jpeg")
-  tb_meetingroom                      tb_meetingroom[]
-  tb_room_tb_room_receiverIdTotb_user tb_room[]        @relation("tb_room_receiverIdTotb_user")
-  tb_room_tb_room_senderIdTotb_user   tb_room[]        @relation("tb_room_senderIdTotb_user")
-}
-
-model tb_user_role {
-  user_role_id Int     @id @default(autoincrement())
-  userId       Int
-  roldId       Int
-  tb_user      tb_user @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_user_TO_tb_user_role_1")
-  tb_role      tb_role @relation(fields: [roldId], references: [roldId], onDelete: NoAction, onUpdate: NoAction, map: "roldId")
-
-  @@index([roldId], map: "roldId_idx")
-  @@index([userId], map: "userId_idx")
+  @@index([hostId], map: "hostId_userId_idx")
 }
 
 model tb_message {
@@ -42,6 +24,13 @@ model tb_message {
   senderId  Int
   message   String   @db.Text
   createdAt DateTime @default(now()) @db.DateTime(0)
+}
+
+model tb_role {
+  roldId       Int            @id @default(autoincrement())
+  authority    String         @db.VarChar(50)
+  rolename     String         @db.VarChar(50)
+  tb_user_role tb_user_role[]
 }
 
 model tb_room {
@@ -58,14 +47,25 @@ model tb_room {
   @@index([senderId], map: "senderId")
 }
 
-model tb_meetingroom {
-  roomId      Int      @id @default(autoincrement())
-  hostId      Int
-  isPrivate   Boolean  @db.Bit(1)
-  description String?  @db.VarChar(50)
-  isFinished  Boolean? @default(dbgenerated("b'0'")) @db.Bit(1)
-  tb_user     tb_user  @relation(fields: [hostId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "hostId_userId")
-
-  @@index([hostId], map: "hostId_userId_idx")
+model tb_user {
+  userId                              Int              @id @default(autoincrement())
+  email                               String           @unique(map: "uniqueEmail") @db.VarChar(100)
+  password                            String           @db.VarChar(100)
+  username                            String           @db.VarChar(45)
+  profilePic                          String           @default("profile_default_img.jpeg")
+  tb_meetingroom                      tb_meetingroom[]
+  tb_room_tb_room_receiverIdTotb_user tb_room[]        @relation("tb_room_receiverIdTotb_user")
+  tb_room_tb_room_senderIdTotb_user   tb_room[]        @relation("tb_room_senderIdTotb_user")
+  tb_user_role                        tb_user_role[]
 }
 
+model tb_user_role {
+  user_role_id Int     @id @default(autoincrement())
+  userId       Int
+  roldId       Int
+  tb_user      tb_user @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_user_TO_tb_user_role_1")
+  tb_role      tb_role @relation(fields: [roldId], references: [roldId], onDelete: NoAction, onUpdate: NoAction, map: "roldId")
+
+  @@index([roldId], map: "roldId_idx")
+  @@index([userId], map: "userId_idx")
+}
