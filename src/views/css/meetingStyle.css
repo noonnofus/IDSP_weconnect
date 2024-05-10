@@ -52,3 +52,32 @@
     background-color: #0062cc;
   }
   
+  @media (max-width: 768px) {
+    #chat {
+      height: 200px;
+    }
+  
+    #chat li .message {
+      font-size: 12px;
+    }
+  
+    #message input[type="text"] {
+      padding: 8px;
+    }
+  
+    #message button {
+      padding: 8px 16px;
+    }
+  
+    #myFace, #peerFace {
+      width: 100%;
+      height: auto;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    #myFace, #peerFace {
+      width: 400px;
+      height: 400px;
+    }
+  }
