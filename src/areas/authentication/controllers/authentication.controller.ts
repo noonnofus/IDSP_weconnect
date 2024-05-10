@@ -32,12 +32,8 @@ class AuthenticationController implements Controller {
     if(req.session.user?.userId !== undefined) {
     // @ts-ignore
     const userId = req.session.user.userId;
-    console.log(`userId: ${userId}`);
-    //console.log(req.session);
     //@ts-ignore
     const loggedInUser = await this.service.getUserById(userId);
-    console.log(`loged In : `);
-    console.log(loggedInUser);
     res.status(200).render('homepage', { loggedInUser })
     } else {
       res.status(200).redirect('/login')
@@ -89,11 +85,11 @@ class AuthenticationController implements Controller {
     }
   }
 
-  private register = (req: Request, res: Response) => {
+  private register = async (req: Request, res: Response) => {
     try {
       const { username, email, password } = req.body;
       
-      const newUser = this.service.insertUser(username, email, password);
+      const newUser = await this.service.insertUser(username, email, password);
 
       const sessionUser = {
         // @ts-ignore
@@ -106,7 +102,7 @@ class AuthenticationController implements Controller {
       //@ts-ignore
       req.session.user = sessionUser;
       
-      res.status(200).render('homepage', { newUser });
+      res.status(200).redirect('/home');
     }
     catch(err) {
       res.status(500).render('signup', { err });

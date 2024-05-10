@@ -64,7 +64,6 @@ export class MessageService implements IMessage {
 
     async getUserByUserId(_userId: number): Promise<tb_user> {
 
-        console.log('service: ', _userId);
         let user = await this._db.prisma.tb_user.findUnique({
             where: {
                 userId: _userId
