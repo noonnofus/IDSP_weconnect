@@ -24,10 +24,19 @@
   </head>
   <body>
     <header><%- include("./homepage_header.ejs") %></header>
-
+    <div id="bo_v_btn_group" class="clearfix text-center py-4 px-3 en">
+      <div class="btn-group btn-group-lg" role="group">
+          <button type="button" class="btn btn-basic" data-toggle="tooltip" data-placement="top" data-original-title="click to copy data to the Clipboard " id="share_url">
+                  <i class="fa fa-clipboard" aria-hidden="true"></i>
+                  <span class="sr-only">copy room ID</span>
+          </button>
+          <input type="text" name="copy roomid"  id="share-url-input" readonly>
+      </div>
+  </div>
     <div class="container text-center">
       <header>
           <h1 class="text-primary my-3" id="roomName"></h1>
+          <h2 class="text-primary my-4" id="roomId"></h2>
       </header>
       <main>
           <div class="mt-5" id="welcome">

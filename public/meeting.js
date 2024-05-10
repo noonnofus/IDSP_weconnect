@@ -175,6 +175,8 @@ const setupRoom = async () => {
       const roomName = document.getElementById("roomName");
       console.log(data.data.description)
       roomName.innerText = data.data.description;
+      const roomId = document.getElementById("share-url-input");
+      roomId.value = data.data.roomId;
     }
 }
 
@@ -316,6 +318,24 @@ function makeConnection() {
     .forEach((track) => myPeerConnection.addTrack(track, myStream));
 }
 
+document.getElementById('share_url').addEventListener('click', () => {
+  const copyText = document.getElementById('share-url-input');
+
+  // 입력 필드를 선택
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // 모바일 기기에서 사용할 수 있도록 범위 설정
+
+  // 텍스트를 클립보드에 복사
+  navigator.clipboard.writeText(copyText.value)
+      .then(() => {
+          // 복사가 성공했을 때 사용자에게 알림
+          alert('Room ID copied to clipboard!');
+      })
+      .catch(err => {
+          // 복사 실패 시 오류 처리
+          console.error('Error copying text: ', err);
+      });
+});
 
 window.onload = function () {
   const urlParams = new URLSearchParams(window.location.search);

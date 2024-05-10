@@ -81,3 +81,19 @@
       height: 400px;
     }
   }
+
+  @media (max-width: 768px) {
+    #share-url-input {
+        margin-bottom: 10px; 
+    }
+    .btn-group-lg > .btn, .btn-group-lg > .form-control {
+        padding: .5rem 1rem;
+        font-size: .875rem;
+    }
+}
+
+@media (min-width: 769px) {
+    #share-url-input {
+        width: auto;
+    }
+}
