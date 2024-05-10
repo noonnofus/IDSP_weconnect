@@ -17,57 +17,36 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    <link>
+    <link rel="stylesheet" href="meetingStyle.css" />
+
+    </script>
   </head>
   <body>
     <header><%- include("./homepage_header.ejs") %></header>
 
-    <main class="container py-4">
-      <div class="row justify-content-center" id="welcome">
-        <div class="col-md-6">
-          <form class="input-group mb-3" id="roomForm">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="room name"
-              id="roomInput"
-              required
-            />
-            <button class="btn btn-primary" type="submit">Enter Room</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="row justify-content-center" id="call">
-        <button id="copyButton">Copy room ID</button>
-        <h2><%= meetingId %></h2>
-        <input type="text" value="<%= meetingId %>" id="textToCopy" class="btn btn-secondary" hidden />
-        <div class="col-md-6 text-center mb-3">
-
-          <video
-            id="myFace"
-            autoplay
-            playsinline
-            class="w-100"
-            style="max-width: 400px; height: 400px"
-          ></video>
-          <div class="btn-group mt-2">
-            <button id="mute" class="btn btn-secondary">Mute</button>
-            <button id="camera" class="btn btn-secondary">
-              Turn camera off
-            </button>
-            <select id="cameras" class="form-select"></select>
+    <div class="container text-center">
+      <header>
+          <h1 class="text-primary my-3" id="roomName"></h1>
+      </header>
+      <main>
+          <div class="mt-5" id="welcome">
+              <form><input class="form-control mb-3" id="inputRoomId" type="text" placeholder="room name" required><button class="btn btn-primary">Enter Room</button></form>
           </div>
-        </div>
-        <div class="col-md-6 text-center">
-          <video
-            id="peerFace"
-            autoplay
-            playsinline
-            class="w-100"
-            style="max-width: 400px; height: 400px"
-          ></video>
-        </div>
-      </div>
+          <div id="call">
+              <div id="myStream">
+                  <div class="text-start"><button class="btn btn-danger" id="leave">Leave</button></div><video class="mx-3" id="myFace" autoplay playsinline width="400" height="400"></video><video class="mx-3" id="peerFace" autoplay playsinline width="400" height="400"></video>
+                  <div
+                      class="mb-3 d-flex flex-row align-items-center justify-content-between">
+                      <div><select class="form-select mb-2" id="cameras"></select></div>
+                      <div class="btn-group d-flex ml-2"><button class="btn btn-primary mr-2 px-3" id="mute"><i class="bi bi-mic-fill"></i></button><button class="btn btn-primary px-3" id="camera"><i class="bi bi-camera-video-fill">                                                       </i></button></div>
+              </div>
+              <div>
+                  <ul class="list-group mb-3" id="chat"></ul>
+                  <form id="message"><input type="text" required><button>Send</button></form>
+              </div>
+          </div>
+  </div>
     </main>
     <footer><%- include("./homepage_footer.ejs") %></footer>
     <script src="/socket.io/socket.io.js"></script>

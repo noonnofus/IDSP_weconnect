@@ -103,6 +103,16 @@ class App {
         socket.join(roomname);
         socket.to(roomname).emit("welcome");
       });
+      //1
+      socket.on("check_room", (roomName) => {
+        const room = this.io?.sockets.adapter.rooms.get(roomName);
+        console.log(room);
+        if (room && room.size >= 4) {  // 방에 4명이 이미 참여 중인지 검사
+          socket.emit("room_full");
+        } else {
+          socket.emit("room_joinable");
+        }
+      });
 
       socket.on("offer", (offer, roomName) => {
         socket.to(roomName).emit("offer", offer);
@@ -128,6 +138,12 @@ class App {
         } catch (err) {
           console.error(err);
         }
+      });
+
+      socket.on("left_room", (roomName, done) => {
+        socket.leave(roomName);
+        done();
+        socket.to(roomName).emit("bye");
       });
       
 
