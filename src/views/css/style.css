@@ -93,7 +93,7 @@
     font-weight: lighter;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 4vw;
+    font-size: 7vw;
     margin-bottom: 20px;
 }
 
@@ -157,7 +157,7 @@
 }
 
 .custom-footer {
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 83px;
     background: linear-gradient(to right, #2277EE, #7722BB);
@@ -202,7 +202,7 @@
 
 body {
     margin: 0;
-    padding-bottom: 100px;
+    /* padding-bottom: 100px; */
 }
 
 
@@ -213,6 +213,7 @@ div.notification.me-3 {
 }
 
 .homepage-header {
+    position: relative;
     margin-top: 15px;
     margin-bottom: 15px;
 }
@@ -229,16 +230,49 @@ div.notification.me-3 {
     border: none !important;
 }
 
+/* search modal */
+
+.modal-body {
+    position: absolute !important;
+    align-items: center;
+    z-index: 2000;
+    width: 100%;
+    background-color: rgb(238, 238, 239);
+    border-radius: 10px;
+    overflow-y: auto;
+}
+
+.user-result {
+    /* margin: 10px; */
+    padding: 10px;
+}
+
+.user-result:hover {
+    background-color: rgb(203, 222, 244);
+}
+
+.user-result a {
+    text-decoration: none;
+    color: black;
+}
+
+
 /* footer */
 .navbar {
     background-color: white;
+    max-height: 85px;
 }
 
 .navbar-nav .nav-link {
     align-items: center;
     justify-content: space-between;
     text-align: center;
-    font-size: 12px;
+    font-size: 2.5vw;
+}
+
+.nav-link img {
+    width: 5vw;
+    height: auto;
 }
 
 .navbar-nav .nav-text {
@@ -255,6 +289,10 @@ div.notification.me-3 {
     border-left: none;
     border-right: none;
     border-bottom: none;
+}
+
+.navbar-nav {
+    max-height: 70px;
 }
 
 
@@ -278,24 +316,28 @@ div.notification.me-3 {
     margin: 0;
     margin-left: 30%;
     color: #ffffff;
-    font-size: 16px;
+    font-size: 3.3vw;
     font-weight: bold;
 }
 
 .btn-icon {
     margin-left: 80%;
-    margin-bottom: 20%;
-    height: 24px; /* 이미지 크기 조절 */
-    width: 24px;
+    margin-bottom: 15%;
+    height: 4.5vw;
+    width: auto;
 }
 
 
 
 .meeting_btn-blue {
+    width: 43vw;
+    height: 26vw;
     background-color: #007bff !important; /* 파란색 */
 }
 
 .meeting_btn-purple {
+    width: 43vw;
+    height: 26vw;
     background-color: #6f42c1 !important; /* 보라색 */
 }
 
@@ -350,7 +392,7 @@ div.notification.me-3 {
     font-weight: lighter;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 1vw;
+    font-size: 1.7vh;
     margin-top: 60px;
     margin-bottom: 320px;
     text-align: center;
@@ -375,23 +417,32 @@ div.notification.me-3 {
     font-weight: lighter;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 0.8vw;
+    font-size: 1.5vh;
     margin-top: 60px;
     text-align: center;
 }
 
 .prelog-signup {
-    background: white;
     font-weight: lighter;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 0.7vw;
+    color: white;
+    font-size: 1vh;
     margin-top: 10px;
     text-align: center;
 }
 
+video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    opacity: 0.6;
+    z-index: -1;
+}
+
 .prelog-signup a {
-    color: orange;
+    color: #FFBB00;
     font-weight: bold;
     text-decoration: none; 
 }
@@ -520,9 +571,12 @@ div.notification.me-3 {
 .chattingRoomDate {
     font-size: 12px;
     color: #0066EE;
-  position: absolute; /* Absolute positioning */
-    top: 0; /* Align to the top */
-    right: 0;
+    margin-left: auto;
+  /* position: absolute; /* Absolute positioning */
+}
+
+.chattingRoomSemi {
+    flex-grow: 1;
 }
 
 .chattingRoomSemi h5 {
@@ -545,6 +599,7 @@ div.notification.me-3 {
     width: 100%;
     height: 100%;
     background-color: white;
+    margin-top: 60px;
 }
 
 .chat-input {
@@ -689,9 +744,8 @@ footer {
 .chat-section {
     top: 170px;
     width: 100%;
-    height: 590px; 
+    height: calc(101vh - 350px); /* 화면 전체 높이에서 170px (상단 공간) 뺀 값으로 설정 */
     overflow: auto;
-    /* display:flex; */
     flex-direction: column-reverse;
 }
 

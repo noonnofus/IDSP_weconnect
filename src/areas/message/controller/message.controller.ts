@@ -81,6 +81,7 @@ class MessageController implements Controller {
     private getUserByUserId = async (req: Request, res: Response) => {
         const sender = req.query.sender;
         const receiver = req.query.receiver;
+        console.log('heeerrrrreee: ', sender, receiver);
         const sendUser = await this.service.getUserByUserId(Number(sender));
         const receiveUser = await this.service.getUserByUserId(Number(receiver));
 

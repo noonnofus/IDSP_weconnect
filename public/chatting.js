@@ -19,7 +19,7 @@ async function enterRoom() {
   console.log(allMsg);
   
   socket.emit("enter_room", roomname);
-  if (allMsg !== null) {
+  if (allMsg.length !== 0) {
     count = allMsg.length; // 44
     for (let i = 0; i < 20; i++) {
       const message = allMsg[count - 1].message;
