@@ -19,7 +19,13 @@ class AuthenticationController implements Controller {
     this.router.get(`${this.path}login`, this.getLoginPage);
     this.router.get(`${this.path}prelog`, this.getPrelogPage);
     this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
+
+    this.router.get(`${this.path}settings`, this.getSettings);
+    this.router.get(`${this.path}accountSettings`, this.getAccountSettings);
+    this.router.get(`${this.path}resetPassword`, this.getResetPassword);
+    this.router.post(`${this.path}home`, this.login);
     this.router.post(`${this.path}login`, this.login);
+
     this.router.post(`${this.path}signup`, this.register);
     this.router.post(`${this.path}getUserSession`, this.getCurrentUserSession);
     this.router.post(`${this.path}searchUser`, this.searchUser);
@@ -32,12 +38,8 @@ class AuthenticationController implements Controller {
     if(req.session.user?.userId !== undefined) {
     // @ts-ignore
     const userId = req.session.user.userId;
-    console.log(`userId: ${userId}`);
-    //console.log(req.session);
     //@ts-ignore
     const loggedInUser = await this.service.getUserById(userId);
-    console.log(`loged In : `);
-    console.log(loggedInUser);
     res.status(200).render('homepage', { loggedInUser })
     } else {
       res.status(200).redirect('/login')
@@ -45,7 +47,6 @@ class AuthenticationController implements Controller {
   
   }
 
-  
   private getRegisterPage(req: Request, res: Response): void {
     res.status(200).render('signup')
   }
@@ -54,12 +55,24 @@ class AuthenticationController implements Controller {
     res.status(200).render("login");
   }
 
+  private getJoinMeetingPage(req: Request, res: Response): void {
+    res.status(200).render("join_meeting");
+  }
+
   private getPrelogPage(req: Request, res: Response): void {
     res.status(200).render('prelog')
   }
 
-  private getJoinMeetingPage(req: Request, res: Response): void {
-    res.status(200).render("join_meeting");
+  private getSettings(req: Request, res: Response): void {
+    res.status(200).render('settings')
+  }
+
+  private getAccountSettings(req: Request, res: Response): void {
+    res.status(200).render('account_settings')
+  }
+
+  private getResetPassword(req: Request, res: Response): void {
+    res.status(200).render('reset_password')
   }
 
   private login = async (req: Request, res: Response) => {
@@ -89,11 +102,11 @@ class AuthenticationController implements Controller {
     }
   }
 
-  private register = (req: Request, res: Response) => {
+  private register = async (req: Request, res: Response) => {
     try {
       const { username, email, password } = req.body;
       
-      const newUser = this.service.insertUser(username, email, password);
+      const newUser = await this.service.insertUser(username, email, password);
 
       const sessionUser = {
         // @ts-ignore
@@ -106,7 +119,7 @@ class AuthenticationController implements Controller {
       //@ts-ignore
       req.session.user = sessionUser;
       
-      res.status(200).render('homepage', { newUser });
+      res.status(200).redirect('/home');
     }
     catch(err) {
       res.status(500).render('signup', { err });

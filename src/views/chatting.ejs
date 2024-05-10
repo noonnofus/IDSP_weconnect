@@ -22,22 +22,22 @@
     <header>
       <%- include("./homepage_header.ejs") %>
     </header>
+
     <div class="chatting_receiver_container">
       <div class="chatting_receiver">
           <img src="<%- receiveUser.profilePic %>" alt="receiver profile img" class="receiver_profile_img">
           <h5><%- receiveUser.username %></h5>
       </div>
     </div>
+
     <div class="line-container">
       <div class="chatting_line"></div>
     </div>
-    
     
     <div class="chat-section">
       <!-- where msgs go -->
     </div>
 
-    
     <div class="chat-input-container">
       <div class="chat-input" id="room">
         <form id="msg">
@@ -46,6 +46,7 @@
         </form>
       </div>
     </div>
+
     <footer>
       <%- include("./homepage_footer.ejs") %>
     </footer>
