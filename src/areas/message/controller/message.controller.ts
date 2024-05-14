@@ -15,28 +15,41 @@ class MessageController implements Controller {
     private initializeRoutes(): void {
         this.router.get(`${this.path}messages`, this.getMessages);
         this.router.get(`${this.path}chat`, this.getChattingRoom);
-        this.router.post(`${this.path}storeInDb`, this.storeData);
         this.router.get(`${this.path}getUserBySenderReceiver`, this.getUserByUserId);
+        this.router.post(`${this.path}storeInDb`, this.storeData);
         this.router.post(`${this.path}storeMsgInDb`, this.storeMsgInDb);
         this.router.post(`${this.path}getRoomByUserId`, this.getRoomByUserId);
         this.router.post(`${this.path}getMsgFromDb`, this.getMsgFromDb);
     }
 
     private getMessages(req: Request, res: Response) {
+      // @ts-ignore
+      const isLoggedIn = req.session.user
+      if (isLoggedIn !== undefined) {
         res.status(200).render("messages");
+      } else {
+        res.status(200).redirect('/login')
+      }
     }
 
     private getChattingRoom = async (req: Request, res: Response) => {
         try {
             const sender = req.query.sender;
             const receiver = req.query.receiver;
-
+            // @ts-ignore
+            const isLoggedIn = req.session.user;
             // console.log('at controller: ', Number(sender), receiver);
-            const sendUser = await this.service.getUserByUserId(Number(sender));
-            const receiveUser = await this.service.getUserByUserId(Number(receiver));
-
-            const roomId = `${sendUser}${receiveUser}`;
-            res.status(200).render("chatting", {roomId, receiveUser});
+            if (sender && receiver) {
+                const sendUser = await this.service.getUserByUserId(Number(sender));
+                const receiveUser = await this.service.getUserByUserId(Number(receiver));
+    
+                const roomId = `${sendUser}${receiveUser}`;
+                res.status(200).render("chatting", {roomId, receiveUser});
+            } else if (isLoggedIn === undefined){
+                res.status(200).redirect('/login')
+            } else {
+                res.status(200).redirect('/home');
+            }
         }
         catch(err) {
             console.error(err);
@@ -81,7 +94,6 @@ class MessageController implements Controller {
     private getUserByUserId = async (req: Request, res: Response) => {
         const sender = req.query.sender;
         const receiver = req.query.receiver;
-        console.log('heeerrrrreee: ', sender, receiver);
         const sendUser = await this.service.getUserByUserId(Number(sender));
         const receiveUser = await this.service.getUserByUserId(Number(receiver));
 

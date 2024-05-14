@@ -12,12 +12,16 @@
 <body class="login">
     <!-- headers -->
   <%- include("./Authentication_header.ejs") %>
-
     <!-- Sign up form -->
   <div class="container custom-container">
     <div class="row justify-content-center">
       <div class="col-md-6">
         <div class="login-text">Sign up</div>
+
+        <% if (typeof err !== 'undefined') { %>
+          <p><%- err %></p>
+        <% } %>
+        
         <form action="/signup" class="custom-form" method="post">
           <div class="mb-3">
             <label for="username" class="form-label">USERNAME</label>

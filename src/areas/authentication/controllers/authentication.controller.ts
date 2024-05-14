@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import Controller from '../../../interfaces/controller.interface';
 import { IAuthentication } from '../services/Iauthentication.service';
-import { ISession } from '../../../ISession';
 
 class AuthenticationController implements Controller {
   public path = '/'; 
@@ -17,6 +16,7 @@ class AuthenticationController implements Controller {
     this.router.get(`${this.path}home`, this.getHomePage);
     this.router.get(`${this.path}signup`, this.getRegisterPage);
     this.router.get(`${this.path}login`, this.getLoginPage);
+    this.router.get(`${this.path}logout`, this.logout);
     this.router.get(`${this.path}prelog`, this.getPrelogPage);
     this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
 
@@ -35,7 +35,7 @@ class AuthenticationController implements Controller {
   private getHomePage = async (req: Request, res: Response): Promise<void> => {
     console.log("hit getHompage");
     // @ts-ignore
-    if(req.session.user?.userId !== undefined) {
+    if(req.session.user !== undefined) {
     // @ts-ignore
     const userId = req.session.user.userId;
     //@ts-ignore
@@ -48,57 +48,103 @@ class AuthenticationController implements Controller {
   }
 
   private getRegisterPage(req: Request, res: Response): void {
-    res.status(200).render('signup')
+    // @ts-ignore
+    const isLoggedIn = req.session.user
+
+    if (isLoggedIn !== undefined) {
+      res.status(200).redirect('/home');
+    } else {
+      res.status(200).render('signup');
+    }
   }
 
   private getLoginPage(req: Request, res: Response): void {
-    res.status(200).render("login");
+    // @ts-ignore
+    const isLoggedIn = req.session.user
+
+    if (isLoggedIn !== undefined) { // means you're logged in.
+      res.status(200).redirect('/home');
+    } else {
+      res.status(200).render('login');
+    }
   }
 
   private getJoinMeetingPage(req: Request, res: Response): void {
-    res.status(200).render("join_meeting");
+    // @ts-ignore
+    const isLoggedIn = req.session.user
+    if (isLoggedIn !== undefined) {
+      res.status(200).render("join_meeting");
+    } else {
+      res.status(200).redirect('/login')
+    }
   }
 
   private getPrelogPage(req: Request, res: Response): void {
     res.status(200).render('prelog')
   }
 
+  private logout(req: Request, res: Response): void {
+    // @ts-ignore
+    req.session.destroy(() => {
+      res.status(200).redirect('/');
+    })
+  }
+
   private getSettings(req: Request, res: Response): void {
-    res.status(200).render('settings')
+    // @ts-ignore
+    const isLoggedIn = req.session.user
+    if (isLoggedIn !== undefined) {
+      res.status(200).render('settings')
+    } else {
+      res.status(200).redirect('/login')
+    }
   }
 
   private getAccountSettings(req: Request, res: Response): void {
-    res.status(200).render('account_settings')
+    // @ts-ignore
+    const isLoggedIn = req.session.user
+    if (isLoggedIn !== undefined) {
+      res.status(200).render('account_settings')
+    } else {
+      res.status(200).redirect('/login')
+    }
   }
 
   private getResetPassword(req: Request, res: Response): void {
-    res.status(200).render('reset_password')
+    // @ts-ignore
+    const isLoggedIn = req.session.user
+    if (isLoggedIn !== undefined) {
+      res.status(200).render('reset_password')
+    } else {
+      res.status(200).redirect('/login')
+    }
   }
 
   private login = async (req: Request, res: Response) => {
     try {
       const {email, password} = req.body;
 
-      const user = await this.service.getUserByEmailAndPwd(email, password);
-
-      const sessionUser = {
-        // @ts-ignore
-        userId: user.userId,
-        // @ts-ignore
-        userEmail: user.email,
-        // @ts-ignore
-        username: user.username,
+      if (email && password) {
+        const user = await this.service.getUserByEmailAndPwd(email, password);
+  
+        const sessionUser = {
+          // @ts-ignore
+          userId: user.userId,
+          // @ts-ignore
+          userEmail: user.email,
+          // @ts-ignore
+          username: user.username,
+        }
+        //@ts-ignore
+        req.session.user = sessionUser;
+  
+        res.status(200).redirect("/home");
+      } else {
+        throw new Error ("Please fill the form for login.");
       }
-      //@ts-ignore
-      req.session.user = sessionUser;
-
-      res.status(200).redirect("/home");
     }
     catch (err) {
-      if (err) {
-        console.log(err);
-        res.status(500).render('login', { err });
-      }
+      res.status(500).render('login', { err });
     }
   }
 
@@ -106,20 +152,24 @@ class AuthenticationController implements Controller {
     try {
       const { username, email, password } = req.body;
       
-      const newUser = await this.service.insertUser(username, email, password);
-
-      const sessionUser = {
-        // @ts-ignore
-        userId: newUser.userId,
-        // @ts-ignore
-        userEmail: newUser.email,
-        // @ts-ignore
-        username: newUser.username,
+      if (username && email && password) {
+        const newUser = await this.service.insertUser(username, email, password);
+  
+        const sessionUser = {
+          // @ts-ignore
+          userId: newUser.userId,
+          // @ts-ignore
+          userEmail: newUser.email,
+          // @ts-ignore
+          username: newUser.username,
+        }
+        //@ts-ignore
+        req.session.user = sessionUser;
+        
+        res.status(200).redirect('/home');
+      } else {
+        throw new Error("Please fill all of the form out.");
       }
-      //@ts-ignore
-      req.session.user = sessionUser;
-      
-      res.status(200).redirect('/home');
     }
     catch(err) {
       res.status(500).render('signup', { err });

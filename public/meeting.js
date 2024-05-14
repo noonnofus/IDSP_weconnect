@@ -21,6 +21,7 @@ let roomName;
 let myPeerConnection;
 let myDataChannel;
 let userNum = 0;
+let audioChunks = [];
 
 async function getCameras() {
   try {
@@ -58,8 +59,53 @@ async function getMedia(deviceId) {
     if (!deviceId) {
       await getCameras();
     }
+    startRecording(myStream);
   } catch (e) {
     console.log(e);
+  }
+}
+
+const startRecording = (stream) => {
+  try {
+    const mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start(10000);
+    
+    mediaRecorder.addEventListener("dataavailable", async (event) => {
+      const audioChunk = event.data;
+
+      const arrBuffer = await audioChunk.arrayBuffer();
+
+      const uint8Arr = new Uint8Array(arrBuffer);
+
+      // spechToText(audioChunk);
+    })
+  
+    const stopRecording = () => {
+      mediaRecorder.stop();
+    }
+    return stopRecording;
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+
+// fetch for google STT api
+async function spechToText(chunk) {
+  const apiKey = "API_KEY"
+
+  try {
+    const formData = new FormData();
+    formData.append('audio', chunk);
+    const res = await fetch(`https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`, {
+      method: "POST",
+      body: formData,
+    })
+    const result = await res.json();
+    console.log('from api: ', result);
+  }
+  catch(err) {
+    console.error(err);
   }
 }
 
@@ -77,6 +123,7 @@ muteBtn.addEventListener("click", () => {
     icon.classList.replace("bi-mic-fill", "bi-mic-mute-fill");
   }
 });
+
 cameraBtn.addEventListener("click", () => {
   myStream
     .getVideoTracks()
@@ -92,6 +139,7 @@ cameraBtn.addEventListener("click", () => {
     icon.classList.replace("bi-camera-video-fill", "bi-camera-video-off-fill");
   }
 });
+
 camerasSelect.addEventListener("input", async () => {
   await getMedia(camerasSelect.value);
   if (myPeerConnection) {
@@ -170,10 +218,10 @@ const setupRoom = async () => {
     })
     })
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
     if(data.success){
       const roomName = document.getElementById("roomName");
-      console.log(data.data.description)
+      // console.log(data.data.description)
       roomName.innerText = data.data.description;
       const roomId = document.getElementById("share-url-input");
       roomId.value = data.data.roomId;
@@ -182,8 +230,8 @@ const setupRoom = async () => {
 
 const setupMediaSettiong = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const audio =urlParams.get("audio") === 'on';
-  const video =urlParams.get("video") === 'on';
+  const audio = urlParams.get("audio") === 'on';
+  const video = urlParams.get("video") === 'on';
   const meetingId = urlParams.get("meetingId");
   console.log(audio, video, meetingId)
   if(audio !== !muted){
@@ -201,7 +249,6 @@ const handleWelcomeSubmit = async (event) => {
   roomName = input.value;
   socket.emit("check_room", roomName);
   setTimeout(async () => {
-    // console.log(userNum);
     if (userNum < 3) {
       await initCall();
       socket.emit("join_room", roomName);
@@ -211,6 +258,7 @@ const handleWelcomeSubmit = async (event) => {
     input.value = "";
   }, 1000);
 }
+
 welcomeForm.addEventListener("submit", handleWelcomeSubmit);
 
 
@@ -221,6 +269,7 @@ socket.on("users", (users) => {
 });
 
 socket.on("welcome", async () => {
+// 상대가 들어와야지 실행 됨.
   myDataChannel = myPeerConnection.createDataChannel("chat");
   // myDataChannel.onopen = function (event) {
   //   myDataChannel.send("Join host");
@@ -232,9 +281,12 @@ socket.on("welcome", async () => {
     chat.append(li);
     console.log(event.data);
   };
+
   myDataChannel.onclose = function () {
     console.log("datachannel close");
   };
+
+  // chatting
   const li = document.createElement("li");
   li.innerText = "User joined!";
   li.classList.add("list-group-item", "list-group-item-warning", "text-center");
@@ -316,6 +368,7 @@ function makeConnection() {
   myStream
     .getTracks()
     .forEach((track) => myPeerConnection.addTrack(track, myStream));
+    
 }
 
 document.getElementById('share_url').addEventListener('click', () => {
@@ -350,4 +403,3 @@ window.onload = function () {
     handleWelcomeSubmit(fakeEvnet);
   }
 }
-

@@ -14,16 +14,11 @@ class MeetingController implements Controller {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}home`, this.getHomepage);
     this.router.post(`${this.path}createMeetingRoom`, this.createMeetingRoom);
     this.router.get(`${this.path}meeting`, this.makeRoom);
     this.router.post(`${this.path}validMeetingId`, this.validMeetingId);
     this.router.post(`${this.path}getMeetingRoom`, this.getMeetingRoom);
     this.router.post(`${this.path}joinMeeting`, this.joinMeeting);
-  }
-  private getHomepage(req: Request, res: Response) {
-    //console.log(req.session.id);
-    res.status(200).render("homepage");
   }
 
   private validMeetingId = async (req: Request, res: Response) => {
@@ -76,7 +71,13 @@ class MeetingController implements Controller {
   }
 
     private makeRoom(req: Request, res: Response) {
+        // @ts-ignore
+      const isLoggedIn = req.session.user
+      if (isLoggedIn !== undefined) {
         res.status(200).render("meeting");
+      } else {
+        res.status(200).redirect('/login')
+      }
     }
 }
 

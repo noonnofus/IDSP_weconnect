@@ -33,6 +33,24 @@ searchbar.addEventListener("input", async (ev) => {
     }
 })
 
+searchbar.addEventListener("keydown", async (ev) => {
+    if (ev.key === 'Enter') {
+        ev.preventDefault();
+        const userResult = await searchUser(searchbar.value);
+        const firstResult = document.querySelector('.user-result');
+        if (firstResult) {
+            const a = firstResult.querySelector('a');
+            const href = a.getAttribute('href');
+            const currentUserStr = await getCurrnetUserSession();
+            const currentUser = JSON.parse(currentUserStr);
+            const sender = currentUser.userEmail;
+            const receiver = await userResult.find(u => u.username === a.textContent).email;
+            await storeRoomInDb(sender, receiver);
+            window.location.href = href;
+        }
+    }
+});
+
 function createModal(currentUser, user) {
     const modal = document.querySelector('.modal-body');
     const newDiv = document.createElement('div');
@@ -66,7 +84,6 @@ async function getCurrnetUserSession() {
   }
 
 async function storeRoomInDb(sender, receiver) {
-    console.log(sender, receiver);
     const res = await fetch('/storeInDb', {
         method: "POST",
         headers: {
@@ -77,6 +94,8 @@ async function storeRoomInDb(sender, receiver) {
     const result = await res.json();
     return result.data;
 }
+
+
 
 function clearModal() {
     const modal = document.querySelector('.modal-body');

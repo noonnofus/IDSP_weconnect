@@ -7,8 +7,8 @@ import database from "../databaseConnection";
 import http from "http";
 import WebSocket from "ws";
 import { Server as SocketIOServer } from "socket.io";
-import MessageController from "./areas/message/controller/message.controller";
-import { MessageService } from "./areas/message/services/message.service";
+import { SpeechClient } from "@google-cloud/speech"
+import * as Flac from 'libflacjs/dist/libflac';
 
 async function printMySQLVersion() {
   let sqlQuery = `
@@ -103,6 +103,7 @@ class App {
         socket.join(roomname);
         socket.to(roomname).emit("welcome");
       });
+
       //1
       socket.on("check_room", (roomName) => {
         const room = this.io?.sockets.adapter.rooms.get(roomName);
@@ -113,6 +114,10 @@ class App {
           socket.emit("room_joinable");
         }
       });
+
+      socket.on("audio_chunk", async (buffer: Buffer) => {
+        
+      })
 
       socket.on("offer", (offer, roomName) => {
         socket.to(roomName).emit("offer", offer);
