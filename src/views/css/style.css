@@ -50,7 +50,7 @@
 }
 
 .logo1 {
-    width: 20vw;
+    width: 45vw;
     height: auto;
 }
 
@@ -396,6 +396,7 @@ div.notification.me-3 {
     text-decoration: none; 
 }
 
+
 .settings-text {
     background: linear-gradient(#2277EE, #7722BB);
     font-weight: lighter;
@@ -488,6 +489,7 @@ div.notification.me-3 {
 .toggle-ball {
     filter: brightness(100%);
 }
+
 .msg-container {
     margin: 16px;
 }
@@ -694,46 +696,3 @@ footer {
     /* display:flex; */
     flex-direction: column-reverse;
 }
-
-.account-settings-group button {
-    margin-bottom: 10px; /* Adjust as needed */
-    width: 300px;
-    height: 50px;
-    text-align: center;
-    border-radius: 15px; 
-    border: none;
-    padding: 10px 20px;
-    background: linear-gradient(to right, #2196F3, #9C27B0);
-    color: #fff; /* Button text color */
-    cursor: pointer;
-}
-.account-settings-group button:hover {
-    background: linear-gradient(to left, #2196F3, #9C27B0); 
-}
-
-.centered-container {
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items horizontally */
-    padding-top: 50px; /* Adjust as needed */
-}
-
-.save-settings-group button{
-    margin-bottom: 10px;
-    width: 300px;
-    height: 50px;
-    text-align: center;
-    border-radius: 15px; 
-    border: none;
-    padding: 10px 20px;
-    position: relative; 
-    overflow: hidden; 
-    background: linear-gradient(to right, #2196F3, #9C27B0);
-    color: #fff; 
-    cursor: pointer;
-}
-
-.save-settings-group button:hover {
-    background: linear-gradient(to left, #2196F3, #9C27B0);
-}
-
