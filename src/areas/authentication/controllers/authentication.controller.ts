@@ -30,6 +30,7 @@ class AuthenticationController implements Controller {
     this.router.post(`${this.path}getUserSession`, this.getCurrentUserSession);
     this.router.post(`${this.path}searchUser`, this.searchUser);
     this.router.post(`${this.path}getUserByUserId`, this.getUserByUserId);
+    this.router.post(`${this.path}resetPassword`, this.resetPassword);
   }
 
   private getHomePage = async (req: Request, res: Response): Promise<void> => {
@@ -176,6 +177,36 @@ class AuthenticationController implements Controller {
       })
     }
   }
+
+  private resetPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { email, oldPassword, newPassword, confirmPassword } = req.body;
+
+        // Check if the new password and confirm password match
+        if (newPassword !== confirmPassword) {
+            throw new Error("New password and confirm password do not match.");
+        }
+
+        // Validate the old password
+        const user = await this.service.getUserByEmailAndPwd(email, oldPassword);
+
+        // Ensure user is not an error
+        if (user instanceof Error) {
+            throw user; // Re-throw the error
+        }
+
+        // Update the user's password with the new password
+        const updatedUser = await this.service.updateUserPassword(user.userId, newPassword);
+
+        // Send a success response
+        res.status(200).json({ success: true, message: "Password reset successfully." });
+    } catch (error) {
+        // Send an error response
+        console.error("Error resetting password:", error);
+        res.status(500).json({ success: false, message: "Reset password failed." });
+    }
+};
+
 }
 
 export default AuthenticationController;
