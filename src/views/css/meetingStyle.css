@@ -27,6 +27,10 @@ video {
 .chat-list-container {
   width: 100%;
   margin-bottom: 150px;
+  max-height: 300px; /* 원하는 높이 설정 */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse; /* 채팅 메시지가 아래에서부터 추가되도록 설정 */
 }
 
 .chat-room-list-container {
@@ -56,6 +60,9 @@ video {
 }
 
 .chat-list li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 기본적으로 왼쪽 정렬 */
   margin: 4px 0;
   padding: 4px 8px;
   color: #000;
@@ -67,9 +74,15 @@ video {
   animation: 0.4s ease-in-out fadeIn;
 }
 
+.chat-list li.self {
+  align-items: flex-end; /* 오른쪽 정렬 */
+  background-color: rgb(243, 243, 208); /* 다른 색상 적용 */
+  text-align: right; /* 텍스트를 오른쪽으로 정렬 */
+}
+
 .chat-form-container {
   display: flex;
-  position: fixed;
+  position: flex;
   left: 1rem;
   bottom: 40px;
   right: 1rem;

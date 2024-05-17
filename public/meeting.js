@@ -9,6 +9,25 @@ let id = "";
 let nickname = "";
 let myStream;
 
+// function onReceiveChat(response) {
+//   const chatListContainer = document.getElementById("chat_list_container");
+//   const chatList = chatListContainer.querySelector(".chat-list");
+//   const chatItem = document.createElement("li");
+
+//   const nicknameView = document.createElement("strong");
+//   nicknameView.innerText = response.nickname;
+
+//   const contentView = document.createElement("div");
+//   contentView.innerText = response.msg;
+
+//   chatItem.appendChild(nicknameView);
+//   chatItem.appendChild(contentView);
+//   chatList.insertAdjacentElement("afterbegin", chatItem);
+
+//   if (response.id === id) {
+//     chatItem.style.backgroundColor = "rgb(243, 243, 208)";
+//   }
+// }
 function onReceiveChat(response) {
   const chatListContainer = document.getElementById("chat_list_container");
   const chatList = chatListContainer.querySelector(".chat-list");
@@ -22,12 +41,18 @@ function onReceiveChat(response) {
 
   chatItem.appendChild(nicknameView);
   chatItem.appendChild(contentView);
-  chatList.insertAdjacentElement("afterbegin", chatItem);
 
+  // 내가 보낸 메시지인지 확인하여 클래스 추가
   if (response.id === id) {
-    chatItem.style.backgroundColor = "rgb(243, 243, 208)";
+    chatItem.classList.add("self");
   }
+
+  chatList.appendChild(chatItem); // 맨 아래에 메시지 추가
+
+  // 새로운 메시지가 추가될 때 스크롤을 맨 아래로 이동
+  chatListContainer.scrollTop = chatListContainer.scrollHeight;
 }
+
 
 async function makeMediaStream() {
   try {
@@ -235,27 +260,51 @@ function initApplication() {
     });
   });
 
+  // chatSubmitForm.addEventListener("submit", (event) => {
+  //   event.preventDefault();
+
+  //   const chat = {
+  //     id,
+  //     nickname,
+  //     msg: chatSubmitTextInput.value.trim(),
+  //   };
+
+  //   if (chat.msg) {
+  //     rtcPeerConnectionMap.forEach((connection) => {
+  //       if (connection.chatDataChannel) {
+  //         connection.chatDataChannel.send(JSON.stringify(chat));
+  //       }
+  //     });
+
+  //     onReceiveChat(chat);
+  //     chatSubmitForm.reset();
+  //   }
+  // });
   chatSubmitForm.addEventListener("submit", (event) => {
     event.preventDefault();
-
+  
     const chat = {
       id,
       nickname,
       msg: chatSubmitTextInput.value.trim(),
     };
-
+  
     if (chat.msg) {
       rtcPeerConnectionMap.forEach((connection) => {
         if (connection.chatDataChannel) {
           connection.chatDataChannel.send(JSON.stringify(chat));
         }
       });
-
-      onReceiveChat(chat);
+  
+      onReceiveChat(chat); // 로컬에서도 채팅을 추가
       chatSubmitForm.reset();
+  
+      // 메시지를 보낸 후 스크롤을 맨 아래로 이동
+      const chatListContainer = document.getElementById("chat_list_container");
+      chatListContainer.scrollTop = chatListContainer.scrollHeight;
     }
   });
-
+  
   document.getElementById("video_on_off_button").addEventListener("click", (event) => {
     if (!myStream || !myStream.getVideoTracks().length) {
       return;
