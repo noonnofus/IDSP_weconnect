@@ -1,4 +1,7 @@
+import 'dotenv/config';
 import { SpeechClient } from "@google-cloud/speech"
+import { GoogleAuth } from "google-auth-library";
+
 
 export class SpeechToTextService {
     private recognizeStream: any;
@@ -11,7 +14,19 @@ export class SpeechToTextService {
     }
   
     public startRecognizeStream(callback: (transcription: string) => void) {
-      const client = new SpeechClient();
+
+      const env = process.env.GOOGLE_APPLICATION_CREDENTIALS
+      if (!env) {
+        throw new Error('google env error');
+      }
+      const credentials = JSON.parse(env);
+
+      const auth = new GoogleAuth({
+        credentials: credentials,
+        scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+      });
+
+      const client = new SpeechClient({ auth });
       this.transcriptionCallback = callback;
   
       this.recognizeStream = client
