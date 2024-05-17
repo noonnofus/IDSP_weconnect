@@ -25,7 +25,15 @@
     <header><%- include("./homepage_header.ejs") %></header>
     <div class ="container">
     <div class="chat-room">
-        <h1 id="app_title">Noom</h1>
+        <h1 id="app_title"></h1>
+        <div id="bo_v_btn_group" class="clearfix text-center py-4 px-3 en">
+          <div class="btn-group btn-group-lg" role="group">
+              <button type="button" class="btn btn-basic" data-toggle="tooltip" data-placement="top" data-original-title="click to copy data to the Clipboard " id="share_url">
+                      <i class="fa fa-clipboard" aria-hidden="true"></i>
+                      <span class="sr-only">copy room ID</span>
+              </button>
+              <input type="text" name="copy roomid"  id="share-url-input" readonly>
+          </div>
         <div id="chat_controller" class="chat-controller" style="display: none;">
           <i id="video_on_off_button" class="ri-camera-fill chat-controller-toggle on"></i>
           <i id="mic_on_off_button" class="ri-mic-off-fill chat-controller-toggle"></i>

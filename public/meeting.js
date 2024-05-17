@@ -1,33 +1,25 @@
+// const socket = window.io();
 const STORAGE_KEY = Object.freeze({
   USER_ID: "userId",
   USER_PASSWORD: "userPassword",
 });
 
-//const socket = window.io();
+const getUrlParams = () => {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    audio: params.get('audio') === 'on',
+    video: params.get('video') === 'on',
+    meetingId: params.get('meetingId'),
+  };
+};
+
+const { audio: initialAudioState, video: initialVideoState, meetingId } = getUrlParams();
+
 const rtcPeerConnectionMap = new Map();
 let id = "";
 let nickname = "";
 let myStream;
 
-// function onReceiveChat(response) {
-//   const chatListContainer = document.getElementById("chat_list_container");
-//   const chatList = chatListContainer.querySelector(".chat-list");
-//   const chatItem = document.createElement("li");
-
-//   const nicknameView = document.createElement("strong");
-//   nicknameView.innerText = response.nickname;
-
-//   const contentView = document.createElement("div");
-//   contentView.innerText = response.msg;
-
-//   chatItem.appendChild(nicknameView);
-//   chatItem.appendChild(contentView);
-//   chatList.insertAdjacentElement("afterbegin", chatItem);
-
-//   if (response.id === id) {
-//     chatItem.style.backgroundColor = "rgb(243, 243, 208)";
-//   }
-// }
 function onReceiveChat(response) {
   const chatListContainer = document.getElementById("chat_list_container");
   const chatList = chatListContainer.querySelector(".chat-list");
@@ -42,17 +34,14 @@ function onReceiveChat(response) {
   chatItem.appendChild(nicknameView);
   chatItem.appendChild(contentView);
 
-  // 내가 보낸 메시지인지 확인하여 클래스 추가
   if (response.id === id) {
     chatItem.classList.add("self");
   }
 
-  chatList.appendChild(chatItem); // 맨 아래에 메시지 추가
+  chatList.appendChild(chatItem);
 
-  // 새로운 메시지가 추가될 때 스크롤을 맨 아래로 이동
   chatListContainer.scrollTop = chatListContainer.scrollHeight;
 }
-
 
 async function makeMediaStream() {
   try {
@@ -69,12 +58,30 @@ async function makeMediaStream() {
 
     myStream.getVideoTracks().forEach((_track) => {
       const track = _track;
-      track.enabled = document.getElementById("video_on_off_button").classList.contains("on");
+      track.enabled = initialVideoState;
+      if (initialVideoState) {
+        document.getElementById("video_on_off_button").classList.add("on");
+        document.getElementById("video_on_off_button").classList.add("ri-camera-fill");
+        document.getElementById("video_on_off_button").classList.remove("ri-camera-off-fill");
+      } else {
+        document.getElementById("video_on_off_button").classList.remove("on");
+        document.getElementById("video_on_off_button").classList.remove("ri-camera-fill");
+        document.getElementById("video_on_off_button").classList.add("ri-camera-off-fill");
+      }
     });
 
     myStream.getAudioTracks().forEach((_track) => {
       const track = _track;
-      track.enabled = document.getElementById("mic_on_off_button").classList.contains("on");
+      track.enabled = initialAudioState;
+      if (initialAudioState) {
+        document.getElementById("mic_on_off_button").classList.add("on");
+        document.getElementById("mic_on_off_button").classList.add("ri-mic-fill");
+        document.getElementById("mic_on_off_button").classList.remove("ri-mic-off-fill");
+      } else {
+        document.getElementById("mic_on_off_button").classList.remove("on");
+        document.getElementById("mic_on_off_button").classList.remove("ri-mic-fill");
+        document.getElementById("mic_on_off_button").classList.add("ri-mic-off-fill");
+      }
     });
 
     document.getElementById("my_face").srcObject = myStream;
@@ -99,8 +106,7 @@ function createRTCPeerConnection(peerId, peerNickname) {
   });
 
   if (myStream) {
-    myStream.getTracks()
-      .forEach((track) => myRTCPeerConnection.addTrack(track, myStream));
+    myStream.getTracks().forEach((track) => myRTCPeerConnection.addTrack(track, myStream));
   }
 
   const myPeerFacePlayerBorder = document.createElement("div");
@@ -244,9 +250,7 @@ function initApplication() {
   const nicknameForm = document.getElementById("nickname_form");
   const nicknameTextInput = nicknameForm.querySelector(".nickname-text-input");
   const chatSubmitForm = document.getElementById("chat_submit_form");
-  const chatSubmitTextInput = chatSubmitForm.querySelector(
-    ".chat-submit-text-input",
-  );
+  const chatSubmitTextInput = chatSubmitForm.querySelector(".chat-submit-text-input");
 
   chatRoomForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -260,91 +264,56 @@ function initApplication() {
     });
   });
 
-  // chatSubmitForm.addEventListener("submit", (event) => {
-  //   event.preventDefault();
-
-  //   const chat = {
-  //     id,
-  //     nickname,
-  //     msg: chatSubmitTextInput.value.trim(),
-  //   };
-
-  //   if (chat.msg) {
-  //     rtcPeerConnectionMap.forEach((connection) => {
-  //       if (connection.chatDataChannel) {
-  //         connection.chatDataChannel.send(JSON.stringify(chat));
-  //       }
-  //     });
-
-  //     onReceiveChat(chat);
-  //     chatSubmitForm.reset();
-  //   }
-  // });
   chatSubmitForm.addEventListener("submit", (event) => {
     event.preventDefault();
-  
+
     const chat = {
       id,
       nickname,
       msg: chatSubmitTextInput.value.trim(),
     };
-  
+
     if (chat.msg) {
       rtcPeerConnectionMap.forEach((connection) => {
         if (connection.chatDataChannel) {
           connection.chatDataChannel.send(JSON.stringify(chat));
         }
       });
-  
-      onReceiveChat(chat); // 로컬에서도 채팅을 추가
+
+      onReceiveChat(chat);
       chatSubmitForm.reset();
-  
-      // 메시지를 보낸 후 스크롤을 맨 아래로 이동
+
       const chatListContainer = document.getElementById("chat_list_container");
       chatListContainer.scrollTop = chatListContainer.scrollHeight;
     }
   });
-  
+
   document.getElementById("video_on_off_button").addEventListener("click", (event) => {
-    if (!myStream || !myStream.getVideoTracks().length) {
-      return;
-    }
+    const button = event.currentTarget;
+    if (myStream && myStream.getVideoTracks().length) {
+      const isOn = button.classList.contains("on");
+      button.classList.toggle("on", !isOn);
+      button.classList.toggle("ri-camera-fill", !isOn);
+      button.classList.toggle("ri-camera-off-fill", isOn);
 
-    if (event.currentTarget.classList.contains("on")) {
-      event.currentTarget.classList.remove("on");
-      event.currentTarget.classList.remove("ri-camera-fill");
-      event.currentTarget.classList.add("ri-camera-off-fill");
-    } else {
-      event.currentTarget.classList.add("on");
-      event.currentTarget.classList.add("ri-camera-fill");
-      event.currentTarget.classList.remove("ri-camera-off -fill");
+      myStream.getVideoTracks().forEach((track) => {
+        track.enabled = !isOn;
+      });
     }
-
-    myStream.getVideoTracks().forEach((_track) => {
-      const track = _track;
-      track.enabled = event.currentTarget.classList.contains("on");
-    });
   });
 
   document.getElementById("mic_on_off_button").addEventListener("click", (event) => {
-    if (!myStream || !myStream.getAudioTracks().length) {
-      return;
-    }
+    const button = event.currentTarget;
+    if (myStream && myStream.getAudioTracks().length) {
+      const isOn = button.classList.contains("on");
+      button.classList.toggle("on", !isOn);
+      button.classList.toggle("ri-mic-fill", !isOn);
+      button.classList.toggle("ri-mic-off-fill", isOn);
 
-    if (event.currentTarget.classList.contains("on")) {
-      event.currentTarget.classList.remove("on");
-      event.currentTarget.classList.remove("ri-mic-fill");
-      event.currentTarget.classList.add("ri-mic-off-fill");
-    } else {
-      event.currentTarget.classList.add("on");
-      event.currentTarget.classList.add("ri-mic-fill");
-      event.currentTarget.classList.remove("ri-mic-off-fill");
+      myStream.getAudioTracks().forEach((track) => {
+        track.enabled = !isOn;
+      });
     }
-
-    myStream.getAudioTracks().forEach((_track) => {
-      const track = _track;
-      track.enabled = event.currentTarget.classList.contains("on");
-    });
   });
 
   socket.emit("login", window.sessionStorage.getItem(STORAGE_KEY.USER_ID), window.sessionStorage.getItem(STORAGE_KEY.USER_PASSWORD), (user) => {
@@ -352,6 +321,10 @@ function initApplication() {
     window.sessionStorage.setItem(STORAGE_KEY.USER_PASSWORD, user.password);
     id = user.id;
     nickname = user.nickname;
+
+    if (meetingId) {
+      joinRoom(meetingId);
+    }
   });
 
   socket.emit("get-rooms", refreshRooms);
@@ -365,7 +338,7 @@ socket.on("notify-join-room", async (response) => {
   onReceiveChat({
     id: response.id,
     nickname: response.nickname,
-    msg: "# Hi there!",
+    msg: `#${response.nickname} has joined the room.`,
   });
 
   const myRTCPeerConnection = createRTCPeerConnection(response.id, response.nickname);
@@ -390,11 +363,9 @@ socket.on("notify-leave-room", (response) => {
 
   if (rtcPeerConnectionMap.has(response.id)) {
     const peerFacePlayerBorder = document.querySelector(`#face_player_container .peer-face-player-border[data-peer-id="${response.id}"]`);
-
     if (peerFacePlayerBorder) {
       peerFacePlayerBorder.remove();
     }
-
     rtcPeerConnectionMap.get(response.id).close();
     rtcPeerConnectionMap.delete(response.id);
   }
@@ -408,7 +379,6 @@ socket.on("notify-change-nickname", (response) => {
   });
 
   const peerFacePlayerCaption = document.querySelector(`.peer-face-player-caption[data-peer-id="${response.id}"]`);
-
   if (peerFacePlayerCaption) {
     peerFacePlayerCaption.innerText = response.nickname;
   }
@@ -441,5 +411,46 @@ socket.on("webrtc-ice-candidate", (userId, candidate) => {
     rtcPeerConnectionMap.get(userId).addIceCandidate(candidate);
   }
 });
+
+
+document.getElementById('share_url').addEventListener('click', () => {
+  const copyText = document.getElementById('share-url-input');
+
+  // 입력 필드를 선택
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // 모바일 기기에서 사용할 수 있도록 범위 설정
+
+  // 텍스트를 클립보드에 복사
+  navigator.clipboard.writeText(copyText.value)
+      .then(() => {
+          // 복사가 성공했을 때 사용자에게 알림
+          alert('Room ID copied to clipboard!');
+      })
+      .catch(err => {
+          // 복사 실패 시 오류 처리
+          console.error('Error copying text: ', err);
+      });
+});
+
+window.onload =  async () => {
+  const res = await fetch("/validMeetingId", {
+    method: "POST",
+    headers:{
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      meetingId: meetingId
+    })
+    })
+    const data = await res.json();
+    console.log(data);
+    if(data.success){
+      const roomName = document.getElementById("app_title");
+      //console.log(data.data.description)
+      roomName.innerText = data.data.description;
+      const roomId = document.getElementById("share-url-input");
+      roomId.value = data.data.roomId;
+    }
+}
 
 initApplication();
