@@ -13,7 +13,7 @@ const getUrlParams = () => {
   };
 };
 
-const { audio: initialAudioState, video: initialVideoState, meetingId } = getUrlParams();
+let { audio: initialAudioState, video: initialVideoState, meetingId } = getUrlParams();
 
 const rtcPeerConnectionMap = new Map();
 let id = "";
@@ -143,7 +143,9 @@ function arrayBufferToBase64(buffer) {
 const translator = document.querySelector('#translate');
 
 translator.addEventListener('click', () => {
-  if (!translation && initialAudioState === false) {
+  console.log('here');
+  console.log('audio State: ', initialAudioState);
+  if (!translation && initialAudioState === true) {
     translation = true;
     translator.classList.add('translator-clicked');
     const result = startRecording(myStream);
@@ -377,9 +379,11 @@ function initApplication() {
       button.classList.toggle("on", !isOn);
       button.classList.toggle("ri-mic-fill", !isOn);
       button.classList.toggle("ri-mic-off-fill", isOn);
+
       myStream.getAudioTracks().forEach((track) => {
         track.enabled = !isOn;
       });
+      initialAudioState = !initialAudioState;
       if (stopRecording) {
         stopRecording();
       }
