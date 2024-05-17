@@ -396,6 +396,100 @@ div.notification.me-3 {
     text-decoration: none; 
 }
 
+
+.settings-text {
+    background: linear-gradient(#2277EE, #7722BB);
+    font-weight: lighter;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2vw;
+    margin-bottom: 20px;
+}
+
+.toggle {
+    display: block;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-slider {
+    content: "";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 5px; 
+    width: 40px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 20px;
+    transition: background-color 0.4s;
+}
+
+.toggle-ball {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    transition: left 0.4s; 
+}
+
+.toggle-input:checked + .toggle-slider .toggle-ball {
+    left: 30px; 
+} 
+
+.toggle-input:checked + .toggle-slider {
+    background: linear-gradient(to right, #2196F3, #9C27B0);
+}
+
+
+.settings-group button {
+    margin-bottom: 10px; 
+    width: 700px;
+    height: 50px;
+    text-align: left;
+    border-radius: 15px; 
+    border: none;
+    padding: 10px 20px;
+}
+
+.settings-group input {
+    margin-bottom: 10px;
+    width: 700px;
+    height: 50px;
+    text-align: left;
+    border-radius: 15px; 
+    border: none;
+    padding: 10px 20px;
+}
+.settings-group button:hover {
+    background: linear-gradient(to right, #2196F3, #9C27B0);
+    color: white
+}
+
+.dark-mode {
+    filter: invert(100%);
+    background-color: #222;
+    color: #fff;
+
+}
+
+.settings-text,
+.toggle-slider,
+.toggle-ball {
+    filter: brightness(100%);
+}
+
 .msg-container {
     margin: 16px;
 }

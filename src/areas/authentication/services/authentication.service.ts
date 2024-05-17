@@ -1,4 +1,4 @@
-import { tb_user, tb_room } from "@prisma/client";
+import { tb_user } from "@prisma/client";
 import DBClient from "../../../prisma";
 import { IAuthentication } from "./Iauthentication.service";
 import bcrypt from "bcrypt";
@@ -72,6 +72,39 @@ export class AuthenticationService implements IAuthentication{
             return users;
         } else {
             return undefined;
+        }
+    }
+
+    async updateUserPassword(userId: number, newPassword: string): Promise<tb_user | null> {
+        try {
+            // Retrieve the user by ID
+            const user = await this._db.prisma.tb_user.findUnique({
+                where: {
+                    userId: userId,
+                },
+            });
+
+            if (!user) {
+                throw new Error("User not found");
+            }
+
+            // Hash the new password
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+            // Update the user's password
+            const updatedUser = await this._db.prisma.tb_user.update({
+                where: {
+                    userId: userId,
+                },
+                data: {
+                    password: hashedPassword,
+                },
+            });
+
+            return updatedUser;
+        } catch (error) {
+            console.error("Error updating user password:", error);
+            return null;
         }
     }
 }
