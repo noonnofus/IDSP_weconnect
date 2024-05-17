@@ -19,6 +19,8 @@ const rtcPeerConnectionMap = new Map();
 let id = "";
 let nickname = "";
 let myStream;
+let translation = false;
+let stopRecording;
 
 function onReceiveChat(response) {
   const chatListContainer = document.getElementById("chat_list_container");
@@ -82,6 +84,16 @@ async function makeMediaStream() {
         document.getElementById("mic_on_off_button").classList.remove("ri-mic-fill");
         document.getElementById("mic_on_off_button").classList.add("ri-mic-off-fill");
       }
+      // 초기 mic 상태에 따라 translator 아이콘 초기화
+      if (initialAudioState) {
+        translator.classList.remove('translator-not-available');
+      } else {
+        translator.classList.add('translator-not-available');
+        translator.classList.remove('translator-clicked');
+        if (stopRecording) {
+          stopRecording();
+        }
+      }
     });
 
     document.getElementById("my_face").srcObject = myStream;
@@ -90,6 +102,62 @@ async function makeMediaStream() {
     console.trace(e);
   }
 }
+
+
+const startRecording = (stream) => {
+  try {
+    const mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start(1500);
+
+    mediaRecorder.addEventListener("dataavailable", async (event) => {
+      const audioChunk = event.data;
+
+      const arrBuffer = await audioChunk.arrayBuffer();
+
+      const base64String = arrayBufferToBase64(arrBuffer);
+
+      socket.emit('audio_chunk', base64String, meetingId);
+    })
+
+    const stopRecording = () => {
+      mediaRecorder.stop();
+    }
+    return { mediaRecorder, stopRecording };
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}
+
+// translation btn
+const translator = document.querySelector('#translate');
+
+translator.addEventListener('click', () => {
+  if (!translation && initialAudioState === false) {
+    translation = true;
+    translator.classList.add('translator-clicked');
+    const result = startRecording(myStream);
+    mediaRecorder = result.mediaRecorder;
+    stopRecording = result.stopRecording;
+  } else {
+    translator.classList.remove('translator-clicked');
+    translation = false;
+    if (stopRecording) {
+      stopRecording();
+    }
+  }
+})
+
 
 function createRTCPeerConnection(peerId, peerNickname) {
   const myRTCPeerConnection = new RTCPeerConnection({
@@ -178,7 +246,7 @@ async function joinRoomCallback(response) {
   leaveButton.classList.add("chat-room-leave-button");
   leaveButton.innerText = "Leave";
 
-  document.getElementById("app_title").innerText = `${response.chatRoom}`;
+  //document.getElementById("app_title").innerText = `${response.chatRoom}`;
 
   const appTitleDiv = document.createElement("div");
   appTitleDiv.style.display = "flex";
@@ -304,15 +372,27 @@ function initApplication() {
 
   document.getElementById("mic_on_off_button").addEventListener("click", (event) => {
     const button = event.currentTarget;
+    const isOn = button.classList.contains("on");
     if (myStream && myStream.getAudioTracks().length) {
-      const isOn = button.classList.contains("on");
       button.classList.toggle("on", !isOn);
       button.classList.toggle("ri-mic-fill", !isOn);
       button.classList.toggle("ri-mic-off-fill", isOn);
-
       myStream.getAudioTracks().forEach((track) => {
         track.enabled = !isOn;
       });
+      if (stopRecording) {
+        stopRecording();
+      }
+    }
+
+     if (isOn) {
+      translator.classList.add('translator-not-available');
+    } else {
+      translator.classList.remove('translator-not-available');
+      translator.classList.remove('translator-clicked');
+      if (stopRecording) {
+        stopRecording();
+      }
     }
   });
 
@@ -329,6 +409,23 @@ function initApplication() {
 
   socket.emit("get-rooms", refreshRooms);
 }
+
+socket.on('transcription', (transcription) => {
+  console.log(transcription);
+  const chat = {
+    id,
+    nickname,
+    msg: transcription,
+  };
+  rtcPeerConnectionMap.forEach((connection) => {
+    if (connection.chatDataChannel) {
+      connection.chatDataChannel.send(JSON.stringify(chat));
+    }
+  })
+
+  onReceiveChat(chat);
+});
+
 
 socket.on("refresh-rooms", refreshRooms);
 

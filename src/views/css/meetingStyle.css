@@ -170,3 +170,11 @@ video {
     opacity: 1;
   }
 }
+
+.translator-clicked {
+  color: blue;
+}
+
+.translator-not-available {
+  display: none;
+}

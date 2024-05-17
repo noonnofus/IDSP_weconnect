@@ -2,16 +2,21 @@ import http from "http";
 import express from "express";
 import { Server as SocketIOServer } from "socket.io";
 import { instrument } from "@socket.io/admin-ui";
+import {SpeechToTextService} from "./google_stt";
+import { PassThrough } from 'stream';
 
 export class WebSocketServer {
   private app: express.Application;
   private server: http.Server;
   private io: SocketIOServer;
   private users: Map<string, any>;
+  private roomId: number = 0;
+  private STTService: SpeechToTextService;
 
   constructor(app: express.Application) {
     this.app = app;
     this.users = new Map();
+    this.STTService = new SpeechToTextService;
 
     this.server = http.createServer(this.app);
     this.io = new SocketIOServer(this.server, {
@@ -42,6 +47,15 @@ export class WebSocketServer {
 
   private initializeSocketEvents(): void {
     this.io.on("connection", (socket) => {
+      this.STTService.startRecognizeStream((transcription: string) => {
+        socket.to(String(this.roomId)).emit('transcription', transcription);
+      });
+      const recognizeStream = this.STTService.getRecognizeStream();
+
+      const passThrough = new PassThrough();
+
+      passThrough.pipe(recognizeStream);
+
       socket.on("disconnect", () => {
         if (socket.data.chatRoom) {
           if (this.getRooms().includes(socket.data.chatRoom)) {
@@ -108,11 +122,19 @@ export class WebSocketServer {
         }
       });
 
+      socket.on("audio_chunk", async (base64Audio, roomName) => {
+        console.log('roomId: ', roomName);
+        this.roomId = roomName;
+        const buffer = Buffer.from(base64Audio, 'base64');
+        passThrough.write(buffer);
+      })
+
       socket.on("leave-room", (done) => {
         const user = this.users.get(socket.data.userId);
 
         if (user && socket.data.chatRoom) {
           socket.leave(socket.data.chatRoom);
+          this.STTService.endStream();
 
           const isRoomRemoved = !this.getRooms().includes(socket.data.chatRoom);
 
