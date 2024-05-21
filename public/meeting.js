@@ -15,6 +15,7 @@ const getUrlParams = () => {
 
 let { audio: initialAudioState, video: initialVideoState, meetingId } = getUrlParams();
 
+const translator = document.querySelector('#translate');
 const rtcPeerConnectionMap = new Map();
 let id = "";
 let nickname = "";
@@ -91,6 +92,7 @@ async function makeMediaStream() {
         translator.classList.add('translator-not-available');
         translator.classList.remove('translator-clicked');
         if (stopRecording) {
+          socket.emit('stop_recording');
           stopRecording();
         }
       }
@@ -107,11 +109,10 @@ async function makeMediaStream() {
 const startRecording = (stream) => {
   try {
     const mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.start(1500);
+    mediaRecorder.start(500);
 
     mediaRecorder.addEventListener("dataavailable", async (event) => {
       const audioChunk = event.data;
-
       const arrBuffer = await audioChunk.arrayBuffer();
 
       const base64String = arrayBufferToBase64(arrBuffer);
@@ -140,12 +141,10 @@ function arrayBufferToBase64(buffer) {
 }
 
 // translation btn
-const translator = document.querySelector('#translate');
 
 translator.addEventListener('click', () => {
-  console.log('here');
-  console.log('audio State: ', initialAudioState);
   if (!translation && initialAudioState === true) {
+    socket.emit('start_recording');
     translation = true;
     translator.classList.add('translator-clicked');
     const result = startRecording(myStream);
@@ -154,12 +153,18 @@ translator.addEventListener('click', () => {
   } else {
     translator.classList.remove('translator-clicked');
     translation = false;
+    socket.emit('stop_recording');
     if (stopRecording) {
       stopRecording();
     }
   }
-})
+});
 
+socket.on('stop_recording', () => {
+  if (stopRecording) {
+    stopRecording();
+  }
+});
 
 function createRTCPeerConnection(peerId, peerNickname) {
   const myRTCPeerConnection = new RTCPeerConnection({
@@ -337,26 +342,30 @@ function initApplication() {
   chatSubmitForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const chat = {
-      id,
-      nickname,
-      msg: chatSubmitTextInput.value.trim(),
-    };
-
-    if (chat.msg) {
-      rtcPeerConnectionMap.forEach((connection) => {
-        if (connection.chatDataChannel) {
-          connection.chatDataChannel.send(JSON.stringify(chat));
-        }
-      });
-
-      onReceiveChat(chat);
-      chatSubmitForm.reset();
-
-      const chatListContainer = document.getElementById("chat_list_container");
-      chatListContainer.scrollTop = chatListContainer.scrollHeight;
-    }
+    socket.emit('chat_translation', chatSubmitTextInput.value.trim());
+    
+    socket.on('translatedChat', (originalChat, translatedText) => {
+      const chat = {
+        id,
+        nickname,
+        msg: `${originalChat} -> ${translatedText}`,
+      };
+      if (chat.msg) {
+        rtcPeerConnectionMap.forEach((connection) => {
+          if (connection.chatDataChannel) {
+            connection.chatDataChannel.send(JSON.stringify(chat));
+          }
+        });
+  
+        chatSubmitTextInput.value = "";
+        onReceiveChat(chat);
+  
+        const chatListContainer = document.getElementById("chat_list_container");
+        chatListContainer.scrollTop = chatListContainer.scrollHeight;
+      }
+    });
   });
+
 
   document.getElementById("video_on_off_button").addEventListener("click", (event) => {
     const button = event.currentTarget;
@@ -414,22 +423,35 @@ function initApplication() {
   socket.emit("get-rooms", refreshRooms);
 }
 
-socket.on('transcription', (transcription) => {
-  console.log(transcription);
-  const chat = {
-    id,
-    nickname,
-    msg: transcription,
-  };
+socket.on('transcription', async (transcription) => {
+  // calling open ai function
+  socket.emit('translation', transcription);
+});
+
+socket.on('translated', async (transcription, translatedText) => {
+  let chat;
+
+  if (translatedText !== null) {
+    chat = {
+      id,
+      nickname,
+      msg: `${transcription} -> ${translatedText}`,
+    };
+  } else {
+    chat = {
+      id,
+      nickname,
+      msg: `${transcription}`,
+    }
+  }
+
   rtcPeerConnectionMap.forEach((connection) => {
     if (connection.chatDataChannel) {
       connection.chatDataChannel.send(JSON.stringify(chat));
     }
   })
-
   onReceiveChat(chat);
-});
-
+})
 
 socket.on("refresh-rooms", refreshRooms);
 
@@ -555,3 +577,33 @@ window.onload =  async () => {
 }
 
 initApplication();
+
+
+// dropdown menu
+document.querySelectorAll('.currentLang a').forEach(function(element) {
+  element.addEventListener('click', function(e) {
+    e.preventDefault();
+    const dropdown = this.closest('.dropdown');
+    const button = dropdown.querySelector('.btn');
+    button.innerHTML = this.getAttribute('data-value');
+
+    const currentLang = this.getAttribute('data-language');
+
+    socket.emit('set_currentLang', currentLang)
+  });
+});
+
+document.querySelectorAll('.targetLang a').forEach(function(element) {
+  element.addEventListener('click', function(e) {
+    e.preventDefault();
+    const dropdown = this.closest('.dropdown');
+    const button = dropdown.querySelector('.btn');
+    button.innerHTML = this.getAttribute('data-value');
+    // this = a tag
+
+    const targetLang = this.getAttribute('data-language');
+
+    socket.emit('set_targetLang', targetLang)
+  });
+});
+
