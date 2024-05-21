@@ -4,6 +4,8 @@ import { Server as SocketIOServer } from "socket.io";
 import { instrument } from "@socket.io/admin-ui";
 import {SpeechToTextService} from "./google_stt";
 import { PassThrough } from 'stream';
+import OpenAI from "openai";
+import 'dotenv/config';
 
 export class WebSocketServer {
   private app: express.Application;
@@ -11,6 +13,8 @@ export class WebSocketServer {
   private io: SocketIOServer;
   private users: Map<string, any>;
   private roomId: number = 0;
+  private currentLang: string | null = null;
+  private targetLang: string | null = null;
   private STTService: SpeechToTextService;
 
   constructor(app: express.Application) {
@@ -47,14 +51,23 @@ export class WebSocketServer {
 
   private initializeSocketEvents(): void {
     this.io.on("connection", (socket) => {
-      this.STTService.startRecognizeStream((transcription: string) => {
-        socket.to(String(this.roomId)).emit('transcription', transcription);
-      });
-      const recognizeStream = this.STTService.getRecognizeStream();
+      const setupRecognitionStream = () => {
+        const recognizeStream = this.STTService.getRecognizeStream();
+        const passThrough = new PassThrough();
+        passThrough.pipe(recognizeStream);
 
-      const passThrough = new PassThrough();
-
-      passThrough.pipe(recognizeStream);
+        socket.on("audio_chunk", async (base64Audio, roomName) => {
+          this.roomId = roomName;
+          console.log('recording...');
+          const buffer = Buffer.from(base64Audio, 'base64');
+          passThrough.write(buffer);
+        })
+  
+        socket.on('stop_recording', () => {
+          this.STTService.endStream();
+          passThrough.end();
+        });
+      };
 
       socket.on("disconnect", () => {
         if (socket.data.chatRoom) {
@@ -122,11 +135,71 @@ export class WebSocketServer {
         }
       });
 
-      socket.on("audio_chunk", async (base64Audio, roomName) => {
-        console.log('roomId: ', roomName);
-        this.roomId = roomName;
-        const buffer = Buffer.from(base64Audio, 'base64');
-        passThrough.write(buffer);
+      socket.on('start_recording', () => {
+        this.STTService.startRecognizeStream((transcription: string) => {
+          console.log('transcription: ', transcription);
+          socket.to(String(this.roomId)).emit('transcription', transcription);
+        });
+        setupRecognitionStream();
+      });
+
+      socket.on('set_currentLang', (lang) => {
+        console.log(lang);
+        this.currentLang = lang;
+        this.STTService.setCurrentLang(lang);
+        this.STTService.restartStream();
+      })
+      
+      socket.on('set_targetLang', (lang) => {
+        this.targetLang = lang;
+      })
+
+      socket.on('translation', async (text: string) => {
+        if (this.currentLang !== null && this.targetLang !== null && this.currentLang !== this.targetLang) {
+          const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+          });
+
+          const messages = [
+            { "role": "system", "content": `You will be provided with a sentence in ${this.currentLang}, and your task is to translate it into ${this.targetLang}.` },
+            { "role": "user", "content": `${text}` },
+          ];
+  
+          const res = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            // @ts-ignore
+            messages: messages,
+          })
+  
+          const translatedText = res.choices[0]?.message?.content?.trim();
+          socket.emit('translated', text, translatedText);
+        } else {
+          socket.emit('translated', text, null);
+        }
+      })
+      
+      socket.on('chat_translation', async (text: string) => {
+        if (this.currentLang !== null && this.targetLang !== null && this.currentLang !== this.targetLang) {
+          const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+          });
+
+          const messages = [
+            { "role": "system", "content": `You will be provided with a sentence in ${this.currentLang}, and your task is to translate it into ${this.targetLang}.` },
+            { "role": "user", "content": `${text}` },
+          ];
+
+          const res = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            // @ts-ignore
+            messages: messages,
+          })
+  
+          const translatedText = res.choices[0]?.message?.content?.trim();
+          socket.emit('translatedChat', text, translatedText);
+        } else {
+          socket.emit('translatedChat', text, null);
+        }
       })
 
       socket.on("leave-room", (done) => {

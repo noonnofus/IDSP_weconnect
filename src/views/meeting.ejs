@@ -1,78 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Document</title>
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    />
-    <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
-    rel="stylesheet"
-    />
-    <!--<link rel="stylesheet" href="style.css" /> -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" />
-    <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.8.0/mvp.css">
-    <link rel="stylesheet" href="meetingStyle.css" />
-  </head>
-  <body>
-    <header><%- include("./homepage_header.ejs") %></header>
-    <div class ="container">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+  <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.8.0/mvp.css">
+  <link rel="stylesheet" href="meetingStyle.css">
+</head>
+<body>
+  <header><%- include("./homepage_header.ejs") %></header>
+  <div class="container">
     <div class="chat-room">
-        <h1 id="app_title"></h1>
-        <div id="bo_v_btn_group" class="clearfix text-center py-4 px-3 en">
-          <div class="btn-group btn-group-lg" role="group">
-              <button type="button" class="btn btn-basic" data-toggle="tooltip" data-placement="top" data-original-title="click to copy data to the Clipboard " id="share_url">
-                      <i class="fa fa-clipboard" aria-hidden="true"></i>
-                      <span class="sr-only">copy room ID</span>
-              </button>
-              <input type="text" name="copy roomid"  id="share-url-input" readonly>
-          </div>
+      <h1 id="app_title"></h1>
+      <div id="bo_v_btn_group" class="clearfix text-center py-4 px-3 en">
+        <div class="btn-group btn-group-lg" role="group">
+          <button type="button" class="btn btn-basic" data-toggle="tooltip" data-placement="top" data-original-title="click to copy data to the Clipboard " id="share_url">
+            <i class="fa fa-clipboard" aria-hidden="true"></i>
+            <span class="sr-only">copy room ID</span>
+          </button>
+          <input type="text" name="copy roomid" id="share-url-input" readonly>
+        </div>
         <div id="chat_controller" class="chat-controller" style="display: none;">
           <i id="video_on_off_button" class="ri-camera-fill chat-controller-toggle on"></i>
           <i id="mic_on_off_button" class="ri-mic-off-fill chat-controller-toggle"></i>
-          <i id="translate"
-          class="bi bi-translate"></i>
+          <i id="translate" class="bi bi-translate"></i>
         </div>
-      <hr class="chat-room-divider">
-      <main>
-        <div id="chat_room_form_container" class="chat-room-form-container">
-              <form id="chat_room_form" class="chat-room-form">
-                <input class="chat-room-text-input" placeholder="Room Name">
-                <button class="chat-room-create-button btn btn-primary">Join</button>
-              </form>
+        <hr class="chat-room-divider">
+        <main>
+          <div id="chat_room_form_container" class="chat-room-form-container">
+            <form id="chat_room_form" class="chat-room-form">
+              <input class="chat-room-text-input" placeholder="Room Name">
+              <button class="chat-room-create-button btn btn-primary">Join</button>
+            </form>
+          </div>
+          <div id="chat_room_list_container" class="chat-room-list-container"></div>
+          <div id="face_player_container" class="face-player-container" style="display: none;">
+            <div class="face-player-border">
+              <video id="my_face" class="face-player mirror-player" autoplay playsinline muted></video>
+              <div class="face-player-caption">&nbsp;</div>
             </div>
-            <div id="chat_room_list_container" class="chat-room-list-container"></div>
-            <div id="face_player_container" class="face-player-container" style="display: none;">
-              <div class="face-player-border">
-                <video id="my_face" class="face-player mirror-player" autoplay playsinline muted></video>
-                <div class="face-player-caption">&nbsp;</div>
+          </div>
+
+          <div class="container mt-5">
+            <div class="custom-container row justify-content-center">
+              <div class="col-12 col-md-3 mb-md-0 text-center">
+                <div class="dropdown">
+                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    Language 1
+                  </button>
+                  <ul class="dropdown-menu currentLang" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item" id="translate-en" data-value="English" data-language="en-US">English</a></li>
+                    <li><a class="dropdown-item" id="translate-fr" data-value="Français" data-language="fr-FR">Français</a></li>
+                    <li><a class="dropdown-item" id="translate-kr" data-value="한국어" data-language="ko-KR">한국어</a></li>
+                    <li><a class="dropdown-item" id="translate-hant" data-value="繁體中文" data-language="zh-TW">繁體中文</a></li>
+                    <li><a class="dropdown-item" id="translate-hans" data-value="简体中文" data-language="zh-CN">简体中文</a></li>
+                    <li><a class="dropdown-item" id="translate-jp" data-value="日本語" data-language="ja-JP">日本語</a></li>
+                  </ul>
+                </div>
+              </div>
+      
+              <div class="col-12 col-md-3 mb-md-0 text-center">
+                <div class="img-container">
+                  <img src="switch_btn.svg" class="img-fluid" alt="switch_btn">
+                </div>
+              </div>
+      
+              <div class="col-12 col-md-3 text-center">
+                <div class="dropdown">
+                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                    Language 2
+                  </button>
+                  <ul class="dropdown-menu targetLang" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item" id="translate-en" data-value="English" data-language="en">English</a></li>
+                    <li><a class="dropdown-item" id="translate-fr" data-value="Français" data-language="fr">Français</a></li>
+                    <li><a class="dropdown-item" id="translate-kr" data-value="한국어" data-language="ko">한국어</a></li>
+                    <li><a class="dropdown-item" id="translate-hant" data-value="繁體中文" data-language="zh-Hant">繁體中文</a></li>
+                    <li><a class="dropdown-item" id="translate-hans" data-value="简体中文" data-language="zh-Hans">简体中文</a></li>
+                    <li><a class="dropdown-item" id="translate-jp" data-value="日本語" data-language="ja">日本語</a></li>
+                  </ul>
+                </div>
               </div>
             </div>
-            <div id="chat_list_container" class="chat-list-container" style="display: none;">
-              <ul class="chat-list"></ul>
-            </div>
-            <section id="chat_form_container" class="chat-form-container" style="display: none;">
-              <form id="nickname_form" class="nickname-form">
-                <input class="nickname-text-input" placeholder="Nickname" maxlength="15">
-                <button class="nickname-save-button btn btn-secondary">Save</button>
-              </form>
-              <form id="chat_submit_form" class="chat-submit-form">
-                <input class="chat-submit-text-input" placeholder="Chat" maxlength="5000">
-                <button class="chat-submit-send-button btn btn-success">Send</button>
-              </form>
-            </section>
-          </main>
-        </div>
+          </div>
+
+          <div id="chat_list_container" class="chat-list-container" style="display: none;">
+            <ul class="chat-list"></ul>
+          </div>
+          <section id="chat_form_container" class="chat-form-container" style="display: none;">
+            <form id="nickname_form" class="nickname-form">
+              <input class="nickname-text-input" placeholder="Nickname" maxlength="15">
+              <button class="nickname-save-button btn btn-secondary">Save</button>
+            </form>
+            <form id="chat_submit_form" class="chat-submit-form">
+              <input class="chat-submit-text-input" placeholder="Chat" maxlength="5000">
+              <button class="chat-submit-send-button btn btn-success">Send</button>
+            </form>
+          </section>
+        </main>
       </div>
-      <script src="/socket.io/socket.io.js"></script>
-      <script src="meeting.js"></script>
-      <footer hidden ><%- include("./homepage_footer.ejs") %></footer>
-  </body>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="meeting.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <footer hidden ><%- include("./homepage_footer.ejs") %></footer>
+</body>
 </html>
