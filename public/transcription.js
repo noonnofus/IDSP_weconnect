@@ -6,7 +6,7 @@ async function load() {
     const transcriptions = await getTranscriptionByHistoryId(historyId);
     console.log(transcriptions);
 }
-
+ 
 load();
 
 async function getTranscriptionByHistoryId(historyId) {
