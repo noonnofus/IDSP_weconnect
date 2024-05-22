@@ -20,6 +20,7 @@ class MeetingController implements Controller {
     this.router.post(`${this.path}validMeetingId`, this.validMeetingId);
     this.router.post(`${this.path}getMeetingRoom`, this.getMeetingRoom);
     this.router.post(`${this.path}joinMeeting`, this.joinMeeting);
+    this.router.post(`${this.path}addMsgToHistory`, this.addMsgToHistory);
   }
   private getHomepage(req: Request, res: Response) {
     //console.log(req.session.id);
@@ -45,29 +46,49 @@ class MeetingController implements Controller {
   }
 
   private createMeetingRoom = async (req: Request, res: Response) => {
-    const meetingId = req.body.meetingId;
-    const audio = req.body.audio;
-    const video = req.body.video;
-    //@ts-ignore
-    const currentUser = req.session.user;
-    const username = currentUser.username;
+    try {
+      const meetingId = req.body.meetingId;
+      const audio = req.body.audio;
+      const video = req.body.video;
+      //@ts-ignore
+      const currentUser = req.session.user;
+      const username = currentUser.username;
+  
+      const createing = await this.service.createMeetingRoom(
+        Number(meetingId),
+        Number(currentUser.userId),
+        username
+      );
+      console.log(createing);
 
-    const createing = await this.service.createMeetingRoom(
-      Number(meetingId),
-      Number(currentUser.userId),
-      username
-    );
-    console.log(createing);
-    res
-      .status(200)
-      .redirect(`meeting?meetingId=${meetingId}&audio=${audio}&video=${video}`);
+      const meetingHistory = await this.service.createMettingHistory(currentUser.userId, String(meetingId));
+
+      // @ts-ignore
+      req.session.history = meetingHistory.historyId;
+  
+      // @ts-ignore
+      await this.service.addParticipant(meetingHistory.historyId, currentUser.userId);
+  
+      res
+        .status(200)
+        .redirect(`meeting?meetingId=${meetingId}&audio=${audio}&video=${video}`);
+    }
+    catch(error) {
+      console.error(error);
+    }
   };
 
-  private joinMeeting(req: Request, res: Response) {
+  private joinMeeting = async(req: Request, res: Response) => {
     const meetingId = req.body.meetingId;
     const audio = req.body.audio;
     const video = req.body.video;
-    //@ts-ignore
+    // @ts-ignore
+    const currentUser = req.session.user;
+
+    const meetingHistory = await this.service.getHistoryIdByMeetingId(String(meetingId));
+
+    // @ts-ignore
+    await this.service.addParticipant(meetingHistory.historyId, currentUser.userId);
 
     res
       .status(200)
@@ -75,9 +96,31 @@ class MeetingController implements Controller {
     //res.status(200).render("meeting");
   }
 
-    private makeRoom(req: Request, res: Response) {
-        res.status(200).render("meeting");
+  private makeRoom(req: Request, res: Response) {
+      res.status(200).render("meeting");
+  }
+  
+  private addMsgToHistory = async (req: Request, res: Response) => {
+    const text = req.body.text;
+    // @ts-ignore
+    const historyId = req.session.history;
+    // @ts-ignore
+    const user = req.session.user;
+    const meetingId = req.body.meetingId;
+
+    if (historyId === undefined) {
+      const history = await this.service.getHistoryIdByMeetingId(meetingId);
+      if (history !== undefined) {
+        await this.service.addMsgToHistory(text, user.userId, history.historyId);
+      }
+    } else {
+      await this.service.addMsgToHistory(text, user.userId, historyId);
     }
+
+    res.status(200).json({
+      success: true,
+    })
+  }
 }
 
 export default MeetingController;

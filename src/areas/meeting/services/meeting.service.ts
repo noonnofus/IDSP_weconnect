@@ -1,4 +1,4 @@
-import { tb_meetingroom } from "@prisma/client";
+import { tb_meetingroom, tb_history, tb_participant } from "@prisma/client";
 import DBClient from "../../../prisma";
 import { IMeeting } from "./Imeeting.service";
 
@@ -38,9 +38,60 @@ export class MeetingService implements IMeeting {
                 }
             });
             return meeting;
-            
         } catch (err) {
             throw new Error("Failed to create meeting room");
+        }
+    }
+
+    async createMettingHistory(userId: number, roomId: string): Promise<tb_history | Error> {
+        try {
+            const history = await this._db.prisma.tb_history.create({
+                data: {
+                    host_userId: userId,
+                    roomId: roomId,
+                }
+            })
+            return history;
+        } catch(error) {
+            throw new Error("Failed to create meeting history");
+        }
+    }
+
+    async addParticipant(historyId: number, userId: number): Promise<tb_participant | Error> {
+        try {
+            const participant = await this._db.prisma.tb_participant.create({
+                data: {
+                    history_id: historyId,
+                    participant_userId: userId,
+                }
+            })
+            return participant;
+        }
+        catch (error) {
+            throw new Error("Failed to add user as a participant");
+        }
+    }
+
+    async addMsgToHistory(text: string, userId: number, historyId: number): Promise<void> {
+        await this._db.prisma.tb_transcription.create({
+            data: {
+                historyId: historyId,
+                senderId: userId,
+                message: text,
+            }
+        })
+    }
+
+    async getHistoryIdByMeetingId(meetingId: string): Promise<tb_history | undefined> {
+        const result = await this._db.prisma.tb_history.findFirst({
+            where: {
+                roomId: meetingId,
+            }
+        })
+        if (result) {
+            return result;
+        } else {
+            return undefined;
         }
     }
 }

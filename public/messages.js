@@ -54,8 +54,13 @@ function changeDateFormat(dateTime) {
         
         if (hourCheck === true) {
             const hoursFormat = hours - 12;
-            const date = `${hoursFormat}:${minutes} PM`;
-            return date;
+            if (Number(hours) === 12) {
+                const date = `12:${minutes} PM`;
+                return date;
+            } else {
+                const date = `${hoursFormat}:${minutes} PM`;
+                return date;
+            }
         } else {
             const date = `${hours}:${minutes}AM`;
             return date;

@@ -339,33 +339,41 @@ function initApplication() {
     });
   });
 
-  chatSubmitForm.addEventListener("submit", (event) => {
+  chatSubmitForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    socket.emit('chat_translation', chatSubmitTextInput.value.trim());
-    
-    socket.on('translatedChat', (originalChat, translatedText) => {
-      const chat = {
-        id,
-        nickname,
-        msg: `${originalChat} -> ${translatedText}`,
-      };
-      if (chat.msg) {
-        rtcPeerConnectionMap.forEach((connection) => {
-          if (connection.chatDataChannel) {
-            connection.chatDataChannel.send(JSON.stringify(chat));
-          }
-        });
-  
-        chatSubmitTextInput.value = "";
-        onReceiveChat(chat);
-  
-        const chatListContainer = document.getElementById("chat_list_container");
-        chatListContainer.scrollTop = chatListContainer.scrollHeight;
-      }
-    });
+    const text = chatSubmitTextInput.value.trim()
+
+    const result = await addMsgToHistory(text, meetingId);
+    if (result.success === true) {
+      socket.emit('chat_translation', text);
+    }
   });
 
+  socket.on('translatedChat', async (originalChat, translatedText) => {
+    // call function to add originalchat to db here.
+
+    console.log('translated chat: ', translatedText);
+    const chat = {
+      id,
+      nickname,
+      msg: `${originalChat} -> ${translatedText}`,
+    };
+
+    if (chat.msg) {
+      rtcPeerConnectionMap.forEach((connection) => {
+        if (connection.chatDataChannel) {
+          connection.chatDataChannel.send(JSON.stringify(chat));
+        }
+      });
+
+      onReceiveChat(chat);
+      chatSubmitTextInput.value = "";
+
+      const chatListContainer = document.getElementById("chat_list_container");
+      chatListContainer.scrollTop = chatListContainer.scrollHeight;
+    }
+  });
 
   document.getElementById("video_on_off_button").addEventListener("click", (event) => {
     const button = event.currentTarget;
@@ -607,3 +615,14 @@ document.querySelectorAll('.targetLang a').forEach(function(element) {
   });
 });
 
+async function addMsgToHistory(text, meetingId) {
+  const res = await fetch('/addMsgToHistory', {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text, meetingId }),
+  })
+  const result = res.json();
+  return result;
+}
