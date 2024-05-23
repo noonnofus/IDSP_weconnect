@@ -3,29 +3,12 @@ import session from "express-session";
 import Controller from "./interfaces/controller.interface";
 import dotenv from "dotenv";
 import path from "node:path";
-import database from "../databaseConnection";
 import http from "http";
 import WebSocket from "ws";
 import { Server as SocketIOServer } from "socket.io";
+import { WebSocketServer } from "./webSocketServer";
 import MessageController from "./areas/message/controller/message.controller";
 import { MessageService } from "./areas/message/services/message.service";
-
-async function printMySQLVersion() {
-  let sqlQuery = `
-		SHOW VARIABLES LIKE 'version';
-	`;
-
-  try {
-    const results = await database.query(sqlQuery);
-    console.log("Successfully connected to MySQL");
-    console.log(results[0]);
-    return true;
-  } catch (err) {
-    console.log("Error getting version from MySQL");
-    return false;
-  }
-}
-const success = printMySQLVersion();
 
 class App {
   public application: express.Application;
@@ -60,7 +43,6 @@ class App {
     });
     this.application.use(sessionMiddleware);
     this.application.set("view engine", "ejs");
-    //this.application.set("views", path.join(__dirname, "views"));
     this.application.set("views", path.join(__dirname, "views"));
   }
 
@@ -84,70 +66,9 @@ class App {
     );
   }
 
-
-
-  public startWebSocketServer(): void {
-    if (this.server) return; // 이미 서버가 실행 중인 경우 중복 생성 방지
-
-    this.server = http.createServer(this.application);
-    this.io = new SocketIOServer(this.server);
-
-    this.io.on("connection", async (socket) => {
-      console.log("Socket.IO client connected");
-      
-      socket.onAny((event) => {
-        console.log(`socket Event : ${event}`);
-      }); // 모든 이벤트를 로깅
-
-      socket.on("join_room", (roomname) => {
-        socket.join(roomname);
-        socket.to(roomname).emit("welcome");
-      });
-
-      socket.on("offer", (offer, roomName) => {
-        socket.to(roomName).emit("offer", offer);
-      });
-
-      socket.on("answer", (answer, roomName) => {
-        socket.to(roomName).emit("answer", answer);
-      });
-
-      socket.on("ice", (ice, roomName) => {
-        socket.to(roomName).emit("ice", ice);
-      });     
-      //chat
-      socket.on("send_roomId", (data) => {
-        // @ts-ignore
-        this.io.to(data.roomId).emit(data);
-      })
-
-      socket.on("enter_room", async (roomId) => {
-        try {
-          const sortedId = roomId.split('').sort().join('');
-          socket.join(sortedId);
-        } catch (err) {
-          console.error(err);
-        }
-      });
-      
-
-      socket.on("disconnecting", () => {
-        socket.rooms.forEach((room) => {
-          socket.to(room).emit("bye");
-        });
-      });
-
-
-      socket.on("new_message", (msg, roomId, sender, done) => {
-        const sortedId = roomId.split('').sort().join('');
-        socket.to(sortedId).emit("new_message", msg, sender);
-        done();
-      });
-    });
-
-    this.server.listen(this.port, () => {
-      console.log(`HTTP and Socket.IO server running on port ${this.port}`);
-    });
+  public webSocketServer(): void {
+    const webSocketServer = new WebSocketServer(this.application);
+    webSocketServer.listen(3000);
   }
 }
 

@@ -48,14 +48,17 @@ model tb_room {
 }
 
 model tb_user {
-  userId                              Int              @id @default(autoincrement())
-  email                               String           @unique(map: "uniqueEmail") @db.VarChar(100)
-  password                            String           @db.VarChar(100)
-  username                            String           @db.VarChar(45)
-  profilePic                          String           @default("profile_default_img.jpeg")
+  userId                              Int                @id @default(autoincrement())
+  email                               String             @unique(map: "uniqueEmail") @db.VarChar(100)
+  password                            String             @db.VarChar(100)
+  username                            String             @db.VarChar(45)
+  profilePic                          String             @default("profile_default_img.jpeg")
+  tb_history                          tb_history[]
   tb_meetingroom                      tb_meetingroom[]
-  tb_room_tb_room_receiverIdTotb_user tb_room[]        @relation("tb_room_receiverIdTotb_user")
-  tb_room_tb_room_senderIdTotb_user   tb_room[]        @relation("tb_room_senderIdTotb_user")
+  tb_participant                      tb_participant[]
+  tb_room_tb_room_receiverIdTotb_user tb_room[]          @relation("tb_room_receiverIdTotb_user")
+  tb_room_tb_room_senderIdTotb_user   tb_room[]          @relation("tb_room_senderIdTotb_user")
+  tb_transcription                    tb_transcription[]
   tb_user_role                        tb_user_role[]
 }
 
@@ -68,4 +71,40 @@ model tb_user_role {
 
   @@index([roldId], map: "roldId_idx")
   @@index([userId], map: "userId_idx")
+}
+
+model tb_history {
+  historyId        Int                @id @default(autoincrement())
+  start_time       DateTime           @default(now()) @db.DateTime(0)
+  last_message     String?            @db.VarChar(50)
+  host_userId      Int
+  roomId           String             @db.VarChar(15)
+  tb_user          tb_user            @relation(fields: [host_userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "host_user_id")
+  tb_participant   tb_participant[]
+  tb_transcription tb_transcription[]
+
+  @@index([host_userId], map: "host_user_id_idx")
+}
+
+model tb_participant {
+  participant_id     Int        @id @default(autoincrement())
+  history_id         Int
+  participant_userId Int
+  tb_history         tb_history @relation(fields: [history_id], references: [historyId], onDelete: NoAction, onUpdate: NoAction, map: "participant_historyId")
+  tb_user            tb_user    @relation(fields: [participant_userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "participant_userId")
+
+  @@index([history_id], map: "participant_historyId_idx")
+  @@index([participant_userId], map: "participant_userId_idx")
+}
+
+model tb_transcription {
+  transcriptId Int        @id @default(autoincrement())
+  historyId    Int
+  senderId     Int
+  message      String     @db.Text
+  tb_history   tb_history @relation(fields: [historyId], references: [historyId], onDelete: NoAction, onUpdate: NoAction, map: "transcription_historyId")
+  tb_user      tb_user    @relation(fields: [senderId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "transcription_senderId")
+
+  @@index([historyId], map: "historyId_idx")
+  @@index([senderId], map: "transcription_senderId_idx")
 }

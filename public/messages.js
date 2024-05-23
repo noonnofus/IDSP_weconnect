@@ -1,8 +1,3 @@
-// 1. session가져오기
-// 2. 가져온 session으로 room table의 senderId나 receiverId가 일치하는 데이터를 다 가져옴
-// 3. 가져온 룸테이블 데이터를 루프 돌려서 div 만든 후에 last_time, last_msg, 그리고 상대의 유저네임 ejs에 집어넣기.
-// 이거 하기!!(유저 아이디는 갔고 이제 그걸로 룸아이디 찾아야함!!)
-
 async function getUser() {
     const user = await getUserSession();
     const userData = JSON.parse(user.data); // user obj from session
@@ -46,7 +41,6 @@ async function showAllRooms(currentUserId, rooms) {
 function changeDateFormat(dateTime) {
     const aDate = new Date(dateTime);
     const currentTime = new Date();
-
     const isToday = aDate.toDateString() === currentTime.toDateString();
 
     const timeDiff = currentTime.getTime() - aDate.getTime();
@@ -60,10 +54,15 @@ function changeDateFormat(dateTime) {
         
         if (hourCheck === true) {
             const hoursFormat = hours - 12;
-            const date = `${hoursFormat}:${minutes} PM`;
-            return date;
+            if (Number(hours) === 12) {
+                const date = `12:${minutes} PM`;
+                return date;
+            } else {
+                const date = `${hoursFormat}:${minutes} PM`;
+                return date;
+            }
         } else {
-            const date = `${hoursFormat}:${minutes}AM`;
+            const date = `${hours}:${minutes}AM`;
             return date;
         }
 

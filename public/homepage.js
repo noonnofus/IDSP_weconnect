@@ -21,7 +21,7 @@ async function generateRandomId() {
         result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     const res = await validMeetingRoom(result);
-    if(res) { 
+    if(!res) { 
         const inputField = document.getElementById('meetingIdInput');
         const labelField = document.getElementById('lb_meetingId');
         inputField.value = result;
@@ -30,4 +30,7 @@ async function generateRandomId() {
         console.log('Error: Invalid Meeting ID');
     }
 }
+
+
+
 document.addEventListener("DOMContentLoaded", generateRandomId);
