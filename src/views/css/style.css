@@ -333,6 +333,7 @@ div.notification.me-3 {
 }
 
 .prelog {
+    min-height: 100vh;
     background: linear-gradient( #2277EE, #7722BB);
 }
 
@@ -695,4 +696,199 @@ footer {
     overflow: auto;
     /* display:flex; */
     flex-direction: column-reverse;
+}
+
+@media (max-width: 768px) {
+    /* Adjust font sizes and padding for smaller screens */
+    .header {
+        padding: 10px;
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+    .back {
+        font-size: 1.2rem;
+    }
+
+    .setting {
+        font-size: 0.9rem;
+    }
+
+    .bi-chevron-left {
+        font-size: 28px;
+        line-height: 38px;
+    }
+
+    .logo-container {
+        margin-top: 5vw;
+    }
+
+    .logo1 {
+        width: 30vw;
+    }
+
+    .login-text {
+        font-size: 5vw;
+        margin-bottom: 10px;
+    }
+
+    .external-login {
+        font-size: 4vw;
+    }
+
+    .signup-card {
+        width: 90%;
+        height: 40px;
+        margin-top: 10vw;
+    }
+
+    .signup-card span {
+        font-size: 12px;
+    }
+
+    .custom-footer {
+        height: 70px;
+        line-height: 70px;
+        padding-right: 10px;
+    }
+
+    .footer-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.2rem;
+    }
+
+    .footer-text span {
+        font-size: 12px;
+    }
+
+    .homepage-header {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .navbar-nav .nav-link, .navbar-nav .nav-text {
+        font-size: 10px;
+    }
+
+    .navbar-nav .nav-item {
+        margin-right: 10px;
+        margin-left: 10px;
+    }
+
+    .btn p {
+        font-size: 14px;
+    }
+
+    .btn-icon {
+        height: 20px;
+        width: 20px;
+    }
+
+    .modal-dialog {
+        max-height: 80%;
+    }
+
+    .prelog-logo {
+        height: 80px;
+        padding-top: 150px;
+        padding-bottom: 20px;
+    }
+
+    .prelog-text {
+        font-size: 2vw;
+        margin-top: 60px;
+        margin-bottom: 200px;
+        text-align: center;
+    }
+
+    .prelog-btn-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .prelog-btn {
+        padding: 10px 20px;
+        margin: 10px 0;
+        width: 80%; 
+        max-width: 300px; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .prelog-btm-text {
+        font-size: 1vw;
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .prelog-signup {
+        font-size: 0.9vw;
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    .settings-text {
+        font-size: 3vw;
+        margin-bottom: 10px;
+    }
+
+    .settings-group button {
+        width: 90%;
+    }
+
+    .msg-container {
+        margin: 8px;
+    }
+
+    .chattingRoom {
+        height: 60px;
+        padding: 5px;
+    }
+
+    .chattingProfileImg {
+        width: 40px;
+    }
+
+    .chattingRoomDate {
+        font-size: 10px;
+    }
+
+    .chattingRoomSemi p {
+        font-size: 12px;
+    }
+
+    .chat-input {
+        bottom: 70px;
+    }
+
+    .chat-input {
+        height: 35px;
+    }
+
+    .chat-sender,
+    .chat-receiver {
+        margin-bottom: 3px;
+    }
+
+    .chat-sender p,
+    .chat-receiver p {
+        margin: 8px;
+    }
+
+    .chat-sender p {
+        margin-left: 3px;
+    }
+
+    .chat-receiver p {
+        margin-right: 3px;
+    }
+
+    .chat-section {
+        height: 500px;
+    }
 }
