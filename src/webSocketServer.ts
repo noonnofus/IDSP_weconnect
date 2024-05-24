@@ -163,9 +163,10 @@ export class WebSocketServer {
           const openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
           });
+          console.log(text);
 
           const messages = [
-            { "role": "system", "content": `You will be provided with a sentence in ${this.currentLang}, and your task is to translate it into ${this.targetLang}.` },
+            { "role": "system", "content": `You will be provided with a sentence in any language, and your task is to translate it into ${this.targetLang}.` },
             { "role": "user", "content": `${text}` },
           ];
   
@@ -183,13 +184,14 @@ export class WebSocketServer {
       })
       
       socket.on('chat_translation', async (text: string) => {
+        console.log('text from socket: ', text);
         if (this.currentLang !== null && this.targetLang !== null && this.currentLang !== this.targetLang) {
           const openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
           });
 
           const messages = [
-            { "role": "system", "content": `You will be provided with a sentence in ${this.currentLang}, and your task is to translate it into ${this.targetLang}.` },
+            { "role": "system", "content": `You will be provided with a sentence in any language, and your task is to translate it into ${this.targetLang}.` },
             { "role": "user", "content": `${text}` },
           ];
 
@@ -198,8 +200,10 @@ export class WebSocketServer {
             // @ts-ignore
             messages: messages,
           })
+          console.log(res);
   
           const translatedText = res.choices[0]?.message?.content?.trim();
+          console.log(translatedText);
           socket.emit('translatedChat', text, translatedText);
         } else {
           socket.emit('translatedChat', text, null);

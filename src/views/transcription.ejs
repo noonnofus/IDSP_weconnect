@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>weconnect-transcription</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="transcriptStyle.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <%- include("./homepage_header.ejs") %>
+    </header>
+
+    <div class="transcript-container m-3">
+        <div class="login-text">Transcript History</div>
+        <div>
+          <p>PDF</p>
+          <img class="transcript_download" src="transcript_download.svg" alt="download_btn">
+        </div>
+    </div>
+    
+    <div class="chatting_receiver_container">
+        <div class="chatting_receiver">
+            
+        </div>
+    </div>
+    
+    <div class="line-container">
+        <div class="chatting_line"></div>
+    </div>
+
+    <div class="container">
+      <div class="translate-text">Translate to: </div>
+          <div class="col-12 col-md-3 text-center">
+            <div class="dropdown">
+              <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                Language
+              </button>
+              <ul class="dropdown-menu targetLang" aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item" id="translate-en" data-value="English" data-language="en">English</a></li>
+                <li><a class="dropdown-item" id="translate-fr" data-value="Français" data-language="fr">Français</a></li>
+                <li><a class="dropdown-item" id="translate-kr" data-value="한국어" data-language="ko">한국어</a></li>
+                <li><a class="dropdown-item" id="translate-hant" data-value="繁體中文" data-language="zh-Hant">繁體中文</a></li>
+                <li><a class="dropdown-item" id="translate-hans" data-value="简体中文" data-language="zh-Hans">简体中文</a></li>
+                <li><a class="dropdown-item" id="translate-jp" data-value="日本語" data-language="ja">日本語</a></li>
+              </ul>
+            </div>
+          </div>
+          <button class="col-10 col-md-3 mb-md-0 text-center translate-btn">
+            <div class="img-container">
+              <img type="button" src="transcript_switch_btn.svg" class="img-fluid translateImg" alt="switch_btn">
+            </div>
+          </button>
+        </div>
+      </div>
+
+    <div class="transcript-section">
+        <!-- where transcriptions go -->
+    </div>
+
+    <footer>
+        <%- include("./homepage_footer.ejs") %>
+    </footer>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.4/vfs_fonts.js"></script>
+    <script src="transcription.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

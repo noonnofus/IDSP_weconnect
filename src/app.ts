@@ -3,7 +3,6 @@ import session from "express-session";
 import Controller from "./interfaces/controller.interface";
 import dotenv from "dotenv";
 import path from "node:path";
-import database from "../databaseConnection";
 import http from "http";
 import WebSocket from "ws";
 import { Server as SocketIOServer } from "socket.io";
@@ -45,7 +44,6 @@ class App {
     });
     this.application.use(sessionMiddleware);
     this.application.set("view engine", "ejs");
-    //this.application.set("views", path.join(__dirname, "views"));
     this.application.set("views", path.join(__dirname, "views"));
   }
 
