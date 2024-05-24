@@ -45,11 +45,11 @@ export class SpeechToTextService {
       this.recognizeStream = this.client
         .streamingRecognize({
           config: {
-            encoding: 'WEBM_OPUS',
-            sampleRateHertz: 48000,
+            encoding: 'LINEAR16', // 원본 오디오 형식에 맞게 변경
+            sampleRateHertz: 16000,
             languageCode: this.currentLang,
             enableSpeakerDiarization: true,
-            model: 'latest_long',
+            model: 'default',
           },
           interimResults: true,
         })

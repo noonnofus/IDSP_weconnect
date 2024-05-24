@@ -63,17 +63,33 @@ class MeetingController implements Controller {
       .redirect(`meeting?meetingId=${meetingId}&audio=${audio}&video=${video}`);
   };
 
-  private joinMeeting(req: Request, res: Response) {
+  public joinMeeting = async (req: Request, res: Response): Promise<void> => {
+    console.log("hit join meeting");
     const meetingId = req.body.meetingId;
     const audio = req.body.audio;
     const video = req.body.video;
-    //@ts-ignore
 
-    res
-      .status(200)
-      .redirect(`meeting?meetingId=${meetingId}&audio=${audio}&video=${video}`);
-    //res.status(200).render("meeting");
-  }
+    console.log(meetingId);
+    console.log(audio);
+    console.log(video);
+
+    try {
+        const isMeetingRoomExist = await this.service.getMeetingById(Number(meetingId));
+        console.log(isMeetingRoomExist);
+
+        if (isMeetingRoomExist === null) {
+            res.status(200).json({ success: false, message: "Meeting room does not exist" });
+        } else {
+            res.status(200).redirect(`meeting?meetingId=${meetingId}&audio=${audio}&video=${video}`);
+        }
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(500).json({ success: false, message: err.message });
+        } else {
+            res.status(500).json({ success: false, message: "Unknown error occurred" });
+        }
+    }
+}
 
     private makeRoom(req: Request, res: Response) {
         res.status(200).render("meeting");

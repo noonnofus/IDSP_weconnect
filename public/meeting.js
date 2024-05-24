@@ -7,15 +7,19 @@ const STORAGE_KEY = Object.freeze({
 const getUrlParams = () => {
   const params = new URLSearchParams(window.location.search);
   return {
-    audio: params.get('audio') === 'on',
-    video: params.get('video') === 'on',
-    meetingId: params.get('meetingId'),
+    audio: params.get("audio") === "on",
+    video: params.get("video") === "on",
+    meetingId: params.get("meetingId"),
   };
 };
 
-let { audio: initialAudioState, video: initialVideoState, meetingId } = getUrlParams();
+let {
+  audio: initialAudioState,
+  video: initialVideoState,
+  meetingId,
+} = getUrlParams();
 
-const translator = document.querySelector('#translate');
+const translator = document.querySelector("#translate");
 const rtcPeerConnectionMap = new Map();
 let id = "";
 let nickname = "";
@@ -64,12 +68,20 @@ async function makeMediaStream() {
       track.enabled = initialVideoState;
       if (initialVideoState) {
         document.getElementById("video_on_off_button").classList.add("on");
-        document.getElementById("video_on_off_button").classList.add("ri-camera-fill");
-        document.getElementById("video_on_off_button").classList.remove("ri-camera-off-fill");
+        document
+          .getElementById("video_on_off_button")
+          .classList.add("ri-camera-fill");
+        document
+          .getElementById("video_on_off_button")
+          .classList.remove("ri-camera-off-fill");
       } else {
         document.getElementById("video_on_off_button").classList.remove("on");
-        document.getElementById("video_on_off_button").classList.remove("ri-camera-fill");
-        document.getElementById("video_on_off_button").classList.add("ri-camera-off-fill");
+        document
+          .getElementById("video_on_off_button")
+          .classList.remove("ri-camera-fill");
+        document
+          .getElementById("video_on_off_button")
+          .classList.add("ri-camera-off-fill");
       }
     });
 
@@ -78,21 +90,29 @@ async function makeMediaStream() {
       track.enabled = initialAudioState;
       if (initialAudioState) {
         document.getElementById("mic_on_off_button").classList.add("on");
-        document.getElementById("mic_on_off_button").classList.add("ri-mic-fill");
-        document.getElementById("mic_on_off_button").classList.remove("ri-mic-off-fill");
+        document
+          .getElementById("mic_on_off_button")
+          .classList.add("ri-mic-fill");
+        document
+          .getElementById("mic_on_off_button")
+          .classList.remove("ri-mic-off-fill");
       } else {
         document.getElementById("mic_on_off_button").classList.remove("on");
-        document.getElementById("mic_on_off_button").classList.remove("ri-mic-fill");
-        document.getElementById("mic_on_off_button").classList.add("ri-mic-off-fill");
+        document
+          .getElementById("mic_on_off_button")
+          .classList.remove("ri-mic-fill");
+        document
+          .getElementById("mic_on_off_button")
+          .classList.add("ri-mic-off-fill");
       }
       // 초기 mic 상태에 따라 translator 아이콘 초기화
       if (initialAudioState) {
-        translator.classList.remove('translator-not-available');
+        translator.classList.remove("translator-not-available");
       } else {
-        translator.classList.add('translator-not-available');
-        translator.classList.remove('translator-clicked');
+        translator.classList.add("translator-not-available");
+        translator.classList.remove("translator-clicked");
         if (stopRecording) {
-          socket.emit('stop_recording');
+          socket.emit("stop_recording");
           stopRecording();
         }
       }
@@ -105,7 +125,6 @@ async function makeMediaStream() {
   }
 }
 
-
 const startRecording = (stream) => {
   try {
     const mediaRecorder = new MediaRecorder(stream);
@@ -117,21 +136,20 @@ const startRecording = (stream) => {
 
       const base64String = arrayBufferToBase64(arrBuffer);
 
-      socket.emit('audio_chunk', base64String, meetingId);
-    })
+      socket.emit("audio_chunk", base64String, meetingId);
+    });
 
     const stopRecording = () => {
       mediaRecorder.stop();
-    }
+    };
     return { mediaRecorder, stopRecording };
-  }
-  catch(err) {
+  } catch (err) {
     console.error(err);
   }
-}
+};
 
 function arrayBufferToBase64(buffer) {
-  let binary = '';
+  let binary = "";
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
   for (let i = 0; i < len; i++) {
@@ -142,25 +160,25 @@ function arrayBufferToBase64(buffer) {
 
 // translation btn
 
-translator.addEventListener('click', () => {
+translator.addEventListener("click", () => {
   if (!translation && initialAudioState === true) {
-    socket.emit('start_recording');
+    socket.emit("start_recording");
     translation = true;
-    translator.classList.add('translator-clicked');
+    translator.classList.add("translator-clicked");
     const result = startRecording(myStream);
     mediaRecorder = result.mediaRecorder;
     stopRecording = result.stopRecording;
   } else {
-    translator.classList.remove('translator-clicked');
+    translator.classList.remove("translator-clicked");
     translation = false;
-    socket.emit('stop_recording');
+    socket.emit("stop_recording");
     if (stopRecording) {
       stopRecording();
     }
   }
 });
 
-socket.on('stop_recording', () => {
+socket.on("stop_recording", () => {
   if (stopRecording) {
     stopRecording();
   }
@@ -181,11 +199,16 @@ function createRTCPeerConnection(peerId, peerNickname) {
   });
 
   if (myStream) {
-    myStream.getTracks().forEach((track) => myRTCPeerConnection.addTrack(track, myStream));
+    myStream
+      .getTracks()
+      .forEach((track) => myRTCPeerConnection.addTrack(track, myStream));
   }
 
   const myPeerFacePlayerBorder = document.createElement("div");
-  myPeerFacePlayerBorder.classList.add("peer-face-player-border", "face-player-border");
+  myPeerFacePlayerBorder.classList.add(
+    "peer-face-player-border",
+    "face-player-border"
+  );
   myPeerFacePlayerBorder.dataset.peerId = peerId;
 
   const myPeerFacePlayer = document.createElement("video");
@@ -195,7 +218,10 @@ function createRTCPeerConnection(peerId, peerNickname) {
   myPeerFacePlayer.playsinline = true;
 
   const myPeerFacePlayerCaption = document.createElement("div");
-  myPeerFacePlayerCaption.classList.add("peer-face-player-caption", "face-player-caption");
+  myPeerFacePlayerCaption.classList.add(
+    "peer-face-player-caption",
+    "face-player-caption"
+  );
   myPeerFacePlayerCaption.dataset.peerId = peerId;
   myPeerFacePlayerCaption.innerText = peerNickname;
 
@@ -206,19 +232,25 @@ function createRTCPeerConnection(peerId, peerNickname) {
     [myPeerFacePlayer.srcObject] = event.streams;
   };
 
-  document.getElementById("face_player_container").appendChild(myPeerFacePlayerBorder);
+  document
+    .getElementById("face_player_container")
+    .appendChild(myPeerFacePlayerBorder);
 
   return myRTCPeerConnection;
 }
 
-function createDataChannel(_myRTCPeerConnection, isOffer) {
-  const myRTCPeerConnection = _myRTCPeerConnection;
+function createDataChannel(myRTCPeerConnection, isOffer) {
   const onChatDataChannelMessage = (event) => {
-    onReceiveChat(JSON.parse(event.data));
+    const data = JSON.parse(event.data);
+    if (data.type === 'chat') {
+      onReceiveChat(data);
+    } else if (data.type === 'file') {
+      onReceiveData(data);
+    }
   };
 
   if (isOffer) {
-    myRTCPeerConnection.chatDataChannel = myRTCPeerConnection.createDataChannel("chat");
+    myRTCPeerConnection.chatDataChannel = myRTCPeerConnection.createDataChannel('chat');
     myRTCPeerConnection.chatDataChannel.onmessage = onChatDataChannelMessage;
   } else {
     myRTCPeerConnection.ondatachannel = (event) => {
@@ -228,10 +260,29 @@ function createDataChannel(_myRTCPeerConnection, isOffer) {
   }
 }
 
+
 async function joinRoomCallback(response) {
   if (response.error) {
     window.alert(response.message);
     return;
+  }
+  const res = await fetch("/validMeetingId", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      meetingId: meetingId,
+    }),
+  });
+  const data = await res.json();
+  console.log(data);
+  if (data.success) {
+    const roomName = document.getElementById("app_title");
+    //console.log(data.data.description)
+    roomName.innerText = data.data.description;
+    const roomId = document.getElementById("share-url-input");
+    roomId.value = data.data.roomId;
   }
 
   document.getElementById("chat_room_form_container").style.display = "none";
@@ -266,14 +317,18 @@ async function joinRoomCallback(response) {
   document.getElementById("app_title").appendChild(leaveButton);
 
   document.querySelector("#chat_list_container .chat-list").innerHTML = "";
-  document.querySelector("#nickname_form .nickname-text-input").value = nickname;
-  document.querySelector("#chat_submit_form .chat-submit-text-input").value = "";
+  document.querySelector("#nickname_form .nickname-text-input").value =
+    nickname;
+  document.querySelector("#chat_submit_form .chat-submit-text-input").value =
+    "";
 
   leaveButton.addEventListener("click", () => {
     rtcPeerConnectionMap.forEach((connection) => {
-      document.querySelectorAll("#face_player_container .peer-face-player-border").forEach((peerFacePlayerBorder) => {
-        peerFacePlayerBorder.remove();
-      });
+      document
+        .querySelectorAll("#face_player_container .peer-face-player-border")
+        .forEach((peerFacePlayerBorder) => {
+          peerFacePlayerBorder.remove();
+        });
       connection.close();
     });
     rtcPeerConnectionMap.clear();
@@ -284,13 +339,16 @@ async function joinRoomCallback(response) {
     }
 
     socket.emit("leave-room", () => {
-      document.getElementById("chat_room_form_container").style.display = "";
-      document.getElementById("chat_room_list_container").style.display = "";
-      document.getElementById("face_player_container").style.display = "none";
-      document.getElementById("chat_list_container").style.display = "none";
-      document.getElementById("chat_form_container").style.display = "none";
-      document.getElementById("chat_controller").style.display = "none";
-      document.getElementById("app_title").innerText = "Noom";
+      // document.getElementById("chat_room_form_container").style.display = "";
+      // document.getElementById("chat_room_list_container").style.display = "";
+      // document.getElementById("face_player_container").style.display = "none";
+      // document.getElementById("chat_list_container").style.display = "none";
+      // document.getElementById("chat_form_container").style.display = "none";
+      // document.getElementById("chat_controller").style.display = "none";
+      //document.getElementById("app_title").innerText = "Noom";
+
+      //move to homepage rounting
+      window.location.href = "/home";
     });
   });
 }
@@ -303,7 +361,9 @@ async function joinRoom(room) {
 }
 
 function refreshRooms(rooms) {
-  const chatRoomListContainer = document.getElementById("chat_room_list_container");
+  const chatRoomListContainer = document.getElementById(
+    "chat_room_list_container"
+  );
   chatRoomListContainer.innerHTML = "";
 
   rooms.forEach((room) => {
@@ -325,12 +385,16 @@ function initApplication() {
   const nicknameForm = document.getElementById("nickname_form");
   const nicknameTextInput = nicknameForm.querySelector(".nickname-text-input");
   const chatSubmitForm = document.getElementById("chat_submit_form");
-  const chatSubmitTextInput = chatSubmitForm.querySelector(".chat-submit-text-input");
+  const chatSubmitTextInput = chatSubmitForm.querySelector(
+    ".chat-submit-text-input"
+  );
+
 
   chatRoomForm.addEventListener("submit", async (event) => {
+    console.log("작동!")
     event.preventDefault();
     await joinRoom(chatRoomTextInput.value);
-  });
+  });``
 
   nicknameForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -342,93 +406,101 @@ function initApplication() {
   chatSubmitForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    socket.emit('chat_translation', chatSubmitTextInput.value.trim());
-    
-    socket.on('translatedChat', (originalChat, translatedText) => {
-      const chat = {
-        id,
-        nickname,
-        msg: `${originalChat} -> ${translatedText}`,
-      };
-      if (chat.msg) {
-        rtcPeerConnectionMap.forEach((connection) => {
-          if (connection.chatDataChannel) {
-            connection.chatDataChannel.send(JSON.stringify(chat));
-          }
+    socket.emit("chat_translation", chatSubmitTextInput.value.trim());
+  });
+  socket.on("translatedChat", (originalChat, translatedText) => {
+    const chat = {
+      id,
+      nickname,
+      msg: `${originalChat} -> ${translatedText}`,
+    };
+    if (chat.msg) {
+      rtcPeerConnectionMap.forEach((connection) => {
+        if (connection.chatDataChannel) {
+          connection.chatDataChannel.send(JSON.stringify(chat));
+        }
+      });
+
+      chatSubmitTextInput.value = "";
+      onReceiveChat(chat);
+
+      const chatListContainer = document.getElementById("chat_list_container");
+      chatListContainer.scrollTop = chatListContainer.scrollHeight;
+    }
+  });
+
+  document
+    .getElementById("video_on_off_button")
+    .addEventListener("click", (event) => {
+      const button = event.currentTarget;
+      if (myStream && myStream.getVideoTracks().length) {
+        const isOn = button.classList.contains("on");
+        button.classList.toggle("on", !isOn);
+        button.classList.toggle("ri-camera-fill", !isOn);
+        button.classList.toggle("ri-camera-off-fill", isOn);
+
+        myStream.getVideoTracks().forEach((track) => {
+          track.enabled = !isOn;
         });
-  
-        chatSubmitTextInput.value = "";
-        onReceiveChat(chat);
-  
-        const chatListContainer = document.getElementById("chat_list_container");
-        chatListContainer.scrollTop = chatListContainer.scrollHeight;
       }
     });
-  });
 
-
-  document.getElementById("video_on_off_button").addEventListener("click", (event) => {
-    const button = event.currentTarget;
-    if (myStream && myStream.getVideoTracks().length) {
+  document
+    .getElementById("mic_on_off_button")
+    .addEventListener("click", (event) => {
+      const button = event.currentTarget;
       const isOn = button.classList.contains("on");
-      button.classList.toggle("on", !isOn);
-      button.classList.toggle("ri-camera-fill", !isOn);
-      button.classList.toggle("ri-camera-off-fill", isOn);
+      if (myStream && myStream.getAudioTracks().length) {
+        button.classList.toggle("on", !isOn);
+        button.classList.toggle("ri-mic-fill", !isOn);
+        button.classList.toggle("ri-mic-off-fill", isOn);
 
-      myStream.getVideoTracks().forEach((track) => {
-        track.enabled = !isOn;
-      });
-    }
-  });
+        myStream.getAudioTracks().forEach((track) => {
+          track.enabled = !isOn;
+        });
+        initialAudioState = !initialAudioState;
+        if (stopRecording) {
+          stopRecording();
+        }
+      }
 
-  document.getElementById("mic_on_off_button").addEventListener("click", (event) => {
-    const button = event.currentTarget;
-    const isOn = button.classList.contains("on");
-    if (myStream && myStream.getAudioTracks().length) {
-      button.classList.toggle("on", !isOn);
-      button.classList.toggle("ri-mic-fill", !isOn);
-      button.classList.toggle("ri-mic-off-fill", isOn);
+      if (isOn) {
+        translator.classList.add("translator-not-available");
+      } else {
+        translator.classList.remove("translator-not-available");
+        translator.classList.remove("translator-clicked");
+        if (stopRecording) {
+          stopRecording();
+        }
+      }
+    });
 
-      myStream.getAudioTracks().forEach((track) => {
-        track.enabled = !isOn;
-      });
-      initialAudioState = !initialAudioState;
-      if (stopRecording) {
-        stopRecording();
+  socket.emit(
+    "login",
+    window.sessionStorage.getItem(STORAGE_KEY.USER_ID),
+    window.sessionStorage.getItem(STORAGE_KEY.USER_PASSWORD),
+    (user) => {
+      window.sessionStorage.setItem(STORAGE_KEY.USER_ID, user.id);
+      window.sessionStorage.setItem(STORAGE_KEY.USER_PASSWORD, user.password);
+      id = user.id;
+      nickname = user.nickname;
+
+      console.log("login", user);
+      if (meetingId) {
+        joinRoom(meetingId);
       }
     }
-
-     if (isOn) {
-      translator.classList.add('translator-not-available');
-    } else {
-      translator.classList.remove('translator-not-available');
-      translator.classList.remove('translator-clicked');
-      if (stopRecording) {
-        stopRecording();
-      }
-    }
-  });
-
-  socket.emit("login", window.sessionStorage.getItem(STORAGE_KEY.USER_ID), window.sessionStorage.getItem(STORAGE_KEY.USER_PASSWORD), (user) => {
-    window.sessionStorage.setItem(STORAGE_KEY.USER_ID, user.id);
-    window.sessionStorage.setItem(STORAGE_KEY.USER_PASSWORD, user.password);
-    id = user.id;
-    nickname = user.nickname;
-
-    if (meetingId) {
-      joinRoom(meetingId);
-    }
-  });
+  );
 
   socket.emit("get-rooms", refreshRooms);
 }
 
-socket.on('transcription', async (transcription) => {
+socket.on("transcription", async (transcription) => {
   // calling open ai function
-  socket.emit('translation', transcription);
+  socket.emit("translation", transcription);
 });
 
-socket.on('translated', async (transcription, translatedText) => {
+socket.on("translated", async (transcription, translatedText) => {
   let chat;
 
   if (translatedText !== null) {
@@ -442,16 +514,16 @@ socket.on('translated', async (transcription, translatedText) => {
       id,
       nickname,
       msg: `${transcription}`,
-    }
+    };
   }
 
   rtcPeerConnectionMap.forEach((connection) => {
     if (connection.chatDataChannel) {
       connection.chatDataChannel.send(JSON.stringify(chat));
     }
-  })
+  });
   onReceiveChat(chat);
-})
+});
 
 socket.on("refresh-rooms", refreshRooms);
 
@@ -464,7 +536,10 @@ socket.on("notify-join-room", async (response) => {
     msg: `#${response.nickname} has joined the room.`,
   });
 
-  const myRTCPeerConnection = createRTCPeerConnection(response.id, response.nickname);
+  const myRTCPeerConnection = createRTCPeerConnection(
+    response.id,
+    response.nickname
+  );
   myRTCPeerConnection.onicecandidate = (event) => {
     socket.emit("webrtc-ice-candidate", response.id, event.candidate);
   };
@@ -485,7 +560,9 @@ socket.on("notify-leave-room", (response) => {
   });
 
   if (rtcPeerConnectionMap.has(response.id)) {
-    const peerFacePlayerBorder = document.querySelector(`#face_player_container .peer-face-player-border[data-peer-id="${response.id}"]`);
+    const peerFacePlayerBorder = document.querySelector(
+      `#face_player_container .peer-face-player-border[data-peer-id="${response.id}"]`
+    );
     if (peerFacePlayerBorder) {
       peerFacePlayerBorder.remove();
     }
@@ -501,7 +578,9 @@ socket.on("notify-change-nickname", (response) => {
     msg: `# Change my nickname to ${response.nickname}`,
   });
 
-  const peerFacePlayerCaption = document.querySelector(`.peer-face-player-caption[data-peer-id="${response.id}"]`);
+  const peerFacePlayerCaption = document.querySelector(
+    `.peer-face-player-caption[data-peer-id="${response.id}"]`
+  );
   if (peerFacePlayerCaption) {
     peerFacePlayerCaption.innerText = response.nickname;
   }
@@ -535,75 +614,120 @@ socket.on("webrtc-ice-candidate", (userId, candidate) => {
   }
 });
 
-
-document.getElementById('share_url').addEventListener('click', () => {
-  const copyText = document.getElementById('share-url-input');
+document.getElementById("share_url").addEventListener("click", () => {
+  const copyText = document.getElementById("share-url-input");
 
   // 입력 필드를 선택
   copyText.select();
   copyText.setSelectionRange(0, 99999); // 모바일 기기에서 사용할 수 있도록 범위 설정
 
   // 텍스트를 클립보드에 복사
-  navigator.clipboard.writeText(copyText.value)
-      .then(() => {
-          // 복사가 성공했을 때 사용자에게 알림
-          alert('Room ID copied to clipboard!');
-      })
-      .catch(err => {
-          // 복사 실패 시 오류 처리
-          console.error('Error copying text: ', err);
-      });
+  navigator.clipboard
+    .writeText(copyText.value)
+    .then(() => {
+      // 복사가 성공했을 때 사용자에게 알림
+      alert("Room ID copied to clipboard!");
+    })
+    .catch((err) => {
+      // 복사 실패 시 오류 처리
+      console.error("Error copying text: ", err);
+    });
 });
 
-window.onload =  async () => {
-  const res = await fetch("/validMeetingId", {
-    method: "POST",
-    headers:{
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      meetingId: meetingId
-    })
-    })
-    const data = await res.json();
-    console.log(data);
-    if(data.success){
-      const roomName = document.getElementById("app_title");
-      //console.log(data.data.description)
-      roomName.innerText = data.data.description;
-      const roomId = document.getElementById("share-url-input");
-      roomId.value = data.data.roomId;
-    }
-}
+window.onload = async () => {};
 
 initApplication();
 
-
 // dropdown menu
-document.querySelectorAll('.currentLang a').forEach(function(element) {
-  element.addEventListener('click', function(e) {
+document.querySelectorAll(".currentLang a").forEach(function (element) {
+  element.addEventListener("click", function (e) {
     e.preventDefault();
-    const dropdown = this.closest('.dropdown');
-    const button = dropdown.querySelector('.btn');
-    button.innerHTML = this.getAttribute('data-value');
+    const dropdown = this.closest(".dropdown");
+    const button = dropdown.querySelector(".btn");
+    button.innerHTML = this.getAttribute("data-value");
 
-    const currentLang = this.getAttribute('data-language');
+    const currentLang = this.getAttribute("data-language");
 
-    socket.emit('set_currentLang', currentLang)
+    socket.emit("set_currentLang", currentLang);
   });
 });
 
-document.querySelectorAll('.targetLang a').forEach(function(element) {
-  element.addEventListener('click', function(e) {
+document.querySelectorAll(".targetLang a").forEach(function (element) {
+  element.addEventListener("click", function (e) {
     e.preventDefault();
-    const dropdown = this.closest('.dropdown');
-    const button = dropdown.querySelector('.btn');
-    button.innerHTML = this.getAttribute('data-value');
+    const dropdown = this.closest(".dropdown");
+    const button = dropdown.querySelector(".btn");
+    button.innerHTML = this.getAttribute("data-value");
     // this = a tag
 
-    const targetLang = this.getAttribute('data-language');
+    const targetLang = this.getAttribute("data-language");
 
-    socket.emit('set_targetLang', targetLang)
+    socket.emit("set_targetLang", targetLang);
   });
 });
 
+document.getElementById('chat_submit_file').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const base64String = event.target.result.split(',')[1];
+      const fileInfo = {
+        filename: file.name,
+        data: base64String,
+        id:"test id",
+        nickname:"test nickname",
+      };
+      socket.emit('file_upload', fileInfo);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+socket.on('file_uploaded', (file) => {
+  const fileInfo = {
+    type: 'file',
+    id: file.id,
+    nickname: file.nickname,
+    textContent: file.filename,
+    url: file.url,
+  };
+  rtcPeerConnectionMap.forEach((connection) => {
+    if (connection.chatDataChannel) {
+      connection.chatDataChannel.send(JSON.stringify(fileInfo));
+    }
+  });
+  console.log("보낸자?");
+  onReceiveData(fileInfo);
+});
+
+function onReceiveData(file) {
+  console.log("file : ")
+  console.log(file)
+  const chatListContainer = document.getElementById('chat_list_container');
+  const chatList = chatListContainer.querySelector('.chat-list');
+  const chatItem = document.createElement('li');
+  const dataLink = document.createElement('a');
+  dataLink.href = file.url;
+  dataLink.textContent = file.textContent;
+  dataLink.download = file.textContent;
+
+  const nicknameView = document.createElement('strong');
+  nicknameView.innerText = file.nickname;
+
+  const contentView = document.createElement('div');
+  contentView.appendChild(dataLink);
+
+  chatItem.appendChild(nicknameView);
+  chatItem.appendChild(contentView);
+
+  if (file.id === id) {
+    chatItem.classList.add('self');
+  }
+
+  chatList.appendChild(chatItem);
+  console.log("appended Child!")
+  chatListContainer.scrollTop = chatListContainer.scrollHeight;
+}

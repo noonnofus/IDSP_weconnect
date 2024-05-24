@@ -6,7 +6,7 @@ import { IMeeting } from "./Imeeting.service";
 export class MeetingService implements IMeeting {
     readonly _db: DBClient = DBClient.getInstance();
 
-    async getMeetingById(meetingId: number): Promise<tb_meetingroom | Error> {
+    async getMeetingById(meetingId: number): Promise<tb_meetingroom | Error | null > {
         try {
             const meeting = await this._db.prisma.tb_meetingroom.findUnique({
                 where: {
@@ -16,10 +16,10 @@ export class MeetingService implements IMeeting {
             if (meeting !== null)  {
                 return meeting;
             } else {
-                throw new Error("Meetingroom not found");
+                return null
             }
         } catch (err) {            
-            throw new Error("Something went wrong, meeting room");
+            return new Error("Something went wrong, meeting room");
         }
     }
 

@@ -33,6 +33,7 @@ class App {
     this.application.use(express.urlencoded({ extended: true }));
     this.application.use(express.static(path.join(__dirname, "..", "public")));
     this.application.use(express.static(path.join(__dirname, "views", "css")));
+    this.application.use("/uploads", express.static(path.join(__dirname, "uploads")));
     this.application.use(
       express.static(path.join(__dirname, "views", "image"))
     );
