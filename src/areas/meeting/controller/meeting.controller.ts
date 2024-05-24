@@ -60,8 +60,9 @@ class MeetingController implements Controller {
         username
       );
       console.log(createing);
-
+      
       const meetingHistory = await this.service.createMettingHistory(currentUser.userId, String(meetingId));
+
 
       // @ts-ignore
       req.session.history = meetingHistory.historyId;
@@ -90,11 +91,24 @@ class MeetingController implements Controller {
     // @ts-ignore
     await this.service.addParticipant(meetingHistory.historyId, currentUser.userId);
 
-    res
-      .status(200)
-      .redirect(`meeting?meetingId=${meetingId}&audio=${audio}&video=${video}`);
-    //res.status(200).render("meeting");
-  }
+    const meetingHistory = await this.service.getHistoryIdByMeetingId(String(meetingId));
+    try {
+        const isMeetingRoomExist = await this.service.getMeetingById(Number(meetingId));
+        console.log(isMeetingRoomExist);
+
+        if (isMeetingRoomExist === null) {
+            res.status(200).json({ success: false, message: "Meeting room does not exist" });
+        } else {
+            res.status(200).redirect(`meeting?meetingId=${meetingId}&audio=${audio}&video=${video}`);
+        }
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(500).json({ success: false, message: err.message });
+        } else {
+            res.status(500).json({ success: false, message: "Unknown error occurred" });
+        }
+    }
+}
 
   private makeRoom(req: Request, res: Response) {
       res.status(200).render("meeting");

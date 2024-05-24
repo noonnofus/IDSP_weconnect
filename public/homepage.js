@@ -9,19 +9,20 @@ async function validMeetingRoom(id) {
         })
     });
     const data = await res.json();
-    //  console.log(data);
+
+    console.log(data);
     return data.success;
 }
 
 async function generateRandomId() {
     const length = 8;
-    const characters = '0123456789';
+    const characters = '123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     const res = await validMeetingRoom(result);
-    if(!res) { 
+    if(res) { 
         const inputField = document.getElementById('meetingIdInput');
         const labelField = document.getElementById('lb_meetingId');
         inputField.value = result;
