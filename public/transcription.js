@@ -161,7 +161,7 @@ document.querySelector('.transcript_download').addEventListener("click", async (
     let definition = '';
 
     texts.forEach((text, index) => {
-        const user = users[index]; // 해당 인덱스의 user 요소 가져오기
+        const user = users[index];
         definition += `${user.innerHTML}: ${text.innerHTML}\n`;
     });
     await generatePDF(definition);
