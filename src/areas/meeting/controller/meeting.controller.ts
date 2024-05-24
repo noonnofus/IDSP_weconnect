@@ -60,8 +60,9 @@ class MeetingController implements Controller {
         username
       );
       console.log(createing);
-
+      
       const meetingHistory = await this.service.createMettingHistory(currentUser.userId, String(meetingId));
+
 
       // @ts-ignore
       req.session.history = meetingHistory.historyId;
@@ -78,17 +79,17 @@ class MeetingController implements Controller {
     }
   };
 
-  public joinMeeting = async(req: Request, res: Response): Promise<void> => {
-    console.log("hit join meeting");
+  private joinMeeting = async(req: Request, res: Response) => {
     const meetingId = req.body.meetingId;
     const audio = req.body.audio;
     const video = req.body.video;
-
-    console.log(meetingId);
-    console.log(audio);
-    console.log(video);
-    //@ts-ignore
+    // @ts-ignore
     const currentUser = req.session.user;
+
+    const meetingHistory = await this.service.getHistoryIdByMeetingId(String(meetingId));
+
+    // @ts-ignore
+    await this.service.addParticipant(meetingHistory.historyId, currentUser.userId);
 
     const meetingHistory = await this.service.getHistoryIdByMeetingId(String(meetingId));
     try {

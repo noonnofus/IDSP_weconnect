@@ -420,7 +420,6 @@ function initApplication() {
 
   socket.on('translatedChat', async (originalChat, translatedText) => {
     // call function to add originalchat to db here.
-
     const chat = {
       type: 'chat',
       id,
