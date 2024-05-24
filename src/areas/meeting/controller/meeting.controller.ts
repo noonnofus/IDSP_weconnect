@@ -85,10 +85,10 @@ class MeetingController implements Controller {
     const video = req.body.video;
     // @ts-ignore
     const currentUser = req.session.user;
+    const meetingHistory = await this.service.getHistoryIdByMeetingId(String(meetingId));
     // @ts-ignore
     await this.service.addParticipant(meetingHistory.historyId, currentUser.userId);
-
-    const meetingHistory = await this.service.getHistoryIdByMeetingId(String(meetingId));
+    
     try {
         const isMeetingRoomExist = await this.service.getMeetingById(Number(meetingId));
         console.log(isMeetingRoomExist);

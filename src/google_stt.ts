@@ -1,9 +1,9 @@
-import 'dotenv/config';
+import "dotenv/config";
 import { SpeechClient } from "@google-cloud/speech";
 import { GoogleAuth } from "google-auth-library";
-import * as fs from 'fs';
-import * as path from 'path';
-
+import * as fs from "fs";
+import * as path from "path";
+const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 export class SpeechToTextService {
   private recognizeStream: any = null;
   private transcriptionCallback: any;
@@ -18,16 +18,17 @@ export class SpeechToTextService {
     this.isRestarting = false;
     this.restartTimeout = null;
 
-    const env = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    if (!env) {
-      throw new Error('google env error');
-    }
-    const credentialsFile = fs.readFileSync(path.join(__dirname, '../', env), 'utf-8');
-    const credentials = JSON.parse(credentialsFile);
 
+    //const env = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    if (!credentialsEnv) {
+      throw new Error("google env error");
+    }
+    
+    const credentials = JSON.parse(credentialsEnv);
     const auth = new GoogleAuth({
       credentials: credentials,
-      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
     });
 
     this.client = new SpeechClient({ auth });
@@ -43,40 +44,42 @@ export class SpeechToTextService {
   private initializeStream() {
     try {
       this.recognizeStream = this.client
-      .streamingRecognize({
-        config: {
-          encoding: 'WEBM_OPUS',
-          sampleRateHertz: 48000,
-          languageCode: this.currentLang,
-          model: 'default',
-        },
-        interimResults: true,
-        singleUtterance : false,
-      })
-        .on('error', (error) => {
-          console.error('Stream error:', error);
+        .streamingRecognize({
+          config: {
+            encoding: "WEBM_OPUS",
+            sampleRateHertz: 48000,
+            languageCode: this.currentLang,
+            model: "default",
+          },
+          interimResults: true,
+          singleUtterance: false,
+        })
+        .on("error", (error) => {
+          console.error("Stream error:", error);
           if (!this.isRestarting) {
             this.isRestarting = true;
             this.restartStream();
           }
         })
-        .on('data', (data) => {
+        .on("data", (data) => {
           const transcription = data.results[0]?.alternatives[0]?.transcript;
           const isFinal = data.results[0]?.isFinal;
-          console.log(`Real time transcript: ${transcription} [isFinal: ${isFinal}]`);
+          console.log(
+            `Real time transcript: ${transcription} [isFinal: ${isFinal}]`
+          );
           console.log(data.results[0]);
           if (isFinal && transcription) {
             this.transcriptionCallback(transcription);
           }
         });
-    } catch(error) {
+    } catch (error) {
       console.error(error);
     }
   }
 
   setCurrentLang(lang: string) {
     this.currentLang = lang;
-    console.log('at stt: ', this.currentLang);
+    console.log("at stt: ", this.currentLang);
   }
 
   restartStream() {
@@ -99,9 +102,9 @@ export class SpeechToTextService {
       this.recognizeStream.end();
       this.recognizeStream.removeAllListeners();
       this.recognizeStream = null;
-      console.log('Recognize stream ended successfully.');
+      console.log("Recognize stream ended successfully.");
     } else {
-      console.error('Recognize stream is not initialized.');
+      console.error("Recognize stream is not initialized.");
     }
   }
 }
