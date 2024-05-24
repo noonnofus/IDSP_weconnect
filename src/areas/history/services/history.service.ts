@@ -29,11 +29,47 @@ export class HistoryService implements IHistory{
     }
 
     async getTrnascriptByHistoryId(_historyId: number): Promise<tb_transcription[]> {
-        const transcription = this._db.prisma.tb_transcription.findMany({
+        const transcription = await this._db.prisma.tb_transcription.findMany({
             where: {
-                historyId: _historyId
+                historyId: Number(_historyId)
             }
         })
         return transcription;
+    }
+
+    async addMsgToTranscription(text: string, userId: number, historyId: number): Promise<void> {
+        await this._db.prisma.tb_transcription.create({
+            data: {
+                historyId: historyId,
+                senderId: userId,
+                message: text,
+            }
+        })
+    }
+
+    async getHistoryByRoomId(_roomId: string): Promise<tb_history> {
+        const history = await this._db.prisma.tb_history.findFirst({
+            where: {
+                roomId: _roomId,
+            }
+        })
+        if (history) {
+            return history;
+        } else {
+            throw new Error("Cannot find history");
+        }
+    }
+    
+    async getHistoryByHistoryId(_historyId: number): Promise<tb_history> {
+        const history = await this._db.prisma.tb_history.findUnique({
+            where: {
+                historyId: _historyId,
+            }
+        })
+        if (history) {
+            return history;
+        } else {
+            throw new Error("Cannot find history");
+        }
     }
 }

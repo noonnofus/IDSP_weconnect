@@ -159,6 +159,7 @@ export class WebSocketServer {
           const openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
           });
+          console.log(text);
 
           const messages = [
             { "role": "system", "content": `You will be provided with a sentence in any language, and your task is to translate it into ${this.targetLang}.` },

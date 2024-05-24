@@ -72,16 +72,6 @@ export class MeetingService implements IMeeting {
         }
     }
 
-    async addMsgToHistory(text: string, userId: number, historyId: number): Promise<void> {
-        await this._db.prisma.tb_transcription.create({
-            data: {
-                historyId: historyId,
-                senderId: userId,
-                message: text,
-            }
-        })
-    }
-
     async getHistoryIdByMeetingId(meetingId: string): Promise<tb_history | undefined> {
         const result = await this._db.prisma.tb_history.findFirst({
             where: {
@@ -92,6 +82,28 @@ export class MeetingService implements IMeeting {
             return result;
         } else {
             return undefined;
+        }
+    }
+
+    async updateLastMsg(msg: string, _roomId: string): Promise<void> {
+        console.log('roomId at service: ', _roomId);
+        const history = await this._db.prisma.tb_history.findFirst({
+            where: {
+                roomId: _roomId,
+            }
+        })
+        console.log('lastmsg: ', history);
+        if (history) {
+            await this._db.prisma.tb_history.update({
+                where: {
+                    historyId: history.historyId,
+                },
+                data: {
+                    last_message: msg,
+                }
+            })
+        } else {
+            throw new Error("Error while updating history");
         }
     }
 }

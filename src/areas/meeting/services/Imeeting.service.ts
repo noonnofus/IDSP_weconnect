@@ -9,7 +9,7 @@ export interface IMeeting {
 
     addParticipant(historyId: number, userId: number): Promise<tb_participant | Error>
 
-    addMsgToHistory(text: string, userId: number, historyId: number): Promise<void>
-
     getHistoryIdByMeetingId(meetingId: string): Promise<tb_history | undefined>
+    
+    updateLastMsg(_roomId: string, msg: string): Promise<void>
 }

@@ -43,16 +43,16 @@ export class SpeechToTextService {
   private initializeStream() {
     try {
       this.recognizeStream = this.client
-        .streamingRecognize({
-          config: {
-            encoding: 'WEBM_OPUS',
-            sampleRateHertz: 48000,
-            languageCode: this.currentLang,
-            enableSpeakerDiarization: true,
-            model: 'latest_long',
-          },
-          interimResults: true,
-        })
+      .streamingRecognize({
+        config: {
+          encoding: 'WEBM_OPUS',
+          sampleRateHertz: 48000,
+          languageCode: this.currentLang,
+          model: 'default',
+        },
+        interimResults: true,
+        singleUtterance : false,
+      })
         .on('error', (error) => {
           console.error('Stream error:', error);
           if (!this.isRestarting) {
@@ -64,7 +64,8 @@ export class SpeechToTextService {
           const transcription = data.results[0]?.alternatives[0]?.transcript;
           const isFinal = data.results[0]?.isFinal;
           console.log(`Real time transcript: ${transcription} [isFinal: ${isFinal}]`);
-          if (isFinal) {
+          console.log(data.results[0]);
+          if (isFinal && transcription) {
             this.transcriptionCallback(transcription);
           }
         });
