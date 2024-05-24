@@ -101,25 +101,20 @@ class MeetingController implements Controller {
   }
   
   private addMsgToHistory = async (req: Request, res: Response) => {
-    const text = req.body.text;
-    // @ts-ignore
-    const historyId = req.session.history;
-    // @ts-ignore
-    const user = req.session.user;
-    const meetingId = req.body.meetingId;
-
-    if (historyId === undefined) {
-      const history = await this.service.getHistoryIdByMeetingId(meetingId);
-      if (history !== undefined) {
-        await this.service.addMsgToHistory(text, user.userId, history.historyId);
-      }
-    } else {
-      await this.service.addMsgToHistory(text, user.userId, historyId);
+    try {
+      const text = req.body.text;
+      const meetingId = req.body.meetingId;
+      
+      await this.service.updateLastMsg(text, meetingId);
+      
+      res.status(200).json({
+        success: true,
+      })
+    } catch(error) {
+      res.status(200).json({
+        success: false,
+      })
     }
-
-    res.status(200).json({
-      success: true,
-    })
   }
 }
 

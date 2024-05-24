@@ -23,7 +23,7 @@ let myStream;
 let translation = false;
 let stopRecording;
 
-function onReceiveChat(response) {
+async function onReceiveChat(response) {
   const chatListContainer = document.getElementById("chat_list_container");
   const chatList = chatListContainer.querySelector(".chat-list");
   const chatItem = document.createElement("li");
@@ -342,18 +342,19 @@ function initApplication() {
   chatSubmitForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const text = chatSubmitTextInput.value.trim()
+    try {
+      const text = chatSubmitTextInput.value.trim()
 
-    const result = await addMsgToHistory(text, meetingId);
-    if (result.success === true) {
       socket.emit('chat_translation', text);
+    }
+    catch(error) {
+      console.error(error);
     }
   });
 
   socket.on('translatedChat', async (originalChat, translatedText) => {
     // call function to add originalchat to db here.
 
-    console.log('translated chat: ', translatedText);
     const chat = {
       id,
       nickname,
@@ -372,6 +373,15 @@ function initApplication() {
 
       const chatListContainer = document.getElementById("chat_list_container");
       chatListContainer.scrollTop = chatListContainer.scrollHeight;
+
+      const userReuslt = await getUserSession();
+      const user = JSON.parse(userReuslt.data);
+
+      const history = await getHistoryByRoomId(meetingId);
+
+      await addMsgToTrnascription(originalChat, user.userId, history.historyId);
+
+      await addMsgToHistory(originalChat, meetingId);
     }
   });
 
@@ -432,8 +442,11 @@ function initApplication() {
 }
 
 socket.on('transcription', async (transcription) => {
-  // calling open ai function
-  socket.emit('translation', transcription);
+  try {
+    socket.emit('translation', transcription);
+  } catch(error) {
+    console.error(error);
+  }
 });
 
 socket.on('translated', async (transcription, translatedText) => {
@@ -459,6 +472,14 @@ socket.on('translated', async (transcription, translatedText) => {
     }
   })
   onReceiveChat(chat);
+
+
+  const userReuslt = await getUserSession();
+  const user = JSON.parse(userReuslt.data);
+
+  const history = await getHistoryByRoomId(meetingId);
+  await addMsgToTrnascription(transcription, user.userId, history.historyId);
+  await addMsgToHistory(transcription, meetingId);
 })
 
 socket.on("refresh-rooms", refreshRooms);
@@ -624,5 +645,42 @@ async function addMsgToHistory(text, meetingId) {
       body: JSON.stringify({ text, meetingId }),
   })
   const result = res.json();
-  return result;
+  if (result.success === false) {
+    throw new Error("Error while updating history");
+  }
+}
+
+async function addMsgToTrnascription(text, userId, historyId) {
+  const res = await fetch('/addMsgToTranscription', {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text, userId, historyId }),
+  })
+  const result = res.json();
+  if (result.success === false) {
+    throw new Error("Error while updating history");
+  }
+}
+
+async function getHistoryByRoomId(roomId) {
+  const res = await fetch('/getHistoryByRoomId', {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ roomId }),
+  })
+  const result = await res.json();
+  console.log(result);
+  return result.data;
+}
+
+async function getUserSession() {
+  const res = await fetch('/getUserSession', {
+      method: 'POST',
+  });
+  const data = await res.json();
+  return data;
 }

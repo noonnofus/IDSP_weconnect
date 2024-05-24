@@ -1,0 +1,13 @@
+.translate-btn {
+    border: 0;
+    background-color:white;
+}
+
+.img-container {
+    width: auto;
+    height: auto;
+}
+
+.translate-text {
+    display: inline-block;
+}
