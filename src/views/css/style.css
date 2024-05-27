@@ -331,7 +331,15 @@ div.notification.me-3 {
     width: 100%;
     height: 42px;
 }
-
+video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
 .prelog {
     min-height: 100vh;
     background: linear-gradient( #2277EE, #7722BB);
@@ -831,6 +839,7 @@ footer {
         margin-top: 8px;
         text-align: center;
     }
+
 
     .settings-text {
         font-size: 3vw;
