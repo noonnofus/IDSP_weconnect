@@ -345,6 +345,15 @@ video {
     background: linear-gradient( #2277EE, #7722BB);
 }
 
+video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
 .prelog-logo {
     display: flex;
     justify-content: center;
