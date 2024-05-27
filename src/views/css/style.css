@@ -706,6 +706,9 @@ footer {
     overflow: auto;
     /* display:flex; */
     flex-direction: column-reverse;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
 }
 
 @media (max-width: 768px) {
