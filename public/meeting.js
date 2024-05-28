@@ -22,6 +22,8 @@ let nickname = "";
 let myStream;
 let translation = false;
 let stopRecording;
+let currentla;
+let targetla;
 
 async function onReceiveChat(response) {
   const chatListContainer = document.getElementById("chat_list_container");
@@ -85,8 +87,7 @@ async function makeMediaStream() {
         document.getElementById("mic_on_off_button").classList.remove("ri-mic-fill");
         document.getElementById("mic_on_off_button").classList.add("ri-mic-off-fill");
       }
-      // 초기 mic 상태에 따라 translator 아이콘 초기화
-      if (initialAudioState) {
+      if (initialAudioState && currentla !== undefined && targetla !== undefined) {
         translator.classList.remove('translator-not-available');
       } else {
         translator.classList.add('translator-not-available');
@@ -144,7 +145,7 @@ function arrayBufferToBase64(buffer) {
 
 translator.addEventListener('click', () => {
   if (!translation && initialAudioState === true) {
-    socket.emit('start_recording');
+    socket.emit('start_recording', currentla, targetla);
     translation = true;
     translator.classList.add('translator-clicked');
     const result = startRecording(myStream);
@@ -341,11 +342,10 @@ function initApplication() {
 
   chatSubmitForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     try {
       const text = chatSubmitTextInput.value.trim()
 
-      socket.emit('chat_translation', text);
+      socket.emit('chat_translation', text, targetla);
     }
     catch(error) {
       console.error(error);
@@ -354,12 +354,20 @@ function initApplication() {
 
   socket.on('translatedChat', async (originalChat, translatedText) => {
     // call function to add originalchat to db here.
-
-    const chat = {
-      id,
-      nickname,
-      msg: `${originalChat} -> ${translatedText}`,
-    };
+    let chat;
+    if (translatedText !== null) {
+      chat = {
+        id,
+        nickname,
+        msg: `${originalChat} -> ${translatedText}`,
+      };
+    } else {
+      chat = {
+        id,
+        nickname,
+        msg: `${originalChat}`,
+      };
+    }
 
     if (chat.msg) {
       rtcPeerConnectionMap.forEach((connection) => {
@@ -418,7 +426,7 @@ function initApplication() {
 
      if (isOn) {
       translator.classList.add('translator-not-available');
-    } else {
+    } else if (currentla !== undefined && targetla !== undefined) {
       translator.classList.remove('translator-not-available');
       translator.classList.remove('translator-clicked');
       if (stopRecording) {
@@ -441,17 +449,8 @@ function initApplication() {
   socket.emit("get-rooms", refreshRooms);
 }
 
-socket.on('transcription', async (transcription) => {
-  try {
-    socket.emit('translation', transcription);
-  } catch(error) {
-    console.error(error);
-  }
-});
-
 socket.on('translated', async (transcription, translatedText) => {
   let chat;
-
   if (translatedText !== null) {
     chat = {
       id,
@@ -595,10 +594,8 @@ window.onload =  async () => {
     })
     })
     const data = await res.json();
-    console.log(data);
-    if(data.success){
+    if (data.success) {
       const roomName = document.getElementById("app_title");
-      //console.log(data.data.description)
       roomName.innerText = data.data.description;
       const roomId = document.getElementById("share-url-input");
       roomId.value = data.data.roomId;
@@ -612,19 +609,25 @@ initApplication();
 document.querySelectorAll('.currentLang a').forEach(function(element) {
   element.addEventListener('click', function(e) {
     e.preventDefault();
+    const mic = document.getElementById("mic_on_off_button").classList
     const dropdown = this.closest('.dropdown');
     const button = dropdown.querySelector('.btn');
     button.innerHTML = this.getAttribute('data-value');
 
     const currentLang = this.getAttribute('data-language');
 
-    socket.emit('set_currentLang', currentLang)
+    currentla = currentLang;
+
+    if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+      translator.classList.remove('translator-not-available');
+    }
   });
 });
 
 document.querySelectorAll('.targetLang a').forEach(function(element) {
   element.addEventListener('click', function(e) {
     e.preventDefault();
+    const mic = document.getElementById("mic_on_off_button").classList
     const dropdown = this.closest('.dropdown');
     const button = dropdown.querySelector('.btn');
     button.innerHTML = this.getAttribute('data-value');
@@ -632,7 +635,10 @@ document.querySelectorAll('.targetLang a').forEach(function(element) {
 
     const targetLang = this.getAttribute('data-language');
 
-    socket.emit('set_targetLang', targetLang)
+    targetla = targetLang;
+    if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+      translator.classList.remove('translator-not-available');
+    }
   });
 });
 

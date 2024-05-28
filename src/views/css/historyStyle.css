@@ -4,31 +4,16 @@ body {
 
 .translate-btn {
     border: 0;
-    background-color: white;
+    background-color:white;
 }
 
 .img-container {
     width: auto;
     height: auto;
-    display: inline-block; /* Ensure it stays inline with other elements */
-}
-
-.translateImg {
-    max-width: 100%; /* Ensure the image scales properly */
-    height: auto;
 }
 
 .translate-text {
     display: inline-block;
-    margin-right: 10px; /* Optional, to add some space between text and dropdown */
-}
-
-.container.d-flex {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px; /* Optional, to control space between items */
-    margin-left: 0;
 }
 
 .chattingRoom {
@@ -38,35 +23,33 @@ body {
     padding: 7px;
 }
 
+.transcriptDetail:hover {
+    background-color: rgb(229, 240, 253);
+    border-radius: 10px;
+}
+
 .transcriptDetail {
     display: flex;
     align-items: center;
     padding: 10px;
     border-radius: 8px;
-    /* margin-bottom: 10px; */
-  	/* position: relative; */
+    position: relative; /* 추가 */
 }
+
 .transcriptProfileImg {
     width: 53px;
     height: auto;
     border-radius: 50%;
     margin-right: 10px;
 }
+
 .transcriptDate {
     font-size: 12px;
     color: #0066EE;
-    position: absolute; /* Absolute positioning */
-    right: 0;
-    margin-right: 10px;
 }
 
-.transcript-text {
-    background: linear-gradient(#2277EE, #7722BB);
-    font-weight: lighter;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 4vw;
-    margin-bottom: 20px;
+.transcriptSemi {
+    flex-grow: 1;
 }
 
 .transcriptSemi p {
@@ -78,39 +61,14 @@ body {
     color: black;
 }
 
-.transcript-section {
-    margin: 15px;
-}
-
-.chatting_line {
-    height: 1px;
-    width: auto;
-    margin: 10px;
+.history-text {
     background: linear-gradient(#2277EE, #7722BB);
+    font-weight: lighter;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 4vw;
+    margin-bottom: 20px;
 }
-
-div.setting,
-div.notification.me-3 {
-    display: inline-block;
-}
-
-.homepage-header {
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
-
-.bg-custom {
-    background-color: rgba(118, 118, 128, 0.12) !important;
-}
-
-.input-group-text {
-    border: none !important;
-}
-
-.form-control {
-    border: none !important;
-}
-
 
 .navbar {
     background-color: white;
@@ -187,18 +145,4 @@ div.notification.me-3 {
     border-left: none;
     border-right: none;
     border-bottom: none;
-}
-
-.transcript-sender {
-    background-color: rgb(204, 224, 252);
-    border-radius: 10px 10px 10px 0px;
-}
-
-.transcript-receiver {
-    background-color: rgb(221, 204, 235);
-    border-radius: 10px 10px 10px 0px;
-}
-
-.translated_text {
-    margin-top: 10px;
 }
