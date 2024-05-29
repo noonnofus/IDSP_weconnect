@@ -1,9 +1,19 @@
 //const { type } = require("os");
 
 // const socket = window.io();
+
+let currentUser = null;
+
+async function initializeStorageKey() {
+  const currentSession = await getUserSession();
+  currentUser = JSON.parse(currentSession.data);
+  console.log(currentUser);
+}
+
 const STORAGE_KEY = Object.freeze({
   USER_ID: "userId",
   USER_PASSWORD: "userPassword",
+  USER_NICKNAME: "Anonymouse"
 });
 
 const getUrlParams = () => {
@@ -28,8 +38,11 @@ let nickname = "";
 let myStream;
 let translation = false;
 let stopRecording;
+let currentla;
+let targetla;
 
 async function onReceiveChat(response) {
+  console.log(response);
   const chatListContainer = document.getElementById("chat_list_container");
   const chatList = chatListContainer.querySelector(".chat-list");
   const chatItem = document.createElement("li");
@@ -44,6 +57,7 @@ async function onReceiveChat(response) {
   chatItem.appendChild(contentView);
 
   if (response.id === id) {
+    console.log("hit if")
     chatItem.classList.add("self");
   }
 
@@ -138,17 +152,18 @@ const startRecording = (stream) => {
 
       const base64String = arrayBufferToBase64(arrBuffer);
 
-      socket.emit("audio_chunk", base64String, meetingId);
-    });
+      socket.emit('audio_chunk', base64String, meetingId);
+    })
 
     const stopRecording = () => {
       mediaRecorder.stop();
-    };
+    }
     return { mediaRecorder, stopRecording };
-  } catch (err) {
+  }
+  catch(err) {
     console.error(err);
   }
-};
+}
 
 function arrayBufferToBase64(buffer) {
   let binary = "";
@@ -162,18 +177,18 @@ function arrayBufferToBase64(buffer) {
 
 // translation btn
 
-translator.addEventListener("click", () => {
+translator.addEventListener('click', () => {
   if (!translation && initialAudioState === true) {
-    socket.emit("start_recording");
+    socket.emit('start_recording', currentla, targetla);
     translation = true;
-    translator.classList.add("translator-clicked");
+    translator.classList.add('translator-clicked');
     const result = startRecording(myStream);
     mediaRecorder = result.mediaRecorder;
     stopRecording = result.stopRecording;
   } else {
-    translator.classList.remove("translator-clicked");
+    translator.classList.remove('translator-clicked');
     translation = false;
-    socket.emit("stop_recording");
+    socket.emit('stop_recording');
     if (stopRecording) {
       stopRecording();
     }
@@ -340,7 +355,7 @@ async function joinRoomCallback(response) {
       myStream = null;
     }
 
-    socket.emit("leave-room", () => {
+    socket.emit("leave-room", async (rooms) => {
       // document.getElementById("chat_room_form_container").style.display = "";
       // document.getElementById("chat_room_list_container").style.display = "";
       // document.getElementById("face_player_container").style.display = "none";
@@ -350,7 +365,18 @@ async function joinRoomCallback(response) {
       //document.getElementById("app_title").innerText = "Noom";
 
       //move to homepage rounting
-      window.location.href = "/home";
+
+      if (rooms.length === 0) {
+        //#working
+        const res = await fetch('/meetingClosed', {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ meetingId }),
+      })
+    }
+    window.location.href = "/home";
     });
   });
 }
@@ -367,7 +393,7 @@ function refreshRooms(rooms) {
     "chat_room_list_container"
   );
   chatRoomListContainer.innerHTML = "";
-
+  
   rooms.forEach((room) => {
     const roomDiv = document.createElement("div");
     roomDiv.classList.add("room-enter-badge");
@@ -380,9 +406,7 @@ function refreshRooms(rooms) {
     chatRoomListContainer.appendChild(roomDiv);
   });
 }
-
-function initApplication() {
-  const chatRoomForm = document.getElementById("chat_room_form");
+const chatRoomForm = document.getElementById("chat_room_form");
   const chatRoomTextInput = chatRoomForm.querySelector(".chat-room-text-input");
   const nicknameForm = document.getElementById("nickname_form");
   const nicknameTextInput = nicknameForm.querySelector(".nickname-text-input");
@@ -390,6 +414,11 @@ function initApplication() {
   const chatSubmitTextInput = chatSubmitForm.querySelector(
     ".chat-submit-text-input"
   );
+async function initApplication() {
+  
+
+
+  
 
 
   chatRoomForm.addEventListener("submit", async (event) => {
@@ -418,38 +447,41 @@ function initApplication() {
     }
   });
 
-  socket.on('translatedChat', async (originalChat, translatedText) => {
-    // call function to add originalchat to db here.
-    const chat = {
-      type: 'chat',
-      id,
-      nickname,
-      msg: `${originalChat} -> ${translatedText}`,
-    };
-
-    if (chat.msg) {
-      rtcPeerConnectionMap.forEach((connection) => {
-        if (connection.chatDataChannel) {
-          connection.chatDataChannel.send(JSON.stringify(chat));
-        }
-      });
-
-      onReceiveChat(chat);
-      chatSubmitTextInput.value = "";
-
-      const chatListContainer = document.getElementById("chat_list_container");
-      chatListContainer.scrollTop = chatListContainer.scrollHeight;
-
-      const userReuslt = await getUserSession();
-      const user = JSON.parse(userReuslt.data);
-
-      const history = await getHistoryByRoomId(meetingId);
-
-      await addMsgToTrnascription(originalChat, user.userId, history.historyId);
-
-      await addMsgToHistory(originalChat, meetingId);
+  socket.on("translated", async (transcription, translatedText) => {
+    let chat;
+  
+    if (translatedText !== null) {
+      chat = {
+        type: 'chat',
+        id,
+        nickname,
+        msg: `${transcription} -> ${translatedText}`,
+      };
+    } else {
+      chat = {
+        type: 'chat',
+        id,
+        nickname,
+        msg: `${transcription}`,
+      };
     }
-  });
+  
+    rtcPeerConnectionMap.forEach((connection) => {
+      if (connection.chatDataChannel) {
+        connection.chatDataChannel.send(JSON.stringify(chat));
+      }
+    });
+  
+    onReceiveChat(chat);
+  
+  
+    const userReuslt = await getUserSession();
+    const user = JSON.parse(userReuslt.data);
+  
+    const history = await getHistoryByRoomId(meetingId);
+    await addMsgToTrnascription(transcription, user.userId, history.historyId);
+    await addMsgToHistory(transcription, meetingId);
+  })
 
   document
     .getElementById("video_on_off_button")
@@ -499,11 +531,15 @@ function initApplication() {
 
   socket.emit(
     "login",
-    window.sessionStorage.getItem(STORAGE_KEY.USER_ID),
-    window.sessionStorage.getItem(STORAGE_KEY.USER_PASSWORD),
+    // window.sessionStorage.getItem(STORAGE_KEY.USER_ID),
+    // window.sessionStorage.getItem(STORAGE_KEY.USER_PASSWORD),
+    currentUser.userId,
+    currentUser.userEmail,
+    currentUser.username,
     (user) => {
       window.sessionStorage.setItem(STORAGE_KEY.USER_ID, user.id);
       window.sessionStorage.setItem(STORAGE_KEY.USER_PASSWORD, user.password);
+      window.sessionStorage.setItem(STORAGE_KEY.USER_NICKNAME, user.nickname);
       id = user.id;
       nickname = user.nickname;
 
@@ -513,8 +549,6 @@ function initApplication() {
       }
     }
   );
-
-  socket.emit("get-rooms", refreshRooms);
 }
 
 socket.on('transcription', async (transcription) => {
@@ -525,41 +559,39 @@ socket.on('transcription', async (transcription) => {
   }
 });
 
-socket.on("translated", async (transcription, translatedText) => {
-  let chat;
+socket.on('translatedChat', async (originalChat, translatedText) => {
+  // call function to add originalchat to db here.
+  const chat = {
+    type: 'chat',
+    id,
+    nickname,
+    msg: `${originalChat} -> ${translatedText}`,
+    from:"translatedChat 585"
+  };
 
-  if (translatedText !== null) {
-    chat = {
-      type: 'chat',
-      id,
-      nickname,
-      msg: `${transcription} -> ${translatedText}`,
-    };
-  } else {
-    chat = {
-      type: 'chat',
-      id,
-      nickname,
-      msg: `${transcription}`,
-    };
+  if (chat.msg) {
+    rtcPeerConnectionMap.forEach((connection) => {
+      if (connection.chatDataChannel) {
+        connection.chatDataChannel.send(JSON.stringify(chat));
+      }
+    });
+
+    onReceiveChat(chat);
+    chatSubmitTextInput.value = "";
+
+    const chatListContainer = document.getElementById("chat_list_container");
+    chatListContainer.scrollTop = chatListContainer.scrollHeight;
+
+    const userReuslt = await getUserSession();
+    const user = JSON.parse(userReuslt.data);
+
+    const history = await getHistoryByRoomId(meetingId);
+
+    await addMsgToTrnascription(originalChat, user.userId, history.historyId);
+
+    await addMsgToHistory(originalChat, meetingId);
   }
-
-  rtcPeerConnectionMap.forEach((connection) => {
-    if (connection.chatDataChannel) {
-      connection.chatDataChannel.send(JSON.stringify(chat));
-    }
-  });
-
-  onReceiveChat(chat);
-
-
-  const userReuslt = await getUserSession();
-  const user = JSON.parse(userReuslt.data);
-
-  const history = await getHistoryByRoomId(meetingId);
-  await addMsgToTrnascription(transcription, user.userId, history.historyId);
-  await addMsgToHistory(transcription, meetingId);
-})
+});
 
 socket.on("refresh-rooms", refreshRooms);
 
@@ -670,36 +702,46 @@ document.getElementById("share_url").addEventListener("click", () => {
       console.error("Error copying text: ", err);
     });
 });
+window.onload = async () => {
+  await initializeStorageKey();
+  initApplication();
+};
 
-window.onload = async () => {};
-
-initApplication();
 
 // dropdown menu
-document.querySelectorAll(".currentLang a").forEach(function (element) {
-  element.addEventListener("click", function (e) {
+document.querySelectorAll('.currentLang a').forEach(function(element) {
+  element.addEventListener('click', function(e) {
     e.preventDefault();
-    const dropdown = this.closest(".dropdown");
-    const button = dropdown.querySelector(".btn");
-    button.innerHTML = this.getAttribute("data-value");
+    const mic = document.getElementById("mic_on_off_button").classList
+    const dropdown = this.closest('.dropdown');
+    const button = dropdown.querySelector('.btn');
+    button.innerHTML = this.getAttribute('data-value');
 
-    const currentLang = this.getAttribute("data-language");
+    const currentLang = this.getAttribute('data-language');
 
-    socket.emit("set_currentLang", currentLang);
+    currentla = currentLang;
+
+    if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+      translator.classList.remove('translator-not-available');
+    }
   });
 });
 
-document.querySelectorAll(".targetLang a").forEach(function (element) {
-  element.addEventListener("click", function (e) {
+document.querySelectorAll('.targetLang a').forEach(function(element) {
+  element.addEventListener('click', function(e) {
     e.preventDefault();
-    const dropdown = this.closest(".dropdown");
-    const button = dropdown.querySelector(".btn");
-    button.innerHTML = this.getAttribute("data-value");
+    const mic = document.getElementById("mic_on_off_button").classList
+    const dropdown = this.closest('.dropdown');
+    const button = dropdown.querySelector('.btn');
+    button.innerHTML = this.getAttribute('data-value');
     // this = a tag
 
-    const targetLang = this.getAttribute("data-language");
+    const targetLang = this.getAttribute('data-language');
 
-    socket.emit("set_targetLang", targetLang);
+    targetla = targetLang;
+    if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+      translator.classList.remove('translator-not-available');
+    }
   });
 });
 
@@ -714,8 +756,8 @@ document.getElementById('chat_submit_file').addEventListener('submit', async (ev
       const fileInfo = {
         filename: file.name,
         data: base64String,
-        id:"test id",
-        nickname:"test nickname",
+        id:currentUser.id,
+        nickname:currentUser.username,
       };
       socket.emit('file_upload', fileInfo);
     };
@@ -726,8 +768,8 @@ document.getElementById('chat_submit_file').addEventListener('submit', async (ev
 socket.on('file_uploaded', (file) => {
   const fileInfo = {
     type: 'file',
-    id: file.id,
-    nickname: file.nickname,
+    id,
+    nickname,
     textContent: file.filename,
     url: file.url,
   };
@@ -738,6 +780,7 @@ socket.on('file_uploaded', (file) => {
   });
   console.log("보낸자?");
   onReceiveData(fileInfo);
+
 });
 
 function onReceiveData(file) {

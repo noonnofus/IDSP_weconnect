@@ -12,4 +12,6 @@ export interface IMeeting {
     getHistoryIdByMeetingId(meetingId: string): Promise<tb_history | undefined>
     
     updateLastMsg(_roomId: string, msg: string): Promise<void>
+
+    finishingMeeting(_roomId: string): Promise<void> 
 }

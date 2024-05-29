@@ -32,6 +32,4 @@ async function generateRandomId() {
     }
 }
 
-
-
 document.addEventListener("DOMContentLoaded", generateRandomId);

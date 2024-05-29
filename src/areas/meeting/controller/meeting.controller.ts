@@ -21,6 +21,7 @@ class MeetingController implements Controller {
     this.router.post(`${this.path}getMeetingRoom`, this.getMeetingRoom);
     this.router.post(`${this.path}joinMeeting`, this.joinMeeting);
     this.router.post(`${this.path}addMsgToHistory`, this.addMsgToHistory);
+    this.router.post(`${this.path}meetingClosed`, this.meetingClosed);
   }
   private getHomepage(req: Request, res: Response) {
     //console.log(req.session.id);
@@ -106,6 +107,14 @@ class MeetingController implements Controller {
         }
     }
 }
+
+  private meetingClosed = async (req: Request, res: Response) => {
+    const meetingId = req.body.meetingId;
+    console.log(`meeting closed meeting id : ${meetingId}`);
+    const finishMeeting = await this.service.finishingMeeting(meetingId);
+    console.log(finishMeeting);
+    res.status(200).json({success: true});
+  }
 
   private makeRoom(req: Request, res: Response) {
       res.status(200).render("meeting");

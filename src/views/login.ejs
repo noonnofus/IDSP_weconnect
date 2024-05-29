@@ -72,5 +72,32 @@
     </div>
   </div>
 </body>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Create a new button element
+    const autoLoginButton = document.createElement('button');
+    const autoLoginButton2 = document.createElement('button');
+    autoLoginButton.textContent = 'testman';
+    autoLoginButton2.textContent = 'jin123';
+    autoLoginButton.classList.add('btn', 'btn-primary', 'mt-3');
+    autoLoginButton2.classList.add('btn', 'btn-primary', 'mt-3');
+    
+    // Append the button to the form
+    const form = document.querySelector('.custom-form');
+    form.appendChild(autoLoginButton);
+    form.appendChild(autoLoginButton2);
 
+    // Add event listener to the button
+    autoLoginButton.addEventListener('click', () => {
+      document.getElementById('email').value = 'test@test.com';
+      document.getElementById('password').value = 'test';
+      form.submit();
+    });
+    
+    autoLoginButton2.addEventListener('click', () => {
+      document.getElementById('email').value = 'jin123@weconnect.com';
+      document.getElementById('password').value = 'jin123';
+    });
+  });
+</script>
 </html>
