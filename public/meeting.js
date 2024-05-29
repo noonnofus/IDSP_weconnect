@@ -1,6 +1,6 @@
 //const { type } = require("os");
 
-// const socket = window.io();
+//onst socket = window.io();
 
 let currentUser = null;
 
@@ -121,9 +121,8 @@ async function makeMediaStream() {
           .getElementById("mic_on_off_button")
           .classList.add("ri-mic-off-fill");
       }
-      // 초기 mic 상태에 따라 translator 아이콘 초기화
-      if (initialAudioState) {
-        translator.classList.remove("translator-not-available");
+      if (initialAudioState && currentla !== undefined && targetla !== undefined) {
+        translator.classList.remove('translator-not-available');
       } else {
         translator.classList.add("translator-not-available");
         translator.classList.remove("translator-clicked");
@@ -436,11 +435,10 @@ async function initApplication() {
 
   chatSubmitForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     try {
       const text = chatSubmitTextInput.value.trim()
 
-      socket.emit('chat_translation', text);
+      socket.emit('chat_translation', text, targetla);
     }
     catch(error) {
       console.error(error);
@@ -519,14 +517,14 @@ async function initApplication() {
       }
 
       if (isOn) {
-        translator.classList.add("translator-not-available");
-      } else {
-        translator.classList.remove("translator-not-available");
-        translator.classList.remove("translator-clicked");
-        if (stopRecording) {
-          stopRecording();
-        }
+       translator.classList.add('translator-not-available');
+      } else if (currentla !== undefined && targetla !== undefined) {
+        translator.classList.remove('translator-not-available');
+        translator.classList.remove('translator-clicked');
+      if (stopRecording) {
+        stopRecording();
       }
+    }
     });
 
   socket.emit(

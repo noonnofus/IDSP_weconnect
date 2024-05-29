@@ -20,15 +20,15 @@ async function showAllHistories(transcripts) {
         const div = document.createElement('div');
 
         div.innerHTML = `
-        <a href="/transcript?historyId=${transcript.historyId}" class="chattingRoomForm" method="get">
-            <div class="chattingRoomContainer">
-                <div class="chattingRoomDetail">
-                    <img class="chattingProfileImg" src="${user.profilePic}">
-                    <div class="chattingRoomSemi">
+        <a href="/transcript?historyId=${transcript.historyId}" class="transcriptForm" method="get">
+            <div class="transcriptContainer">
+                <div class="transcriptDetail">
+                    <img class="transcriptProfileImg" src="${user.profilePic}">
+                    <div class="transcriptSemi">
                         <h5>${user.username}'s room</h5>
                         <p>${transcript.last_message || ""}</p>
                     </div>
-                <h6 class="chattingRoomDate">${startDate}</h6>
+                <h6 class="transcriptDate">${startDate}</h6>
                 </div>
             </div>
         </a>

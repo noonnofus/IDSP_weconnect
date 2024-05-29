@@ -99,7 +99,8 @@ class AuthenticationController implements Controller {
     catch (err) {
       if (err) {
         console.log(err);
-        res.status(500).render('login', { err });
+        // @ts-ignore
+        res.status(500).render('login', { err: err.message });
       }
     }
   }
@@ -124,7 +125,8 @@ class AuthenticationController implements Controller {
       res.status(200).redirect('/home');
     }
     catch(err) {
-      res.status(500).render('signup', { err });
+      // @ts-ignore
+      res.status(500).render('signup', { err: err.message });
     }
   }
 

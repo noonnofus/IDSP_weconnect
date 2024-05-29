@@ -21,31 +21,40 @@ async function addHistory(history) {
     const div = document.createElement('div');
 
     div.innerHTML = `
-    <div class="chattingRoomForm">
-        <div class="chattingRoomContainer">
-            <div class="chattingRoomDetail">
-                <img class="chattingProfileImg" src="${user.profilePic}">
-                <div class="chattingRoomSemi">
+    <div class="transcriptForm">
+        <div class="transcriptContainer">
+            <div class="transcriptDetail">
+                <img class="transcriptProfileImg" src="${user.profilePic}">
+                <div class="transcriptSemi">
                     <h5>${user.username}'s room</h5>
                     <p>${history.last_message || ""}</p>
                 </div>
-            <h6 class="chattingRoomDate">${startDate}</h6>
+            <h6 class="transcriptDate">${startDate}</h6>
             </div>
         </div>
     </div>
     `
+
     historySection.appendChild(div);
 }
 
 async function addTranscript(transcripts) {
+    const userData = await getUserSession();
+    const currentUser = JSON.parse(userData.data);
     for (const transcript of transcripts) {
-        const div = document.createElement('div');
         const user = await getUserByUserId(transcript.senderId);
+        const isSender = currentUser.userId === user.userId;
+        const div = document.createElement('div');
         div.innerHTML = `
-        <h6 class="transcript-sender">${user.username}</h6>
-        <div class="transcript-message">${transcript.message}</div>
+        <h6>${user.username}:</h6>
+        <div class="original_text">${transcript.message}</div>
         `
         div.classList.add('mt-3')
+        if (isSender === true) {
+            div.classList.add("p-2", "col-auto", "transcript-sender");
+        } else {
+            div.classList.add("p-2", "col-auto", "transcript-receiver");
+        }
         transcriptSection.appendChild(div);
     }
 }
@@ -128,6 +137,14 @@ async function translateText(targetLang, text) {
     return result.data;
 }
 
+async function getUserSession() {
+    const res = await fetch('/getUserSession', {
+        method: 'POST',
+    });
+    const data = await res.json();
+    return data;
+}
+
 document.querySelectorAll('.targetLang a').forEach(function(element) {
     element.addEventListener('click', function(e) {
       e.preventDefault();
@@ -144,7 +161,13 @@ document.querySelectorAll('.targetLang a').forEach(function(element) {
 
 document.querySelector('.translate-btn').addEventListener("click", async (ev) => {
     ev.preventDefault();
-    const texts = document.querySelectorAll('.transcript-message');
+    const translated = document.querySelectorAll('.translated_text');
+    if (translated.length > 0) {
+        translated.forEach((el) => {
+            el.remove();
+        })
+    }
+    const texts = document.querySelectorAll('.original_text');
     for (const text of texts) {
         const translatedText = await translateText(targetLang, text.innerHTML);
         text.innerHTML = `
@@ -153,35 +176,3 @@ document.querySelector('.translate-btn').addEventListener("click", async (ev) =>
         `
     }
 })
-
-document.querySelector('.transcript_download').addEventListener("click", async (e) => {
-    e.preventDefault();
-    const texts = document.querySelectorAll('.transcript-message');
-    const users = document.querySelectorAll(".transcript-sender");
-    let definition = '';
-
-    texts.forEach((text, index) => {
-        const user = users[index];
-        definition += `${user.innerHTML}: ${text.innerHTML}\n`;
-    });
-    await generatePDF(definition);
-})
-
-async function generatePDF(definition) {
-    pdfMake.fonts = {
-        DM_Mono: {
-            normal: 'DM Mono',
-        }
-    };
-
-    const docDefinition = {
-        content: [
-            { text: definition, font: 'DM_Mono', fontSize: 15 },
-        ]
-    };
-
-    const timestamp = new Date().toISOString().replace(/[-:.]/g, "");
-    const fileName = `document_${timestamp}.pdf`;
-
-    pdfMake.createPdf(docDefinition).download(fileName);
-}

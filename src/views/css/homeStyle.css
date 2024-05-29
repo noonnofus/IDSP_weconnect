@@ -1,0 +1,56 @@
+.transcriptForm {
+    text-decoration-line: none;
+    color: black;
+}
+
+.transcriptContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+}
+
+.transcriptHeader {
+    margin-bottom: 5px;
+}
+
+.transcriptDetails {
+    display: flex;
+    align-items: center;
+    width: 100%; /* Ensure it uses the full width */
+}
+
+.transcriptDate {
+    margin-right: 15px;
+    flex-grow: 1;
+}
+
+.transcriptMessage {
+    margin-right: 15px;
+    flex-grow: 2;
+    margin: 0; /* To remove default margin */
+}
+
+.bi-chevron-right {
+    margin-left: auto;
+}
+
+/* .meeting-history {
+    margin-top: 15px;
+    margin-bottom: 15px;
+} */
+
+.custom-shadow {
+    box-shadow: 0 .5rem 1rem rgba(37, 114, 237, 0.1) !important;
+}
+
+.btn-text-container {
+    display: inline-block;
+    flex-direction: column; /* 텍스트를 세로로 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    text-align: left;
+}
+
+.btn-detail {
+    margin-top: 2vw;
+}

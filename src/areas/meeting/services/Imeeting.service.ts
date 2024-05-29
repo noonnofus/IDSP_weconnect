@@ -14,4 +14,6 @@ export interface IMeeting {
     updateLastMsg(_roomId: string, msg: string): Promise<void>
 
     finishingMeeting(_roomId: string): Promise<void> 
+
+    getActivatedMeetings(): Promise<tb_meetingroom[]>
 }

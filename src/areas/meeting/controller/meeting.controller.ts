@@ -22,6 +22,7 @@ class MeetingController implements Controller {
     this.router.post(`${this.path}joinMeeting`, this.joinMeeting);
     this.router.post(`${this.path}addMsgToHistory`, this.addMsgToHistory);
     this.router.post(`${this.path}meetingClosed`, this.meetingClosed);
+    this.router.post(`${this.path}activatedMeetings`, this.getActivatieMeetings);
   }
   private getHomepage(req: Request, res: Response) {
     //console.log(req.session.id);
@@ -136,6 +137,26 @@ class MeetingController implements Controller {
       })
     }
   }
+
+  private getActivatieMeetings = async (req: Request, res: Response) => {
+    try {
+      const meetings = await this.service.getActivatedMeetings();
+      console.log("activated meetings :")
+      console.log(meetings);
+      if(meetings.length !== 0) {
+      res.status(200).json({success: true, data: meetings});
+      } else {
+        res.status(200).json({success: false, message: "No activated meetings"});
+      
+      }
+
+
+    } catch(error) {
+      console.error(error);
+      res.status(500).json({success: false, message: "Something went wrong"});
+    }
+  }
 }
 
+  
 export default MeetingController;

@@ -86,13 +86,11 @@ export class MeetingService implements IMeeting {
     }
 
     async updateLastMsg(msg: string, _roomId: string): Promise<void> {
-        console.log('roomId at service: ', _roomId);
         const history = await this._db.prisma.tb_history.findFirst({
             where: {
                 roomId: _roomId,
             }
         })
-        console.log('lastmsg: ', history);
         if (history) {
             await this._db.prisma.tb_history.update({
                 where: {
@@ -117,6 +115,15 @@ export class MeetingService implements IMeeting {
                 isFinished: true,
             }
         })
+    }
+
+    async getActivatedMeetings(): Promise<tb_meetingroom[]> {
+        const meetings = await this._db.prisma.tb_meetingroom.findMany({
+            where: {
+                isFinished: false,
+            }
+        })
+        return meetings;
     }
 
 }
