@@ -43,3 +43,14 @@
 .custom-shadow {
     box-shadow: 0 .5rem 1rem rgba(37, 114, 237, 0.1) !important;
 }
+
+.btn-text-container {
+    display: inline-block;
+    flex-direction: column; /* 텍스트를 세로로 정렬 */
+    justify-content: center; /* 세로 중앙 정렬 */
+    text-align: left;
+}
+
+.btn-detail {
+    margin-top: 2vw;
+}
