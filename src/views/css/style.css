@@ -642,6 +642,40 @@ video {
     background: linear-gradient(to right, #2196F3, #9C27B0);
 }
 
+.centered-container {
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center;     /* Vertical centering */           
+}
+.account-settings-group button {
+    margin-bottom: 10px; 
+    width: 300px;
+    height: 50px;
+    text-align: center;
+    border-radius: 15px; 
+    border: none;
+    padding: 10px 20px;
+}
+
+.account-settings-group button:hover {
+    background: linear-gradient(to right, #2196F3, #9C27B0);
+    color: white
+}
+
+.save-settings-group button {
+    margin-bottom: 10px; 
+    width: 300px;
+    height: 50px;
+    text-align: center;
+    border-radius: 15px; 
+    border: none;
+    padding: 10px 20px;
+}
+
+.save-settings-group button:hover {
+    background: linear-gradient(to right, #2196F3, #9C27B0);
+    color: white
+}
 
 .settings-group button {
     margin-bottom: 10px; 
@@ -715,6 +749,7 @@ video {
   position: absolute; /* Absolute positioning */
     top: 0; /* Align to the top */
     right: 0;
+    padding-bottom: 10px;
 }
 
 .chattingRoomSemi h5 {
