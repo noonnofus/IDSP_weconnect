@@ -6,6 +6,10 @@ import {SpeechToTextService} from "./google_stt";
 import { PassThrough } from 'stream';
 import OpenAI from "openai";
 import 'dotenv/config';
+import path from "path";
+import fs from "fs";
+
+
 
 export class WebSocketServer {
   private app: express.Application;
@@ -269,7 +273,31 @@ export class WebSocketServer {
         if (user && targetSocket) {
           socket.to(targetSocket.id).emit("webrtc-ice-candidate", socket.data.userId, iceCandidate);
         }
+
+
       });
+      
+      socket.on('file_upload', (file) => {
+        const buffer = Buffer.from(file.data, 'base64');
+        const filePath = path.join(__dirname, 'uploads', file.filename);
+        fs.writeFile(filePath, buffer, (err) => {
+          if (err) {
+            console.error('File upload error: ', err);
+            return;
+          }
+          const fileUrl = `/uploads/${file.filename}`;
+          socket.emit('file_uploaded', {
+            filename: file.filename,
+            url: fileUrl,
+            id: file.id,
+            nickname: file.nickname,
+          });
+        });
+      });
+
+
+
+
       //chatting
       socket.on("send_roomId", (data) => {
         this.io.to(data.roomId).emit("send_roomId", data);
@@ -295,6 +323,7 @@ export class WebSocketServer {
   }
 
   private getRooms(includeSids?: boolean): string[] {
+    console.log(` get rooms: ${Array.from(this.io.sockets.adapter.rooms.keys())}`);
     return Array.from(this.io.sockets.adapter.rooms.keys())
       .filter((roomName) => includeSids || !this.io.sockets.adapter.sids.has(roomName));
   }
