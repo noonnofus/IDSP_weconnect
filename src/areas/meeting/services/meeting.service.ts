@@ -104,4 +104,26 @@ export class MeetingService implements IMeeting {
             throw new Error("Error while updating history");
         }
     }
+
+    async finishingMeeting(_roomId: string): Promise<void> {
+        console.log(`room Id at fising meeting: ${_roomId}`);
+        const finishing = await this._db.prisma.tb_meetingroom.update({
+            where: {
+                roomId: Number(_roomId),
+            },
+            data: {
+                isFinished: true,
+            }
+        })
+    }
+
+    async getActivatedMeetings(): Promise<tb_meetingroom[]> {
+        const meetings = await this._db.prisma.tb_meetingroom.findMany({
+            where: {
+                isFinished: false,
+            }
+        })
+        return meetings;
+    }
+
 }

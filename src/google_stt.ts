@@ -1,9 +1,9 @@
-import "dotenv/config";
+import 'dotenv/config';
 import { SpeechClient } from "@google-cloud/speech";
 import { GoogleAuth } from "google-auth-library";
-import * as fs from "fs";
-import * as path from "path";
-const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+import * as fs from 'fs';
+import * as path from 'path';
+
 export class SpeechToTextService {
   private recognizeStream: any = null;
   private transcriptionCallback: any;
@@ -22,11 +22,12 @@ export class SpeechToTextService {
     if (!credentialsEnv) {
       throw new Error("google env error");
     }
-    
-    const credentials = JSON.parse(credentialsEnv);
+    const credentialsFile = fs.readFileSync(path.join(__dirname, '../', credentialsEnv), 'utf-8');
+    const credentials = JSON.parse(credentialsFile);
+
     const auth = new GoogleAuth({
       credentials: credentials,
-      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
 
     this.client = new SpeechClient({ auth });
@@ -58,26 +59,24 @@ export class SpeechToTextService {
             this.restartStream(currentla);
           }
         })
-        .on("data", (data) => {
+        .on('data', (data) => {
           const transcription = data.results[0]?.alternatives[0]?.transcript;
           const isFinal = data.results[0]?.isFinal;
-          console.log(
-            `Real time transcript: ${transcription} [isFinal: ${isFinal}]`
-          );
+          console.log(`Real time transcript: ${transcription} [isFinal: ${isFinal}]`);
           console.log(data.results[0]);
           if (isFinal && transcription) {
             console.log('최종 전사: ', this.transcriptionCallback);
             this.transcriptionCallback(transcription);
           }
         });
-    } catch (error) {
+    } catch(error) {
       console.error(error);
     }
   }
 
   setCurrentLang(lang: string) {
     this.currentLang = lang;
-    console.log("at stt: ", this.currentLang);
+    console.log('at stt: ', this.currentLang);
   }
 
   restartStream(currentla: string) {
@@ -103,9 +102,9 @@ export class SpeechToTextService {
       this.recognizeStream.end();
       this.recognizeStream.removeAllListeners();
       this.recognizeStream = null;
-      console.log("Recognize stream ended successfully.");
+      console.log('Recognize stream ended successfully.');
     } else {
-      console.error("Recognize stream is not initialized.");
+      console.error('Recognize stream is not initialized.');
     }
   }
 }

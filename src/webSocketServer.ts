@@ -9,8 +9,6 @@ import 'dotenv/config';
 import path from "path";
 import fs from "fs";
 
-
-
 export class WebSocketServer {
   private app: express.Application;
   private server: http.Server;
@@ -89,13 +87,16 @@ export class WebSocketServer {
         }
       });
 
-      socket.on("login", (id, password, done) => {
+      socket.on("login", (id, password, nickname,done) => {
+        console.log(`hit login`);
+        console.log(`id: ${id}, password: ${password}`)
         let user;
 
         if (this.users.has(id) && this.users.get(id).password === password) {
           user = this.users.get(id);
         } else {
-          user = this.createUser(this.getRandomString(), this.getRandomString());
+          console.log("최초로그인시 여길 친다")
+          user = this.createUser(id, password, nickname);
           this.users.set(user.id, user);
         }
 
@@ -105,6 +106,10 @@ export class WebSocketServer {
           password: user.password,
           nickname: user.nickname,
         });
+      });
+
+      socket.on("get-rooms", (done) => {
+        done(this.getRooms());
       });
 
       socket.on("get-rooms", (done) => {
@@ -216,7 +221,7 @@ export class WebSocketServer {
           }
 
           socket.data.chatRoom = undefined;
-          done();
+          done(this.getRooms());
         }
       });
 
@@ -273,10 +278,8 @@ export class WebSocketServer {
         if (user && targetSocket) {
           socket.to(targetSocket.id).emit("webrtc-ice-candidate", socket.data.userId, iceCandidate);
         }
-
-
       });
-      
+
       socket.on('file_upload', (file) => {
         const buffer = Buffer.from(file.data, 'base64');
         const filePath = path.join(__dirname, 'uploads', file.filename);
@@ -294,10 +297,6 @@ export class WebSocketServer {
           });
         });
       });
-
-
-
-
       //chatting
       socket.on("send_roomId", (data) => {
         this.io.to(data.roomId).emit("send_roomId", data);
@@ -323,7 +322,6 @@ export class WebSocketServer {
   }
 
   private getRooms(includeSids?: boolean): string[] {
-    console.log(` get rooms: ${Array.from(this.io.sockets.adapter.rooms.keys())}`);
     return Array.from(this.io.sockets.adapter.rooms.keys())
       .filter((roomName) => includeSids || !this.io.sockets.adapter.sids.has(roomName));
   }
@@ -332,11 +330,11 @@ export class WebSocketServer {
     return this.io.sockets.adapter.rooms.get(roomName)?.size || 0;
   }
 
-  private createUser(id: string, password: string) {
+  private createUser(id: string, password: string, nickname: string) {
     return {
       id,
       password,
-      nickname: "Anonymous",
+      nickname: nickname,
     };
   }
 
