@@ -17,8 +17,6 @@ export class WebSocketServer {
   private io: SocketIOServer;
   private users: Map<string, any>;
   private roomId: number = 0;
-  private currentLang: string | null = null;
-  private targetLang: string | null = null;
   private STTService: SpeechToTextService;
 
   constructor(app: express.Application) {
@@ -139,59 +137,48 @@ export class WebSocketServer {
         }
       });
 
-      socket.on('start_recording', () => {
-        this.STTService.startRecognizeStream((transcription: string) => {
-          console.log('transcription: ', transcription);
-          socket.to(String(this.roomId)).emit('transcription', transcription);
+      socket.on('start_recording', (currentla: string, targetla) => {
+        console.log('start_recording 이벤트 수신, 언어: ', currentla);
+        this.STTService.startRecognizeStream(currentla, async (transcription: string) => {
+            console.log("herereee");
+            console.log('transcription: ', transcription);
+
+            if (targetla) {
+              const openai = new OpenAI({
+                apiKey: process.env.OPENAI_API_KEY,
+              });
+              console.log('text:: ', transcription);
+    
+              const messages = [
+                { "role": "system", "content": `You will be provided with a sentence in any language, and your task is to translate it into ${targetla}.` },
+                { "role": "user", "content": `${transcription}` },
+              ];
+      
+              const res = await openai.chat.completions.create({
+                model: "gpt-3.5-turbo",
+                // @ts-ignore
+                messages: messages,
+              })
+      
+              const translatedText = res.choices[0]?.message?.content?.trim();
+              console.log('translation: ', translatedText);
+              socket.emit('translated', transcription, translatedText);
+            } else {
+              socket.emit('translated', transcription, null);
+            }
         });
         setupRecognitionStream();
       });
-
-      socket.on('set_currentLang', (lang) => {
-        console.log(lang);
-        this.currentLang = lang;
-        this.STTService.setCurrentLang(lang);
-        this.STTService.restartStream();
-      })
       
-      socket.on('set_targetLang', (lang) => {
-        this.targetLang = lang;
-      })
-
-      socket.on('translation', async (text: string) => {
-        if (this.currentLang !== null && this.targetLang !== null && this.currentLang !== this.targetLang) {
-          const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
-          });
-          console.log(text);
-
-          const messages = [
-            { "role": "system", "content": `You will be provided with a sentence in any language, and your task is to translate it into ${this.targetLang}.` },
-            { "role": "user", "content": `${text}` },
-          ];
-  
-          const res = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            // @ts-ignore
-            messages: messages,
-          })
-  
-          const translatedText = res.choices[0]?.message?.content?.trim();
-          socket.emit('translated', text, translatedText);
-        } else {
-          socket.emit('translated', text, null);
-        }
-      })
-      
-      socket.on('chat_translation', async (text: string) => {
+      socket.on('chat_translation', async (text: string, targetla: string) => {
         console.log('text from socket: ', text);
-        if (this.currentLang !== null && this.targetLang !== null && this.currentLang !== this.targetLang) {
+        if (targetla) {
           const openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY,
           });
 
           const messages = [
-            { "role": "system", "content": `You will be provided with a sentence in any language, and your task is to translate it into ${this.targetLang}.` },
+            { "role": "system", "content": `You will be provided with a sentence in any language, and your task is to translate it into ${targetla}.` },
             { "role": "user", "content": `${text}` },
           ];
 
@@ -200,7 +187,6 @@ export class WebSocketServer {
             // @ts-ignore
             messages: messages,
           })
-          console.log(res);
   
           const translatedText = res.choices[0]?.message?.content?.trim();
           console.log(translatedText);

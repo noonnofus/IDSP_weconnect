@@ -37,11 +37,6 @@
     height: 100px;
 }
 
-.logo1 {
-    max-width: 100%;
-    max-height: 100%;
-}
-
 .logo-container {
     display: flex;
     justify-content: center;
@@ -50,8 +45,10 @@
 }
 
 .logo1 {
-    width: 45vw;
+    width: 40vw;
     height: auto;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .bold {
@@ -93,7 +90,7 @@
     font-weight: lighter;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 4vw;
+    font-size: 7vw;
     margin-bottom: 20px;
 }
 
@@ -265,31 +262,27 @@ div.notification.me-3 {
 }
 
 .btn {
-    display: inline-flex;
-    align-items: center;
-    /* height: 104px;
-    width: 191px; */
+    display: flex; /* Flexbox를 사용하여 아이템을 가로로 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
     border: none;
     background-color: transparent;
-    justify-content: flex-end;
+    justify-content: flex-start; /* 좌측 정렬 */
+    width: 44.5vw;
+    height: 25vw;
 }
 
 .btn p {
     margin: 0;
-    margin-left: 30%;
     color: #ffffff;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 4.2vw;
 }
 
 .btn-icon {
-    margin-left: 80%;
-    margin-bottom: 20%;
-    height: 24px; /* 이미지 크기 조절 */
-    width: 24px;
+    margin-right: 1vw;
+    margin-bottom: 6vw;
+    height: auto;
+    width: 7.5vw;
 }
-
-
 
 .meeting_btn-blue {
     background-color: #007bff !important; /* 파란색 */
@@ -301,35 +294,221 @@ div.notification.me-3 {
 
 
 /* meeting start modal */
-.modal.fade .modal-dialog {
-    position: fixed;
-    bottom: 0;
-    margin: 0 auto;
-    width: 100%;
-    max-width: none;
-    height: auto;
 
+@media (max-width: 430px) {
+    .modal-content {
+        background: linear-gradient(to right, #2277EE, #7722BB);
+    }
+    
+    .modal-title {
+        color: white;
+        font-size: 3.5vw;
+    }
+    
+    .modal.fade .modal-dialog {
+        position: fixed;
+        bottom: 0;
+        margin: 0 auto;
+        width: 100%;
+        max-width: none;
+        height: auto;
+    }
+    
+    .modal-body {
+        padding-top: 0 !important;
+    }
+    
+    .modal.modal-center {
+        text-align: center;
+    }
+    
+    .modal-dialog {
+        height: auto !important;
+        max-height: 90%;          /* 최대 높이 설정 */
+        overflow-y: auto;  
+    }
+    
+    .modal-footer {
+        display: flex;
+        justify-content: center !important;
+        align-items: center;
+        border: none !important;
+    }
+    
+    .modal-header {
+        border: none !important;
+    }
+    
+    .modal_interact_btn {
+        display: flex;
+        width: 100%;
+        height: 10vw;
+        background-color: white;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+    }
+    
+    .modal-detail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(255, 255, 255, 0.3);
+        border-radius: 10px;
+        width: 100%;
+        height: 10vw;
+    }
+    
+    .modal-detail p {
+        margin: 0;
+        margin-left: 10px;
+        color: white;
+    }
+    
+    .modal_checkbox {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .modal-detail input {
+        margin: 100%;
+    }
+    
+    .modal-detail label {
+        margin-left: 10px;
+        color: white;
+    }
+    
+    .input-join {
+        width: 50% !important;
+        height: 100%;
+    }
+    
+    .rounded-circle {
+        width: 15vw;
+        height: auto;
+    }
+    
+    .new-meeting-btn {
+        width: 100%;
+        height: 42px;
+    }
+    
+    .meetingBtn {
+        color: black !important;
+    }
+    
+    .meetingId {
+        margin-right: 5%;
+    }
 }
 
-.modal.modal-center {
-    text-align: center;
-}
-
-.modal-dialog {
-    height: auto !important;
-    max-height: 90%;          /* 최대 높이 설정 */
-    overflow-y: auto;  
-}
-
-.modal-footer {
-    display: flex;
-    justify-content: center !important;
-    align-items: center;
-}
-
-.new-meeting-btn {
-    width: 100%;
-    height: 42px;
+@media (min-width: 430px) {
+    .modal-content {
+        background: linear-gradient(to right, #2277EE, #7722BB);
+    }
+    
+    .modal-title {
+        color: white;
+        font-size: 3.5vw;
+    }
+    
+    .modal.fade .modal-dialog {
+        position: fixed;
+        bottom: 0;
+        margin: 0 auto;
+        width: 100%;
+        max-width: none;
+        height: auto;
+    }
+    
+    .modal-body {
+        padding-top: 0 !important;
+    }
+    
+    .modal.modal-center {
+        text-align: center;
+    }
+    
+    .modal-dialog {
+        height: auto !important;
+        max-height: 90%;          /* 최대 높이 설정 */
+        overflow-y: auto;  
+    }
+    
+    .modal-footer {
+        display: flex;
+        justify-content: center !important;
+        align-items: center;
+        border: none !important;
+    }
+    
+    .modal-header {
+        border: none !important;
+    }
+    
+    .modal_interact_btn {
+        display: flex;
+        width: 100%;
+        height: 10vw;
+        background-color: white;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+    }
+    
+    .modal-detail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(255, 255, 255, 0.3);
+        border-radius: 10px;
+        width: 100%;
+        height: 10vw;
+    }
+    
+    .modal-detail p {
+        margin: 0;
+        margin-left: 10px;
+        color: white;
+    }
+    
+    .modal_checkbox {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .modal-detail input {
+        margin: 100%;
+    }
+    
+    .modal-detail label {
+        margin-left: 10px;
+        color: white;
+    }
+    
+    .input-join {
+        width: 50% !important;
+        height: 100%;
+    }
+    
+    .rounded-circle {
+        width: 15vw;
+        height: auto;
+    }
+    
+    .new-meeting-btn {
+        width: 100%;
+        height: 42px;
+    }
+    
+    .meetingBtn {
+        color: black !important;
+    }
+    
+    .meetingId {
+        margin-right: 5%;
+    }
 }
 
 video {
@@ -709,6 +888,10 @@ footer {
     padding-left: 10px;
     padding-right: 10px;
     text-align: center;
+}
+
+.error-msg {
+    color: red;
 }
 
 @media (max-width: 768px) {

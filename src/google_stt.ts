@@ -18,8 +18,6 @@ export class SpeechToTextService {
     this.isRestarting = false;
     this.restartTimeout = null;
 
-
-    //const env = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     if (!credentialsEnv) {
       throw new Error("google env error");
@@ -34,31 +32,30 @@ export class SpeechToTextService {
     this.client = new SpeechClient({ auth });
   }
 
-  public startRecognizeStream(callback: (transcription: string) => void) {
-    this.initializeStream();
-    setTimeout(() => {
-      this.transcriptionCallback = callback;
-    }, 500);
+  public startRecognizeStream(currentla: string, callback: (transcription: string) => void) {
+    this.initializeStream(currentla);
+    this.transcriptionCallback = callback;
   }
 
-  private initializeStream() {
+
+  private initializeStream(currentla: string) {
     try {
       this.recognizeStream = this.client
-        .streamingRecognize({
-          config: {
-            encoding: "WEBM_OPUS",
-            sampleRateHertz: 48000,
-            languageCode: this.currentLang,
-            model: "default",
-          },
-          interimResults: true,
-          singleUtterance: false,
-        })
-        .on("error", (error) => {
-          console.error("Stream error:", error);
+      .streamingRecognize({
+        config: {
+          encoding: 'WEBM_OPUS',
+          sampleRateHertz: 48000,
+          languageCode: currentla,
+          model: 'default',
+        },
+        interimResults: true,
+        singleUtterance : false,
+      })
+        .on('error', (error) => {
+          console.error('Stream error:', error);
           if (!this.isRestarting) {
             this.isRestarting = true;
-            this.restartStream();
+            this.restartStream(currentla);
           }
         })
         .on("data", (data) => {
@@ -69,6 +66,7 @@ export class SpeechToTextService {
           );
           console.log(data.results[0]);
           if (isFinal && transcription) {
+            console.log('최종 전사: ', this.transcriptionCallback);
             this.transcriptionCallback(transcription);
           }
         });
@@ -82,16 +80,19 @@ export class SpeechToTextService {
     console.log("at stt: ", this.currentLang);
   }
 
-  restartStream() {
+  restartStream(currentla: string) {
     this.endStream();
     if (this.restartTimeout) {
       clearTimeout(this.restartTimeout);
     }
     this.restartTimeout = setTimeout(() => {
       this.isRestarting = false;
-      this.startRecognizeStream(this.transcriptionCallback);
+      if (this.transcriptionCallback) {
+        this.startRecognizeStream(currentla, this.transcriptionCallback);
+      }
     }, 1000);
   }
+
 
   public getRecognizeStream() {
     return this.recognizeStream;

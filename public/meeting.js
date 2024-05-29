@@ -28,6 +28,8 @@ let nickname = "";
 let myStream;
 let translation = false;
 let stopRecording;
+let currentla;
+let targetla;
 
 async function onReceiveChat(response) {
   const chatListContainer = document.getElementById("chat_list_container");
@@ -107,9 +109,8 @@ async function makeMediaStream() {
           .getElementById("mic_on_off_button")
           .classList.add("ri-mic-off-fill");
       }
-      // 초기 mic 상태에 따라 translator 아이콘 초기화
-      if (initialAudioState) {
-        translator.classList.remove("translator-not-available");
+      if (initialAudioState && currentla !== undefined && targetla !== undefined) {
+        translator.classList.remove('translator-not-available');
       } else {
         translator.classList.add("translator-not-available");
         translator.classList.remove("translator-clicked");
@@ -164,7 +165,7 @@ function arrayBufferToBase64(buffer) {
 
 translator.addEventListener("click", () => {
   if (!translation && initialAudioState === true) {
-    socket.emit("start_recording");
+    socket.emit('start_recording', currentla, targetla);
     translation = true;
     translator.classList.add("translator-clicked");
     const result = startRecording(myStream);
@@ -407,11 +408,10 @@ function initApplication() {
 
   chatSubmitForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     try {
       const text = chatSubmitTextInput.value.trim()
 
-      socket.emit('chat_translation', text);
+      socket.emit('chat_translation', text, targetla);
     }
     catch(error) {
       console.error(error);
@@ -420,12 +420,20 @@ function initApplication() {
 
   socket.on('translatedChat', async (originalChat, translatedText) => {
     // call function to add originalchat to db here.
-    const chat = {
-      type: 'chat',
-      id,
-      nickname,
-      msg: `${originalChat} -> ${translatedText}`,
-    };
+    let chat;
+    if (translatedText !== null) {
+      chat = {
+        id,
+        nickname,
+        msg: `${originalChat} -> ${translatedText}`,
+      };
+    } else {
+      chat = {
+        id,
+        nickname,
+        msg: `${originalChat}`,
+      };
+    }
 
     if (chat.msg) {
       rtcPeerConnectionMap.forEach((connection) => {
@@ -487,13 +495,12 @@ function initApplication() {
       }
 
       if (isOn) {
-        translator.classList.add("translator-not-available");
-      } else {
-        translator.classList.remove("translator-not-available");
-        translator.classList.remove("translator-clicked");
-        if (stopRecording) {
-          stopRecording();
-        }
+       translator.classList.add('translator-not-available');
+      } else if (currentla !== undefined && targetla !== undefined) {
+        translator.classList.remove('translator-not-available');
+        translator.classList.remove('translator-clicked');
+      if (stopRecording) {
+        stopRecording();
       }
     });
 
@@ -517,17 +524,8 @@ function initApplication() {
   socket.emit("get-rooms", refreshRooms);
 }
 
-socket.on('transcription', async (transcription) => {
-  try {
-    socket.emit('translation', transcription);
-  } catch(error) {
-    console.error(error);
-  }
-});
-
-socket.on("translated", async (transcription, translatedText) => {
+socket.on('translated', async (transcription, translatedText) => {
   let chat;
-
   if (translatedText !== null) {
     chat = {
       type: 'chat',
@@ -671,7 +669,24 @@ document.getElementById("share_url").addEventListener("click", () => {
     });
 });
 
-window.onload = async () => {};
+window.onload =  async () => {
+  const res = await fetch("/validMeetingId", {
+    method: "POST",
+    headers:{
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      meetingId: meetingId
+    })
+    })
+    const data = await res.json();
+    if (data.success) {
+      const roomName = document.getElementById("app_title");
+      roomName.innerText = data.data.description;
+      const roomId = document.getElementById("share-url-input");
+      roomId.value = data.data.roomId;
+    }
+}
 
 initApplication();
 
@@ -679,27 +694,36 @@ initApplication();
 document.querySelectorAll(".currentLang a").forEach(function (element) {
   element.addEventListener("click", function (e) {
     e.preventDefault();
-    const dropdown = this.closest(".dropdown");
-    const button = dropdown.querySelector(".btn");
-    button.innerHTML = this.getAttribute("data-value");
+    const mic = document.getElementById("mic_on_off_button").classList
+    const dropdown = this.closest('.dropdown');
+    const button = dropdown.querySelector('.btn');
+    button.innerHTML = this.getAttribute('data-value');
 
     const currentLang = this.getAttribute("data-language");
 
-    socket.emit("set_currentLang", currentLang);
+    currentla = currentLang;
+
+    if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+      translator.classList.remove('translator-not-available');
+    }
   });
 });
 
 document.querySelectorAll(".targetLang a").forEach(function (element) {
   element.addEventListener("click", function (e) {
     e.preventDefault();
-    const dropdown = this.closest(".dropdown");
-    const button = dropdown.querySelector(".btn");
-    button.innerHTML = this.getAttribute("data-value");
+    const mic = document.getElementById("mic_on_off_button").classList
+    const dropdown = this.closest('.dropdown');
+    const button = dropdown.querySelector('.btn');
+    button.innerHTML = this.getAttribute('data-value');
     // this = a tag
 
     const targetLang = this.getAttribute("data-language");
 
-    socket.emit("set_targetLang", targetLang);
+    targetla = targetLang;
+    if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+      translator.classList.remove('translator-not-available');
+    }
   });
 });
 

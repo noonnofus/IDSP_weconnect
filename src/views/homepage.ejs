@@ -9,6 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="homeStyle.css">
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
       rel="stylesheet"
@@ -34,7 +35,12 @@
 
     <div class="login-text">Today's Meeting</div>
 
-    <div class="login-text">Meeting Transcripts</div>
+    <div>
+      <div class="login-text">Meeting Transcripts</div>
+      <div class="transcript-section">
+        <!-- where last 2 transcript histories goes -->
+      </div>
+    </div>
 
     <div class="button-container">
       <button
@@ -43,8 +49,13 @@
         data-toggle="modal"
         data-target="#newMeetingModal"
       >
+      <div class="btn-detail">
         <img src="new_meeting.svg" alt="New Meeting" class="btn-icon" />
-        <p>New Meeting</p>
+        <div class="btn-text-container">
+          <p>New</p>
+          <p>Meeting</p>
+        </div>
+      </div>
       </button>
       <button
         type="button"
@@ -52,8 +63,13 @@
         data-toggle="modal"
         data-target="#joinMeetingModal"
       >
+      <div class="btn-detail">
         <img src="join_meeting.svg" alt="Join Meeting" class="btn-icon" />
-        <p>Join Meeting</p>
+        <div class="btn-text-container">
+          <p>Join</p>
+          <p>Meeting</p>
+        </div>
+      </div>
       </button>
     </div>
     
@@ -70,26 +86,21 @@ aria-hidden="true"
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title" id="newMeetingModalLabel">New Meeting</h5>
-      <button
-        type="button"
-        class="close"
-        data-dismiss="modal"
-        aria-label="Close"
-      >
-        <span aria-hidden="true">
-          <img src="newmeeting_close.svg" alt="closing btn" />
-        </span>
-      </button>
+      <span aria-hidden="true">
+        <img src="newmeeting_close.svg" alt="closing btn" data-dismiss="modal"/>
+      </span>
     </div>
     <div class="modal-body">
-      <div class="d-flex align-items-center mb-3">
+      <div class="align-items-center mb-3">
         <img
           class="rounded-circle"
-          style="width: 48px; height: 48px; margin-right: 8px"
           src="<%- loggedInUser.profilePic %>"
           alt=""
         />
-        <%= loggedInUser.username %>
+      </div>
+      <div class="modal-detail user-username mb-3">
+        <img src="modal_username.svg" alt="user_icon">
+        <p><%= loggedInUser.username %></p>
       </div>
       <form action="/createMeetingRoom" method="post">
         <input
@@ -107,33 +118,30 @@ aria-hidden="true"
           value="<%= loggedInUser.userId %>"
           hidden
         />
-        <div class="form-group mb-3">
+        <div class="modal-detail form-group mb-3">
           <label>Meeting Id:</label>
           <label id="lb_meetingId"></label>
         </div>
-        <div class="form-group mb-3">
+        <div class="modal-detail form-group mb-3">
+          <img src="modal_audio.svg" alt="audio_icon">
           <label>Turn on Audio</label>
           <label class="switch">
-            <input type="checkbox" name="audio" />
+            <input class="modal_checkbox" type="checkbox" name="audio" />
           </label>
         </div>
-        <div class="form-group mb-3">
+        <div class="modal-detail form-group">
+          <img src="modal_video.svg" alt="video_icon">
           <label>Turn on Video</label>
           <label class="switch">
-            <input type="checkbox" name="video" />
+            <input class="modal_checkbox" type="checkbox" name="video" />
           </label>
         </div>
         <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-dismiss="modal"
-          >
-            Close
-          </button>
-          <button type="submit" class="btn btn-primary new-meeting-btn">
-            Start Meeting
-          </button>
+          <div class="modal_interact_btn">
+            <button type="submit" class="btn btn-white new-meeting-btn">
+              <p class="meetingBtn">Start Meeting</p>
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -151,63 +159,63 @@ aria-hidden="true"
       aria-labelledby="joinMeetingModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="joinMeetingModalLabel">Join Meeting</h5>
-            <button
-              type="submit"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newMeetingModalLabel">Join Meeting</h5>
+          <span aria-hidden="true">
+            <img src="newmeeting_close.svg" alt="closing btn" data-dismiss="modal"/>
+          </span>
+        </div>
+        <div class="modal-body">
+          <div class="align-items-center mb-3">
+            <img
+              class="rounded-circle"
+              src="<%- loggedInUser.profilePic %>"
+              alt=""
+            />
           </div>
-          <div class="modal-body">Meeting details go here.</div>
-          <div class="modal-footer">
-            <form action="/joinMeeting" method="POST">
-                <div class="form-group mb-3">
-                <label>Meeting Id :</label>
+          <div class="modal-detail user-username mb-3">
+            <img src="modal_username.svg" alt="user_icon">
+            <p><%= loggedInUser.username %></p>
+          </div>
+          <form action="/joinMeeting" method="POST">
+            <div class="modal-detail form-group mb-3">
+              <label class="meetingId">Meeting Id: </label>
                 <input
                   id="meetingIdInputForJoin"
                   name="meetingId"
-                  class="form-group"
+                  class="form-control input-join form-group m-0"
                   placeholder="Enter meeting Id"
                   required
                 />
             </div>
-                <input
-                  id="userId"
-                  name="id"
-                  class="form-control"
-                  value="<%=loggedInUser.userId %>"
-                 hidden
-                />
-                <div class="form-group mb-3">
-                  <label>Turn on Audio</label>
-                  <label class="switch">
-                    <input type="checkbox" name="audio" />
-                  </label>
-                </div>
-                <div class="form-group mb-3">
-                  <label>Turn on Video</label>
-                  <label class="switch">
-                    <input type="checkbox" name="video" />
-                  </label>
-                </div>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-dismiss="modal"
-                >
-                  Close
+            <div class="modal-detail form-group mb-3">
+              <img src="modal_audio.svg" alt="audio_icon">
+              <label>Turn on Audio</label>
+              <label class="switch">
+                <input class="modal_checkbox" type="checkbox" name="audio" />
+              </label>
+            </div>
+            <div class="modal-detail form-group">
+              <img src="modal_video.svg" alt="video_icon">
+              <label>Turn on Video</label>
+              <label class="switch">
+                <input class="modal_checkbox" type="checkbox" name="video" />
+              </label>
+            </div>
+            <div class="modal-footer">
+              <div class="modal_interact_btn">
+                <button type="submit" class="btn btn-white new-meeting-btn">
+                  <p class="meetingBtn">Join Meeting</p>
                 </button>
-                <button type="submit" class="btn btn-primary">Join</button>
-              </form>
-          </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
+    </div>
+    </div>
     </div>
 
     <footer><%- include("./homepage_footer.ejs") %></footer>
