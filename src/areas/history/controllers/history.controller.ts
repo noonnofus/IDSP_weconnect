@@ -15,9 +15,9 @@ class HistoryController implements Controller {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}history`, this.getHomePage);
-    this.router.post(`${this.path}getAllTranscripts`, this.getAllTranscripts);
+    this.router.get(`${this.path}history`, this.getHistorypage);
     this.router.get(`${this.path}transcript`, this.getTranscriptPage);
+    this.router.post(`${this.path}getAllTranscripts`, this.getAllTranscripts);
     this.router.post(`${this.path}getTranscriptionByHistoryId`, this.getTranscriptionByHistoryId);
     this.router.post(`${this.path}addMsgToTranscription`, this.addMsgToTranscription);
     this.router.post(`${this.path}getHistoryByRoomId`, this.getHitoryByRoomId);
@@ -25,8 +25,7 @@ class HistoryController implements Controller {
     this.router.post(`${this.path}translateText`, this.translateText);
   }
 
-  private getHomePage = async (req: Request, res: Response): Promise<void> => {
-    console.log("hit history page");
+  private getHistorypage = async (req: Request, res: Response): Promise<void> => {
     // @ts-ignore
     if(req.session.user !== undefined) {
       res.status(200).render('history')
@@ -36,7 +35,6 @@ class HistoryController implements Controller {
   }
   
   private getTranscriptPage = async (req: Request, res: Response): Promise<void> => {
-    console.log('hit transcription page');
     // @ts-ignore
     if(req.session.user !== undefined) {
       res.status(200).render('transcription');

@@ -3,7 +3,6 @@ import DBClient from "../../../prisma";
 import { IAuthentication } from "./Iauthentication.service";
 import bcrypt from "bcrypt";
 
-
 export class AuthenticationService implements IAuthentication{
     readonly _db: DBClient = DBClient.getInstance();
 

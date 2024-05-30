@@ -14,20 +14,14 @@ class MeetingController implements Controller {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}home`, this.getHomepage);
-    this.router.post(`${this.path}createMeetingRoom`, this.createMeetingRoom);
     this.router.get(`${this.path}meeting`, this.makeRoom);
     this.router.get(`${this.path}meetings`, this.getMeetingspage);
+    this.router.post(`${this.path}createMeetingRoom`, this.createMeetingRoom);
     this.router.post(`${this.path}validMeetingId`, this.validMeetingId);
-    this.router.post(`${this.path}getMeetingRoom`, this.getMeetingRoom);
     this.router.post(`${this.path}joinMeeting`, this.joinMeeting);
     this.router.post(`${this.path}addMsgToHistory`, this.addMsgToHistory);
     this.router.post(`${this.path}meetingClosed`, this.meetingClosed);
     this.router.post(`${this.path}activatedMeetings`, this.getActivatieMeetings);
-  }
-  private getHomepage(req: Request, res: Response) {
-    //console.log(req.session.id);
-    res.status(200).render("homepage");
   }
 
   private validMeetingId = async (req: Request, res: Response) => {
@@ -41,15 +35,14 @@ class MeetingController implements Controller {
       res.status(500).json({ success: false, message: err.message });
     }
   };
-
-  private getMeetingRoom(req: Request, res: Response) {
-    const meetingId = req.body.meetingId;
-    console.log(meetingId);
-    //res.status(200).json({success: true});
-  }
   
   private getMeetingspage(req: Request, res: Response) {
-    res.status(200).render('meetingRoom');
+    // @ts-ignore
+    if(req.session.user !== undefined) {
+      res.status(200).render('meetingRoom');
+    } else {
+      res.status(200).redirect('/login');
+    }
   }
 
   private createMeetingRoom = async (req: Request, res: Response) => {
@@ -123,7 +116,12 @@ class MeetingController implements Controller {
   }
 
   private makeRoom(req: Request, res: Response) {
+    // @ts-ignore
+    if(req.session.user !== undefined) {
       res.status(200).render("meeting");
+    } else {
+      res.status(200).redirect('/login');
+    }
   }
   
   private addMsgToHistory = async (req: Request, res: Response) => {
