@@ -1,0 +1,23 @@
+.searchModal-body {
+    position: absolute !important;
+    background-color: rgb(238, 238, 239);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.user-result {
+    padding: 7px;
+}
+
+.user-result:hover {
+    background-color: rgb(229, 240, 253);
+}
+
+.user-link {
+    color: black;
+    text-decoration-line: none;
+}

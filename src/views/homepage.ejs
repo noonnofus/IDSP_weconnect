@@ -8,6 +8,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+    <link rel="stylesheet" href="searchbarStyle.css">
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="homeStyle.css">
     <link
@@ -140,7 +141,7 @@ aria-hidden="true"
         </div>
         <div class="modal-footer">
           <div class="modal_interact_btn">
-            <button type="submit" class="btn btn-white new-meeting-btn">
+            <button type="submit" class="btn btn-white new-meeting-btn" id="meeting-start">
               <p class="meetingBtn">Start Meeting</p>
             </button>
           </div>
@@ -150,7 +151,6 @@ aria-hidden="true"
   </div>
 </div>
 </div>
-
 
     <!-- Join Meeting Modal -->
     <div
@@ -218,6 +218,14 @@ aria-hidden="true"
       </div>
     </div>
     </div>
+    </div>
+
+    <!-- loading modal -->
+    <div id="loadingModal" class="loading loading-modal">
+      <div class="loadingmodal-content">
+        <div class="spinner-border text-light" role="status"></div>
+        <div class="loading-text">loading, please wait...</div>
+      </div>
     </div>
 
     <footer><%- include("./homepage_footer.ejs") %></footer>

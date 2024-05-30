@@ -16,14 +16,13 @@ searchbar.addEventListener("input", async (ev) => {
         userResult.forEach(user => {
             createModal(currentUser, user);
         });
-
         document.querySelectorAll('.user-result').forEach(element => {
             element.addEventListener("click", async (ev) => {
                 ev.preventDefault();
                 const a = element.querySelector('a');
                 const href = a.getAttribute('href');
                 const sender = currentUser.userEmail;
-                const receiver = await userResult.find(u => u.username === a.textContent).email;
+                const receiver = await userResult.find(u => u.username === a.textContent.trim()).email;
                 await storeRoomInDb(sender, receiver);
                 window.location.href = href;
             });
@@ -34,13 +33,21 @@ searchbar.addEventListener("input", async (ev) => {
 })
 
 function createModal(currentUser, user) {
-    const modal = document.querySelector('.modal-body');
+    const modal = document.querySelector('.searchModal-body');
     const newDiv = document.createElement('div');
     newDiv.innerHTML = `
-    <a href="/chat?sender=${currentUser.userId}&receiver=${user.userId}" class="user-link">${user.username}</a>
+    <div class="row">
+        <div class="col-12">
+            <div class="search-result">
+                <a href="/chat?sender=${currentUser.userId}&receiver=${user.userId}" class="user-link">
+                    ${user.username}
+                </a>
+            </div>
+        </div>
+    </div>
     `
     
-    newDiv.classList.add("user-result");
+    newDiv.classList.add("user-result", "rounded-bottom");
     modal.append(newDiv);
 }
 
@@ -79,8 +86,6 @@ async function storeRoomInDb(sender, receiver) {
 }
 
 function clearModal() {
-    const modal = document.querySelector('.modal-body');
+    const modal = document.querySelector('.searchModal-body');
     modal.innerHTML = '';
 }
-
-// export default socket;

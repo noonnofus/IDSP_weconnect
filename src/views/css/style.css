@@ -522,8 +522,30 @@ video {
 }
 
 .prelog {
+    position: relative;
     min-height: 100vh;
+}
+
+.prelog::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: linear-gradient( #2277EE, #7722BB);
+    opacity: 0.65;
+    z-index: 1;
+}
+
+video {
+    z-index: 0;
+}
+
+.prelog-logo,
+.container {
+    position: relative;
+    z-index: 2;
 }
 
 .prelog-logo {
@@ -540,7 +562,7 @@ video {
     font-weight: lighter;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 1vw;
+    font-size: 1.5vw;
     margin-top: 60px;
     margin-bottom: 320px;
     text-align: center;
@@ -1022,13 +1044,13 @@ footer {
 
     .prelog-logo {
         height: 80px;
-        padding-top: 150px;
+        padding-top: 200px;
         padding-bottom: 20px;
     }
 
     .prelog-text {
-        font-size: 2vw;
-        margin-top: 60px;
+        font-size: 3vw;
+        margin-top: 80px;
         margin-bottom: 200px;
         text-align: center;
     }

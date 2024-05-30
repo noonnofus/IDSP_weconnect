@@ -1,5 +1,6 @@
 const transcriptSection = document.querySelector(".transcript-section");
 const meetingSection = document.querySelector(".meeting-section");
+const createMeeting = document.querySelector("#meeting-start");
 
 async function validMeetingRoom(id) {
   const res = await fetch("/validMeetingId", {
@@ -13,7 +14,6 @@ async function validMeetingRoom(id) {
   });
   const data = await res.json();
 
-  //console.log(data);
   return data.success;
 }
 
@@ -75,30 +75,6 @@ async function showActivatedMeetings() {
     div.classList.add("active-meetings");
     meetingSection.appendChild(div);
   }
-
-  //   for (const meeting of meetings) {
-  //     const div = document.createElement("div");
-  //     const user = await getUserByUserId(transcript.host_userId);
-  //     const date = changeDateFormat(transcript.start_time);
-  //     div.innerHTML = `
-  //             <a href="/transcript?historyId=${
-  //               transcript.historyId
-  //             }" class="transcriptForm" method="get">
-  //                 <div class="transcriptContainer custom-shadow p-3 mb-3 bg-white rounded">
-  //                 <h6 class="transcriptHeader">${user.username}'s room</h6>
-  //                 <div class="transcriptDetails">
-  //                     <div class="transcriptDate">${date}</div>
-  //                     <p class="transcriptMessage">${
-  //                       transcript.last_message || ""
-  //                     }</p>
-  //                     <i class="bi bi-chevron-right bi-fw"></i>
-  //                 </div>
-  //                 </div>
-  //             </a>
-  //             `;
-  //     div.classList.add("meeting-history");
-  //     transcriptSection.appendChild(div);
-  // }
 }
 
 async function addTranscripts(transcripts) {
@@ -134,6 +110,17 @@ function changeDateFormat(dateTime) {
   const day = ("0" + date.getDate()).slice(-2);
   const dateStr = `${year}-${month}-${day}`;
   return dateStr;
+}
+
+function showLoadingModal() {
+  document.getElementById('loadingModal').style.display = 'block';
+  
+  // 예시: 3초 후에 로딩 모달 숨기기
+  setTimeout(hideLoadingModal, 3000);
+}
+
+function hideLoadingModal() {
+  document.getElementById('loadingModal').style.display = 'none';
 }
 
 async function getUserSession() {
@@ -190,10 +177,10 @@ async function getMeetingRooms() {
     },
   });
   const data = await res.json();
-  //console.log(data);
   return data;
 }
 
 document.addEventListener("DOMContentLoaded", generateRandomId);
 document.addEventListener("DOMContentLoaded", showMeetingHistory);
 document.addEventListener("DOMContentLoaded", showActivatedMeetings);
+createMeeting.addEventListener('click', showLoadingModal);

@@ -19,16 +19,18 @@ export class SpeechToTextService {
     this.restartTimeout = null;
 
     
-    const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    if (!credentialsEnv) {
-      throw new Error("google env error");
+    const env = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    if (!env) {
+      throw new Error('google env error');
     }
-    
-    const credentials = JSON.parse(credentialsEnv);
+    const credentialsFile = fs.readFileSync(path.join(__dirname, '../', env), 'utf-8');
+    const credentials = JSON.parse(credentialsFile);
+
     const auth = new GoogleAuth({
       credentials: credentials,
-      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
     });
+
     this.client = new SpeechClient({ auth });
   }
 
