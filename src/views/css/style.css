@@ -727,12 +727,43 @@ video {
 }
 
 /* dark mode settings */
+
+/* Style for the dark-mode-header container */
+.dark-mode-header {
+    text-align: right;   /* Center align the content */
+    padding: 10px;        /* Add some padding */
+}
+
+/* Rounded button with no borders */
+.dark-mode-header button {
+    border: none;                /* Remove border */
+    border-radius: 50px;         /* Make the button rounded */
+    padding: 10px 20px;          /* Add some padding for better appearance */
+    background-color: #007bff;   /* Button background color */
+    color: #ffffff;              /* Button text color */
+    font-size: 16px;             /* Button text size */
+    cursor: pointer;             /* Pointer cursor on hover */
+    outline: none;               /* Remove outline on focus */
+    display: inline-block;       /* Ensure proper alignment */
+    text-align: center;          /* Center text alignment */
+    transition: background-color 0.3s ease;
+    
+}
+
+.dark-mode-header button:hover {
+    background-color: #0056b3;   /* Darker background on hover */
+}
+
+.dark-mode-header button:active {
+    background-color: #004085;   /* Even darker background on click */
+}
+
 .dark-mode {
     background-color: #2e2c2c;
     color: #ffffff; 
 }
 
-.dark-mode .homepage-header, .dark-mode .home-footer {
+.dark-mode .homepage-header, .dark-mode .home-footer .navbar {
     background-color: #2e2c2c;
     color: #ffffff;
 }
@@ -749,6 +780,16 @@ video {
     filter: invert(100%);
 }
 
+.dark-mode .navbar {
+    background-color: #5b5858;
+    color: #ffffff; 
+}
+
+.dark-mode .form-control {
+    background-color: white;
+    color: #ffffff; 
+}
+
 .dark-mode .settings-group button:hover {
     background: linear-gradient(to right, #dd8811, #88dd44);
     color: black;
@@ -757,6 +798,8 @@ video {
 .dark-mode .toggle-input:checked + .toggle-slider {
     background: linear-gradient(to right, #dd8811, #88dd44);
 }
+
+
 
 
 .settings-text,

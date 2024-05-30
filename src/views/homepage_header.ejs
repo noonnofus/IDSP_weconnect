@@ -13,6 +13,11 @@
             <div class="setting" onclick="goToSettingsPage()">
                 <img src="Setting.svg" alt="setting_icon">
             </div>
+            <div class="dark-mode-header">
+                <button onclick="toggleLightDarkMode()">
+                    Light/Dark mode
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -47,4 +52,8 @@
     function goToSettingsPage() {
         window.location.href = 'settings';
     }
+    function toggleLightDarkMode() {
+            var body = document.body;
+            body.classList.toggle("dark-mode");
+        }
 </script>
