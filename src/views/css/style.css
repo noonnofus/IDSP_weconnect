@@ -252,6 +252,8 @@ div.notification.me-3 {
     border-left: none;
     border-right: none;
     border-bottom: none;
+    padding-left: 2vw;
+    padding-right: 2vw;
 }
 
 
@@ -1147,4 +1149,15 @@ footer {
     .chat-section {
         height: 500px;
     }
+}
+
+.header-search-icon {
+    width: 5vw;
+    height: auto;
+}
+
+
+.header-setting-icon {
+    width: 4.5vw;
+    height: auto;
 }

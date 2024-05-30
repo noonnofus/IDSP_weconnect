@@ -14,7 +14,12 @@ class AuthenticationController implements Controller {
   }
 
   private getLandingPage(req: Request, res: Response): void {
-    res.render("prelog");
+    // @ts-ignore
+    if(req.session.user) {
+      res.status(200).redirect('/home')
+    } else {
+      res.status(200).render('prelog')
+    }
   }
 }
 
