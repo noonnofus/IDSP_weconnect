@@ -23,8 +23,8 @@ export class SpeechToTextService {
     if (!env) {
       throw new Error('google env error');
     }
-    // const credentialsFile = fs.readFileSync(path.join(__dirname, '../', env), 'utf-8');
-    const credentials = JSON.parse(env);
+    const credentialsFile = fs.readFileSync(path.join(__dirname, '../', env), 'utf-8');
+    const credentials = JSON.parse(credentialsFile);
 
     const auth = new GoogleAuth({
       credentials: credentials,
