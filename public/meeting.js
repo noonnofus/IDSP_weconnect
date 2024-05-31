@@ -218,7 +218,10 @@ function createRTCPeerConnection(peerId, peerNickname) {
   });
 
   myRTCPeerConnection.oniceconnectionstatechange = () => {
-    if (myRTCPeerConnection.iceConnectionState === "failed") {
+    console.log(`ICE connection state: ${myRTCPeerConnection.iceConnectionState}`);
+    if (myRTCPeerConnection.iceConnectionState === "failed" || 
+        myRTCPeerConnection.iceConnectionState === "disconnected" || 
+        myRTCPeerConnection.iceConnectionState === "closed") {
       window.location.href = "/home";
     }
   };
