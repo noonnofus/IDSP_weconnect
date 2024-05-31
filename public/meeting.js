@@ -629,6 +629,12 @@ socket.on("notify-join-room", async (response) => {
     response.nickname
   );
   myRTCPeerConnection.onicecandidate = (event) => {
+    console.log(`ICE Connection State: ${peerConnection.iceConnectionState}`);
+  
+  // 연결 상태가 'failed'일 경우 홈 페이지로 리디렉션
+  if (peerConnection.iceConnectionState === 'failed') {
+    window.location.href = '/home'; // 홈 페이지 URL로 변경하세요.
+  }
     socket.emit("webrtc-ice-candidate", response.id, event.candidate);
   };
   createDataChannel(myRTCPeerConnection, true);
