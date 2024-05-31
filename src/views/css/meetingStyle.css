@@ -173,16 +173,19 @@ video {
   position: fixed;
   bottom: 0;
   left: 0;
-  right: 0; /* 오른쪽 끝까지 확장되도록 설정 */
-  width: 100%; /* 너비를 100%로 설정 */
+  right: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
 }
 
+footer {
+  max-width: 100% !important;
+}
+
 .footer a {
-  color: red;
   font-size: 1.5rem;
   display: flex;
   align-items: center;
@@ -205,6 +208,14 @@ video {
 /* 아이콘 스타일 */
 .footer .icon i {
   font-size: 24px; /* 아이콘 크기 */
+  color: white;
+  border: none;
+}
+
+.icon {
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
 }
 
 /* 반응형 디자인 추가 */
