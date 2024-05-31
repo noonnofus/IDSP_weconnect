@@ -66,8 +66,8 @@ body {
     font-weight: lighter;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 7vw;
-    margin-bottom: 20px;
+    font-size: 5vw;
+    margin-bottom: 10px;
 }
 
 .navbar {

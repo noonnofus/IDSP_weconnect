@@ -201,32 +201,36 @@ class AuthenticationController implements Controller {
     }
   }
 
-  private resetPassword = async (req: Request, res: Response): Promise<void> => {
+  private resetPassword = async (req: Request, res: Response) => {
     try {
-        const { email, oldPassword, newPassword, confirmPassword } = req.body;
+        const { oldPwd, newPwd, confirmPwd } = req.body;
+        // @ts-ignore
+        const user = req.session.user;
 
         // Check if the new password and confirm password match
-        if (newPassword !== confirmPassword) {
-            throw new Error("New password and confirm password do not match.");
+        if (newPwd !== confirmPwd) {
+          throw new Error("New password and confirm password have to matched.");
         }
 
-        // Validate the old password
-        const user = await this.service.getUserByEmailAndPwd(email, oldPassword);
+        const validEmail = await this.service.getUserByEmailAndPwd(user.userEmail, oldPwd);
 
-        // Ensure user is not an error
-        if (user instanceof Error) {
-            throw user; // Re-throw the error
+        if (validEmail) {
+          // Update the user's password with the new password
+          const updatedUser = await this.service.updateUserPassword(user.userId, newPwd);
+
+          if (updatedUser !== null) {
+            // Send a success response
+            res.status(200).json({ success: true, message: "Password reset successfully." });
+          } else {
+            throw new Error("Failed to updating password. Please try it again later.");
+          }
+        } else {
+          throw new Error("Wrong old password, please try it again.")
         }
-
-        // Update the user's password with the new password
-        const updatedUser = await this.service.updateUserPassword(user.userId, newPassword);
-
-        // Send a success response
-        res.status(200).json({ success: true, message: "Password reset successfully." });
     } catch (error) {
         // Send an error response
-        console.error("Error resetting password:", error);
-        res.status(500).json({ success: false, message: "Reset password failed." });
+        console.error(error);
+        res.status(200).json({ success: false, message: `${error}` });
     }
   };
   
