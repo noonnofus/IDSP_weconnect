@@ -43,10 +43,11 @@
                 <div class="centered-container">
                     <div class="account-settings-group">
                         <div>
-                            <button onclick="switchAccount()">Switch Account</button>
+                            <button class="switch_account"
+                            type="submit">Switch Account</button>
                         </div>
                         <div>
-                            <button onclick="signOut()">Sign Out</button>
+                            <button class="signout" type="submit">Sign Out</button>
                         </div>
                     </div>
                 </div>   
@@ -58,13 +59,6 @@
     <footer>
         <%- include("./homepage_footer.ejs") %>
     </footer>
-    <script>
-        function signOut() {
-            window.location.href = './';
-        }
-        function switchAccount() {
-            window.location.href = 'login';
-        }
-    </script>
+    <script src="setting.js"></script>
 </body>
 </html>

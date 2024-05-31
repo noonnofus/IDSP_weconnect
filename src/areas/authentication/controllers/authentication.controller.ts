@@ -17,7 +17,6 @@ class AuthenticationController implements Controller {
     this.router.get(`${this.path}home`, this.getHomePage);
     this.router.get(`${this.path}signup`, this.getRegisterPage);
     this.router.get(`${this.path}login`, this.getLoginPage);
-    this.router.get(`${this.path}prelog`, this.getPrelogPage);
     this.router.get(`${this.path}join_meeting`, this.getJoinMeetingPage);
 
     this.router.get(`${this.path}settings`, this.getSettings);
@@ -31,6 +30,7 @@ class AuthenticationController implements Controller {
     this.router.post(`${this.path}searchUser`, this.searchUser);
     this.router.post(`${this.path}getUserByUserId`, this.getUserByUserId);
     this.router.post(`${this.path}resetPassword`, this.resetPassword);
+    this.router.post(`${this.path}signout`, this.signout);
   }
 
   private getHomePage = async (req: Request, res: Response): Promise<void> => {
@@ -45,36 +45,61 @@ class AuthenticationController implements Controller {
     } else {
       res.status(200).redirect('/login')
     }
-  
-  }
-
-  private getPrelogPage(req: Request, res: Response): void {
-    res.status(200).render('prelog')
   }
 
   private getRegisterPage(req: Request, res: Response): void {
-    res.status(200).render('signup')
+     // @ts-ignore
+     if(req.session.user) {
+      res.status(200).redirect('/home')
+    } else {
+      res.status(200).render('signup')
+    }
   }
 
   private getLoginPage(req: Request, res: Response): void {
-    res.status(200).render("login");
+     // @ts-ignore
+     if(req.session.user) {
+      res.status(200).redirect('/home')
+    } else {
+      res.status(200).render("login");
+    }
   }
 
   private getJoinMeetingPage(req: Request, res: Response): void {
-    res.status(200).render("join_meeting");
+    // @ts-ignore
+    if(req.session.user !== undefined) {
+      res.status(200).render("join_meeting");
+    } else {
+      res.status(200).redirect('/login');
+    }
   }
 
 
   private getSettings(req: Request, res: Response): void {
-    res.status(200).render('settings')
+    // @ts-ignore
+    if(req.session.user !== undefined) {
+      res.status(200).render('settings')
+    } else {
+      res.status(200).redirect('/login');
+    }
   }
 
   private getAccountSettings(req: Request, res: Response): void {
-    res.status(200).render('account_settings')
+    // @ts-ignore
+    if(req.session.user !== undefined) {
+      res.status(200).render('account_settings')
+    } else {
+      res.status(200).redirect('/login');
+    }
   }
 
   private getResetPassword(req: Request, res: Response): void {
-    res.status(200).render('reset_password')
+    // @ts-ignore
+    if(req.session.user !== undefined) {
+      res.status(200).render('reset_password')
+    } else {
+      res.status(200).redirect('/login');
+    }
   }
 
   private login = async (req: Request, res: Response) => {
@@ -176,35 +201,53 @@ class AuthenticationController implements Controller {
     }
   }
 
-  private resetPassword = async (req: Request, res: Response): Promise<void> => {
+  private resetPassword = async (req: Request, res: Response) => {
     try {
-        const { email, oldPassword, newPassword, confirmPassword } = req.body;
+        const { oldPwd, newPwd, confirmPwd } = req.body;
+        // @ts-ignore
+        const user = req.session.user;
 
         // Check if the new password and confirm password match
-        if (newPassword !== confirmPassword) {
-            throw new Error("New password and confirm password do not match.");
+        if (newPwd !== confirmPwd) {
+          throw new Error("New password and confirm password have to matched.");
         }
 
-        // Validate the old password
-        const user = await this.service.getUserByEmailAndPwd(email, oldPassword);
+        const validEmail = await this.service.getUserByEmailAndPwd(user.userEmail, oldPwd);
 
-        // Ensure user is not an error
-        if (user instanceof Error) {
-            throw user; // Re-throw the error
+        if (validEmail) {
+          // Update the user's password with the new password
+          const updatedUser = await this.service.updateUserPassword(user.userId, newPwd);
+
+          if (updatedUser !== null) {
+            // Send a success response
+            res.status(200).json({ success: true, message: "Password reset successfully." });
+          } else {
+            throw new Error("Failed to updating password. Please try it again later.");
+          }
+        } else {
+          throw new Error("Wrong old password, please try it again.")
         }
-
-        // Update the user's password with the new password
-        const updatedUser = await this.service.updateUserPassword(user.userId, newPassword);
-
-        // Send a success response
-        res.status(200).json({ success: true, message: "Password reset successfully." });
     } catch (error) {
         // Send an error response
-        console.error("Error resetting password:", error);
-        res.status(500).json({ success: false, message: "Reset password failed." });
+        console.error(error);
+        res.status(200).json({ success: false, message: `${error}` });
     }
-};
-
+  };
+  
+  private signout = async (req: Request, res: Response): Promise<void> => {
+    try {
+      // @ts-ignore
+      req.session.user = null;
+      res.status(200).json({
+        success: true,
+      })
+    } catch(err) {
+      res.status(200).json({
+        success: false,
+        error: err,
+      })
+    }
+  };
 }
 
 export default AuthenticationController;

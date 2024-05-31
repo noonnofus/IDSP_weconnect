@@ -46,14 +46,10 @@ async function showMeetingHistory() {
 async function showActivatedMeetings() {
   const meetings = await getMeetingRooms();
 
-  console.log("showActiatedMeetings");
-  console.log(meetings);
-
-  //console.log("meetings.data.length: " + meetings.data.length);
   if (meetings.data) {
     for (i = 0; i < meetings.data.length; i++) {
         console.log("i: " + i);
-      if (i > 3) {
+      if (i > 2) {
         break;
       }
       const div = document.createElement("div");
