@@ -630,10 +630,6 @@ socket.on("notify-join-room", async (response) => {
   myRTCPeerConnection.onicecandidate = (event) => {
     
     // 연결 상태가 'failed'일 경우 홈 페이지로 리디렉션
-    if (peerConnection === null || peerConnection === undefined) {
-    alert("!")
-    window.location.href = '/home'; // 홈 페이지 URL로 변경하세요.
-  }
     console.log(`ICE Connection State: ${peerConnection.iceConnectionState}`);
     socket.emit("webrtc-ice-candidate", response.id, event.candidate);
   };
@@ -702,7 +698,7 @@ socket.on("webrtc-answer", (userId, userNickname, answer) => {
     alert("rtcPeerConnectionMap does not have userId!")
     return;
   } else {
-    alert("rtcPeerConnectionMap has userId!")
+    alert("rtcPeerConnectionMap has userId1")
   }
 
   rtcPeerConnectionMap.get(userId).setRemoteDescription(answer);
@@ -713,8 +709,7 @@ socket.on("webrtc-ice-candidate", (userId, candidate) => {
     alert("rtcPeerConnectionMap has userId!")
     rtcPeerConnectionMap.get(userId).addIceCandidate(candidate);
   } else {
-    alert("rtcPeerConnectionMap does not have userId!")
-  
+    alert("rtcPeerConnectionMap does not have userId2")
   }
 });
 
