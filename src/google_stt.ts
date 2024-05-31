@@ -32,11 +32,6 @@ export class SpeechToTextService {
     });
 
     this.client = new SpeechClient({ auth });
-      credentials: credentials,
-      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-    });
-
-    this.client = new SpeechClient({ auth });
   }
 
   public startRecognizeStream(currentla: string, callback: (transcription: string) => void) {
