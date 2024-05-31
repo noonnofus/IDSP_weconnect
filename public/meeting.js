@@ -616,6 +616,7 @@ socket.on("refresh-rooms", refreshRooms);
 
 socket.on("notify-join-room", async (response) => {
   document.getElementById("size_of_room").innerText = response.sizeOfRoom;
+
   onReceiveChat({
     type: 'chat',
     id: response.id,
@@ -628,9 +629,6 @@ socket.on("notify-join-room", async (response) => {
     response.nickname
   );
   myRTCPeerConnection.onicecandidate = (event) => {
-    
-    // 연결 상태가 'failed'일 경우 홈 페이지로 리디렉션
-    console.log(`ICE Connection State: ${peerConnection.iceConnectionState}`);
     socket.emit("webrtc-ice-candidate", response.id, event.candidate);
   };
   createDataChannel(myRTCPeerConnection, true);
@@ -678,9 +676,6 @@ socket.on("notify-change-nickname", (response) => {
 
 socket.on("webrtc-offer", async (userId, userNickname, offer) => {
   const myRTCPeerConnection = createRTCPeerConnection(userId, userNickname);
-  console.log("확인");
-  console.log(myRTCPeerConnection);
-
   myRTCPeerConnection.onicecandidate = (event) => {
     socket.emit("webrtc-ice-candidate", userId, event.candidate);
   };
@@ -695,21 +690,18 @@ socket.on("webrtc-offer", async (userId, userNickname, offer) => {
 
 socket.on("webrtc-answer", (userId, userNickname, answer) => {
   if (!rtcPeerConnectionMap.has(userId)) {
-    alert("rtcPeerConnectionMap does not have userId!")
     return;
-  } else {
-    alert("rtcPeerConnectionMap has userId1")
   }
 
   rtcPeerConnectionMap.get(userId).setRemoteDescription(answer);
 });
 
 socket.on("webrtc-ice-candidate", (userId, candidate) => {
+
+  console.log("ice : ");
+  console.log(candidate);
   if (rtcPeerConnectionMap.has(userId) && candidate) {
-    alert("rtcPeerConnectionMap has userId!")
     rtcPeerConnectionMap.get(userId).addIceCandidate(candidate);
-  } else {
-    alert("rtcPeerConnectionMap does not have userId2")
   }
 });
 
