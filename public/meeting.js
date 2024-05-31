@@ -217,6 +217,12 @@ function createRTCPeerConnection(peerId, peerNickname) {
     ],
   });
 
+  myRTCPeerConnection.oniceconnectionstatechange = () => {
+    if (myRTCPeerConnection.iceConnectionState === "failed") {
+      window.location.href = "/home";
+    }
+  };
+  
   if (myStream) {
     myStream
       .getTracks()
@@ -697,9 +703,6 @@ socket.on("webrtc-answer", (userId, userNickname, answer) => {
 });
 
 socket.on("webrtc-ice-candidate", (userId, candidate) => {
-
-  console.log("ice : ");
-  console.log(candidate);
   if (rtcPeerConnectionMap.has(userId) && candidate) {
     rtcPeerConnectionMap.get(userId).addIceCandidate(candidate);
   }
