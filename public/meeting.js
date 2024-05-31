@@ -42,22 +42,27 @@ let currentla;
 let targetla;
 
 async function onReceiveChat(response) {
-  console.log(response);
+  // console.log("msg: ")
+  // console.log(response)
   const chatListContainer = document.getElementById("chat_list_container");
   const chatList = chatListContainer.querySelector(".chat-list");
   const chatItem = document.createElement("li");
 
   const nicknameView = document.createElement("strong");
   nicknameView.innerText = response.nickname;
-
   const contentView = document.createElement("div");
   contentView.innerText = response.msg;
+  if(response.tmsg !== null) {
+  const contentView2 = document.createElement("div");
+  contentView2.innerText = response.tmsg;
+  contentView2.style.color = "blue";
+  contentView.appendChild(contentView2);
 
+  }
   chatItem.appendChild(nicknameView);
   chatItem.appendChild(contentView);
 
   if (response.id === id) {
-    console.log("hit if")
     chatItem.classList.add("self");
   }
 
@@ -224,7 +229,7 @@ function createRTCPeerConnection(peerId, peerNickname) {
         myRTCPeerConnection.iceConnectionState === "closed") {
       console.log(`ICE connection state2: ${myRTCPeerConnection.iceConnectionState}`);
       if (isExternal) {
-        alert("어?");
+        alert("if you see this message, please let me know :O");
         window.location.href = "/home";
       }
     }
@@ -493,7 +498,8 @@ async function initApplication() {
         type: 'chat',
         id,
         nickname,
-        msg: `${transcription} -> ${translatedText}`,
+        msg: `${transcription}`,
+        tmsg: `${translatedText}`
       };
     } else {
       chat = {
@@ -615,7 +621,8 @@ socket.on("translatedChat", async (originalChat, translatedText) => {
     type: 'chat',
     id,
     nickname,
-    msg: `${originalChat} -> ${translatedText}`,
+    msg: `${originalChat}`,
+    tmsg: `${translatedText}`,
     from: "translatedChat 585"
   };
 
@@ -633,7 +640,7 @@ socket.on("translatedChat", async (originalChat, translatedText) => {
 
     const chatListContainer = document.getElementById("chat_list_container");
     chatListContainer.scrollTop = chatListContainer.scrollHeight;
-
+    
     const userReuslt = await getUserSession();
     const user = JSON.parse(userReuslt.data);
 
