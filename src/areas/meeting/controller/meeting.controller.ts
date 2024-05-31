@@ -115,9 +115,15 @@ class MeetingController implements Controller {
     res.status(200).json({success: true});
   }
 
-  private makeRoom(req: Request, res: Response) {
+  private makeRoom = async (req: Request, res: Response) => {
     // @ts-ignore
     if(req.session.user !== undefined) {
+      const meetingId = req.query.meetingId;
+      // @ts-ignore
+      const currentUser = req.session.user;
+      const meetingHistory = await this.service.getHistoryIdByMeetingId(String(meetingId));
+      // @ts-ignore
+      const parti = await this.service.addParticipant(meetingHistory.historyId, currentUser.userId);
       res.status(200).render("meeting");
     } else {
       res.status(200).redirect('/login');
