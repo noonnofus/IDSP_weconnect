@@ -97,12 +97,14 @@ video {
   flex: 1;
   background-color: #fff;
 }
+
 .face-player-border{
   width:100%;
 }
 .peer-face-player-border{
   width:100%
 }
+
 
 .face-player-container {
   display: grid;
