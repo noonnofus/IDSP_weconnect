@@ -1,14 +1,15 @@
 main {
   padding-top: 2rem;
 }
+
 video {
   background-color: #aaa;
 }
 
-  .header-section {
-    display: flex;
-    justify-content: space-around;
-  }
+.header-section {
+  display: flex;
+  justify-content: space-around;
+}
 
 .app-title {
   margin-left: 8px;
@@ -36,21 +37,6 @@ video {
   margin-top: 30px;
   margin-bottom: 30px;
 }
-
-/* .room-enter-badge {
-  margin: 4px;
-  padding: 4px 8px;
-  border: 1px solid var(--color-bg-secondary);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow) var(--color-shadow);
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.room-enter-badge:hover {
-  color: var(--color-bg);
-  background-color: var(--color-link);
-} */
 
 .chat-list {
   width: 100%;
@@ -100,29 +86,6 @@ video {
   flex: 1;
   background-color: #fff;
 }
-
-/* .chat-room-text-input,
-.chat-submit-text-input,
-.nickname-text-input {
-  flex: 1;
-  margin: 0;
-  border-radius: 0;
-}
-
-.chat-room-create-button,
-.chat-room-leave-button,
-.chat-submit-send-button,
-.nickname-save-button {
-  margin: 0;
-  padding: 0.5rem 1rem;
-  border-radius: 0;
-}
-
-.chat-room-leave-button {
-  margin-left: 20px;
-  padding: 0.2rem 0.4rem;
-  flex-shrink: 0;
-} */
 
 .face-player-container {
   display: grid;
@@ -194,17 +157,6 @@ video {
   border-radius: 10px;
 }
 
-/* @media (max-width: 767px) {
-  .custom-container {
-    flex-direction: column;
-    height: auto;
-  }
-} */
-/* 
-.dropdown-toggle {
-  color: white;
-} */
-
 .dropdown-menu {
   background-color: rgba(0, 0, 0, 0.2);
 }
@@ -221,16 +173,19 @@ video {
   position: fixed;
   bottom: 0;
   left: 0;
-  right: 0; /* 오른쪽 끝까지 확장되도록 설정 */
-  width: 100%; /* 너비를 100%로 설정 */
+  right: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
 }
 
+footer {
+  max-width: 100% !important;
+}
+
 .footer a {
-  color: red;
   font-size: 1.5rem;
   display: flex;
   align-items: center;
@@ -253,6 +208,14 @@ video {
 /* 아이콘 스타일 */
 .footer .icon i {
   font-size: 24px; /* 아이콘 크기 */
+  color: white;
+  border: none;
+}
+
+.icon {
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
 }
 
 /* 반응형 디자인 추가 */
