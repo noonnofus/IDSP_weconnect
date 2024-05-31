@@ -9,4 +9,4 @@ navHome.addEventListener('click', (event) => {
 navMessage.addEventListener('click', (event) => {
     event.preventDefault();
     window.location.href = '/messages';
-});
+}); 

@@ -1,6 +1,6 @@
 //const { type } = require("os");
 
-//onst socket = window.io();
+const socket = window.io();
 
 let currentUser = null;
 
@@ -12,7 +12,7 @@ async function initializeStorageKey() {
 
 const STORAGE_KEY = Object.freeze({
   USER_ID: "userId",
-  USER_PASSWORD: "userPassword",
+  USER_PASSWORD: "useremail",
   USER_NICKNAME: "Anonymouse"
 });
 
@@ -176,7 +176,8 @@ function arrayBufferToBase64(buffer) {
 
 // translation btn
 
-translator.addEventListener('click', () => {
+translator.addEventListener('click', (eve) => {
+  eve.preventDefault();
   if (!translation && initialAudioState === true) {
     socket.emit('start_recording', currentla, targetla);
     translation = true;
@@ -306,7 +307,7 @@ async function joinRoomCallback(response) {
   document.getElementById("face_player_container").style.display = "";
   document.getElementById("chat_list_container").style.display = "";
   document.getElementById("chat_form_container").style.display = "";
-  document.getElementById("chat_controller").style.display = "";
+  //document.getElementById("chat_controller").style.display = "";
 
   const icon = document.createElement("i");
   icon.classList.add("ri-user-fill");
@@ -315,13 +316,14 @@ async function joinRoomCallback(response) {
   sizeOfRoom.id = "size_of_room";
   sizeOfRoom.innerText = response.sizeOfRoom;
 
-  const leaveButton = document.createElement("button");
-  leaveButton.type = "button";
-  leaveButton.classList.add("chat-room-leave-button");
-  leaveButton.innerText = "Leave";
-
-  //document.getElementById("app_title").innerText = `${response.chatRoom}`;
-
+  const  leaveButton = document.getElementById("leaveButton");
+  window.onpopstate = () => {
+     leaveButton.click();
+  };
+  
+  window.onbeforeunload = () => {
+    leaveButton.click();
+  };
   const appTitleDiv = document.createElement("div");
   appTitleDiv.style.display = "flex";
   appTitleDiv.innerHTML = "&nbsp;(";
@@ -330,7 +332,7 @@ async function joinRoomCallback(response) {
   appTitleDiv.appendChild(document.createTextNode(")"));
 
   document.getElementById("app_title").appendChild(appTitleDiv);
-  document.getElementById("app_title").appendChild(leaveButton);
+  //document.getElementById("meetingFooter").appendChild(leaveButton);
 
   document.querySelector("#chat_list_container .chat-list").innerHTML = "";
   document.querySelector("#nickname_form .nickname-text-input").value =
@@ -338,7 +340,9 @@ async function joinRoomCallback(response) {
   document.querySelector("#chat_submit_form .chat-submit-text-input").value =
     "";
 
-  leaveButton.addEventListener("click", () => {
+    
+  leaveButton.addEventListener("click", (event) => {
+    event.preventDefault();
     rtcPeerConnectionMap.forEach((connection) => {
       document
         .querySelectorAll("#face_player_container .peer-face-player-border")
@@ -404,6 +408,8 @@ function refreshRooms(rooms) {
 
     chatRoomListContainer.appendChild(roomDiv);
   });
+
+
 }
 const chatRoomForm = document.getElementById("chat_room_form");
   const chatRoomTextInput = chatRoomForm.querySelector(".chat-room-text-input");
@@ -421,7 +427,6 @@ async function initApplication() {
 
 
   chatRoomForm.addEventListener("submit", async (event) => {
-    console.log("작동!")
     event.preventDefault();
     await joinRoom(chatRoomTextInput.value);
   });``
@@ -484,6 +489,7 @@ async function initApplication() {
   document
     .getElementById("video_on_off_button")
     .addEventListener("click", (event) => {
+      event.preventDefault();
       const button = event.currentTarget;
       if (myStream && myStream.getVideoTracks().length) {
         const isOn = button.classList.contains("on");
@@ -500,6 +506,7 @@ async function initApplication() {
   document
     .getElementById("mic_on_off_button")
     .addEventListener("click", (event) => {
+      event.preventDefault();
       const button = event.currentTarget;
       const isOn = button.classList.contains("on");
       if (myStream && myStream.getAudioTracks().length) {
@@ -515,15 +522,25 @@ async function initApplication() {
           stopRecording();
         }
       }
-
+      // #working
+      // if (isOn) {
+      //  translator.classList.add('translator-not-available');
+      // } else if (currentla !== undefined && targetla !== undefined) {
+      //   translator.classList.remove('translator-not-available');
+      //   translator.classList.remove('translator-clicked');
+      // if (stopRecording) {
+      //   stopRecording();
+      // }
+      const translator = document.querySelector("#translate");
+    const translateContainer = document.querySelector("#translate-container");
       if (isOn) {
-       translator.classList.add('translator-not-available');
-      } else if (currentla !== undefined && targetla !== undefined) {
-        translator.classList.remove('translator-not-available');
-        translator.classList.remove('translator-clicked');
-      if (stopRecording) {
-        stopRecording();
-      }
+        translator.classList.add('translator-not-available');
+       } else {
+         translator.classList.remove('translator-not-available');
+         translator.classList.remove('translator-clicked');
+       if (stopRecording) {
+         stopRecording();
+       }
     }
     });
 
@@ -557,20 +574,21 @@ socket.on('transcription', async (transcription) => {
   }
 });
 
-socket.on('translatedChat', async (originalChat, translatedText) => {
-  // call function to add originalchat to db here.
+socket.on("translatedChat", async (originalChat, translatedText) => {
   const chat = {
     type: 'chat',
     id,
     nickname,
     msg: `${originalChat} -> ${translatedText}`,
-    from:"translatedChat 585"
+    from: "translatedChat 585"
   };
 
   if (chat.msg) {
     rtcPeerConnectionMap.forEach((connection) => {
-      if (connection.chatDataChannel) {
+      if (connection.chatDataChannel && connection.chatDataChannel.readyState === 'open') {
         connection.chatDataChannel.send(JSON.stringify(chat));
+      } else {
+        console.error('DataChannel is not open:', connection.chatDataChannel.readyState);
       }
     });
 
@@ -718,10 +736,10 @@ document.querySelectorAll('.currentLang a').forEach(function(element) {
     const currentLang = this.getAttribute('data-language');
 
     currentla = currentLang;
-
-    if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
-      translator.classList.remove('translator-not-available');
-    }
+    //#working2
+    // if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+    //   translator.classList.remove('translator-not-available');
+    // }
   });
 });
 
@@ -737,9 +755,9 @@ document.querySelectorAll('.targetLang a').forEach(function(element) {
     const targetLang = this.getAttribute('data-language');
 
     targetla = targetLang;
-    if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
-      translator.classList.remove('translator-not-available');
-    }
+    // if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+    //   translator.classList.remove('translator-not-available');
+    // }
   });
 });
 

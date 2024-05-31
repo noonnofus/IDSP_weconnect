@@ -10,25 +10,25 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
   <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.8.0/mvp.css">
   <link rel="stylesheet" href="meetingStyle.css">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <header><%- include("./homepage_header.ejs") %></header>
+  <header><%- include("./meeting_header.ejs") %></header>
   <div class="container">
     <div class="chat-room">
       <h1 id="app_title"></h1>
+      <div class="btn-group btn-group-lg" role="group">
+        <button type="button" class="btn btn-basic" data-toggle="tooltip" data-placement="top" data-original-title="click to copy data to the Clipboard " id="share_url">
+          <i class="fa fa-clipboard" aria-hidden="true"></i>
+          <span class="sr-only">copy room ID</span>
+        </button>
+        <input type="text" name="copy roomid" id="share-url-input" readonly>
+      </div>
       <div id="bo_v_btn_group" class="clearfix text-center py-4 px-3 en">
-        <div class="btn-group btn-group-lg" role="group">
-          <button type="button" class="btn btn-basic" data-toggle="tooltip" data-placement="top" data-original-title="click to copy data to the Clipboard " id="share_url">
-            <i class="fa fa-clipboard" aria-hidden="true"></i>
-            <span class="sr-only">copy room ID</span>
-          </button>
-          <input type="text" name="copy roomid" id="share-url-input" readonly>
-        </div>
-        <div id="chat_controller" class="chat-controller" style="display: none;">
-          <i id="video_on_off_button" class="ri-camera-fill chat-controller-toggle on"></i>
-          <i id="mic_on_off_button" class="ri-mic-off-fill chat-controller-toggle"></i>
+        <!--<div id="chat_controller" class="chat-controller" style="display: none;">
           <i id="translate" class="bi bi-translate"></i>
-        </div>
+        </div>-->
         <hr class="chat-room-divider">
         <main>
           <div id="chat_room_form_container" class="chat-room-form-container">
@@ -41,7 +41,7 @@
           <div id="face_player_container" class="face-player-container" style="display: none;">
             <div class="face-player-border">
               <video id="my_face" class="face-player mirror-player" autoplay playsinline muted></video>
-              <div class="face-player-caption">&nbsp;</div>
+              <div class="face-player-caption">ME</div>
             </div>
           </div>
 
@@ -50,7 +50,7 @@
               <div class="col-12 col-md-3 mb-md-0 text-center">
                 <div class="dropdown">
                   <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    Language 1
+                    currentLang
                   </button>
                   <ul class="dropdown-menu currentLang" aria-labelledby="dropdownMenuButton1">
                     <li><a class="dropdown-item" id="translate-en" data-value="English" data-language="en-US">English</a></li>
@@ -62,58 +62,97 @@
                   </ul>
                 </div>
               </div>
-      
-              <div class="col-12 col-md-3 mb-md-0 text-center">
-                <div class="img-container">
-                  <img src="switch_btn.svg" class="img-fluid" alt="switch_btn">
-                </div>
-              </div>
-      
-              <div class="col-12 col-md-3 text-center">
-                <div class="dropdown">
-                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                    Language 2
-                  </button>
-                  <ul class="dropdown-menu targetLang" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item" id="translate-en" data-value="English" data-language="en">English</a></li>
-                    <li><a class="dropdown-item" id="translate-fr" data-value="Français" data-language="fr">Français</a></li>
-                    <li><a class="dropdown-item" id="translate-kr" data-value="한국어" data-language="ko">한국어</a></li>
-                    <li><a class="dropdown-item" id="translate-hant" data-value="繁體中文" data-language="zh-Hant">繁體中文</a></li>
-                    <li><a class="dropdown-item" id="translate-hans" data-value="简体中文" data-language="zh-Hans">简体中文</a></li>
-                    <li><a class="dropdown-item" id="translate-jp" data-value="日本語" data-language="ja">日本語</a></li>
-                    <li><a class="dropdown-item" id="translate-ru" data-value="русский" data-language="ru_RU">русский</a></li>
-                    <li><a class="dropdown-item" id="translate-vi" data-value="Tiếng Việt" data-language="vi">Tiếng Việt</a></li>
-                  </ul>
-                </div>
-              </div>
             </div>
           </div>
-
-          <div id="chat_list_container" class="chat-list-container" style="display: none;">
-            <ul class="chat-list"></ul>
-          </div>
-          <section id="chat_form_container" class="chat-form-container" style="display: none;">
-            <form id="nickname_form" class="nickname-form">
-              <input class="nickname-text-input" placeholder="Nickname" maxlength="15">
-              <button class="nickname-save-button btn btn-secondary">Save</button>
-            </form>
-            <form id="chat_submit_form" class="chat-submit-form">
-              <input class="chat-submit-text-input" placeholder="Chat" maxlength="5000">
-              <button class="chat-submit-send-button btn btn-success">Send</button>
-            </form>
-            <form id="chat_submit_file" class="chat-submit-form">
-              <input type="file" id="fileInput" />
-              <button class="chat-submit-send-button btn btn-success" >upload file</button>
-            </form>
-          </section>
         </main>
       </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="meeting.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <footer hidden ><%- include("./homepage_footer.ejs") %></footer>
+    
+
+    <!-- Chat Modal -->
+    <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="chatModalLabel">Chat</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="chat_list_container" class="chat-list-container">
+              <ul class="chat-list"></ul>
+            </div>
+            <section id="chat_form_container" class="chat-form-container">
+              <form id="nickname_form" class="nickname-form">
+                <input class="nickname-text-input" placeholder="Nickname" maxlength="15">
+                <button class="nickname-save-button btn btn-secondary">Save</button>
+              </form>
+              <form id="chat_submit_form" class="chat-submit-form">
+                <input class="chat-submit-text-input" placeholder="Chat" maxlength="5000">
+                <button class="chat-submit-send-button btn btn-success">Send</button>
+              </form>
+              <form id="chat_submit_file" class="chat-submit-form">
+                <input type="file" id="fileInput" />
+                <button class="chat-submit-send-button btn btn-success">Send</button>
+              </form>
+              <!-- Language 2 Dropdown added here -->
+              <div class="col-12 col-md-3 text-center">
+                <!-- Language 2 Dropdown removed from here -->
+              
+              <div class="dropdown mt-3">
+                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                  translate to ....
+                </button>
+                <ul class="dropdown-menu targetLang" aria-labelledby="dropdownMenuButton2">
+                  <li><a class="dropdown-item" id="translate-en" data-value="English" data-language="en">English</a></li>
+                  <li><a class="dropdown-item" id="translate-fr" data-value="Français" data-language="fr">Français</a></li>
+                  <li><a class="dropdown-item" id="translate-kr" data-value="한국어" data-language="ko">한국어</a></li>
+                  <li><a class="dropdown-item" id="translate-hant" data-value="繁體中文" data-language="zh-Hant">繁體中文</a></li>
+                  <li><a class="dropdown-item" id="translate-hans" data-value="简体中文" data-language="zh-Hans">简体中文</a></li>
+                  <li><a class="dropdown-item" id="translate-jp" data-value="日本語" data-language="ja">日本語</a></li>
+                  <li><a class="dropdown-item" id="translate-ru" data-value="русский" data-language="ru_RU">русский</a></li>
+                  <li><a class="dropdown-item" id="translate-vi" data-value="Tiếng Việt" data-language="vi">Tiếng Việt</a></li>
+                </ul>
+              </div>
+            </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="footer" id="meetingFooter">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-auto">
+            <a href="#" class="icon">
+              <i class="ri-mic-fill chat-controller-toggle" id="mic_on_off_button"></i>
+            </a>
+          </div>
+          <div class="col-auto" >
+            <a href="#" class="icon">
+              <i class="ri-chat-voice-line" id="translate"></i>
+            </a>
+          </div>
+          <div class="col-auto">
+            <a href="#" class="icon">
+              <i class="ri-camera-fill chat-controller-toggle on" id="video_on_off_button"></i>
+            </a>
+          </div>
+          <div class="col-auto">
+            <a href="#" class="icon" id="chat_icon">
+              <i class="ri-chat-3-line"></i>
+            </a>
+          </div>
+          <div class="col-auto">
+            <a href="#" class="icon">
+              <i class="ri-logout-box-line" id="leaveButton"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="meeting.js"></script>
+  <script src="meetingChat.js"></script>
 </body>
 </html>
