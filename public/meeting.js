@@ -52,7 +52,7 @@ async function onReceiveChat(response) {
   nicknameView.innerText = response.nickname;
   const contentView = document.createElement("div");
   contentView.innerText = response.msg;
-  if(response.tmsg !== null) {
+  if(response.tmsg !== null || response.tmsg !== undefined) {
   const contentView2 = document.createElement("div");
   contentView2.innerText = response.tmsg;
   contentView2.style.color = "blue";
