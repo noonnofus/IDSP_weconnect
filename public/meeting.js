@@ -126,7 +126,7 @@ async function makeMediaStream() {
           .getElementById("mic_on_off_button")
           .classList.add("ri-mic-off-fill");
       }
-      if (initialAudioState && currentla !== undefined && targetla !== undefined) {
+      if (response.tmsg !== null || response.tmsg !== undefined || response.tmsg !== "" || response.tmsg !== "null" || response.tmsg !== "undefined") {
         translator.classList.remove('translator-not-available');
       } else {
         translator.classList.add("translator-not-available");
