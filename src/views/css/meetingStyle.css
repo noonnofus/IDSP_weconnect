@@ -1,14 +1,19 @@
-main {
-  padding-top: 2rem;
+body {
+  margin-bottom: 90px
 }
+
+main {
+  padding-top: 1rem;
+}
+
 video {
   background-color: #aaa;
 }
 
-  .header-section {
-    display: flex;
-    justify-content: space-around;
-  }
+.header-section {
+  display: flex;
+  justify-content: space-around;
+}
 
 .app-title {
   margin-left: 8px;
@@ -37,21 +42,6 @@ video {
   margin-bottom: 30px;
 }
 
-/* .room-enter-badge {
-  margin: 4px;
-  padding: 4px 8px;
-  border: 1px solid var(--color-bg-secondary);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow) var(--color-shadow);
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.room-enter-badge:hover {
-  color: var(--color-bg);
-  background-color: var(--color-link);
-} */
-
 .chat-list {
   width: 100%;
   padding: 0;
@@ -60,6 +50,7 @@ video {
 
 .chat-list li {
   display: flex;
+  
   flex-direction: column;
   align-items: flex-start; /* 기본적으로 왼쪽 정렬 */
   margin: 4px 0;
@@ -87,6 +78,12 @@ video {
   right: 1rem;
 }
 
+.chat-room h1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .chat-room-form,
 .nickname-form {
   display: flex;
@@ -100,44 +97,37 @@ video {
   flex: 1;
   background-color: #fff;
 }
-
-/* .chat-room-text-input,
-.chat-submit-text-input,
-.nickname-text-input {
-  flex: 1;
-  margin: 0;
-  border-radius: 0;
+.face-player-border{
+  width:100%;
 }
-
-.chat-room-create-button,
-.chat-room-leave-button,
-.chat-submit-send-button,
-.nickname-save-button {
-  margin: 0;
-  padding: 0.5rem 1rem;
-  border-radius: 0;
+.peer-face-player-border{
+  width:100%
 }
-
-.chat-room-leave-button {
-  margin-left: 20px;
-  padding: 0.2rem 0.4rem;
-  flex-shrink: 0;
-} */
 
 .face-player-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 20%));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 30%));
   align-items: center;
   justify-items: center;
   gap: 10px;
 }
 
-.face-player-border {
-  text-align: center;
+.face-player-container-align{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-items: center;
+  gap: 10px;
 }
+
+
 
 .face-player {
   width: 100%;
+}
+
+.face-player-border {
+  text-align: center;
 }
 
 .mirror-player {
@@ -168,10 +158,6 @@ video {
   }
 }
 
-
-
-
-
 /* drop down */
 .custom-container {
   width: 100%;
@@ -181,7 +167,7 @@ video {
   display: flex;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 30px;
+  border-radius: 10px;
 }
 
 .dropdown .btn {
@@ -189,21 +175,14 @@ video {
   border: none;
 }
 
+.copy {
+  width: 50px;
+}
+
 .img-container img {
   max-height: 100%;
   border-radius: 10px;
 }
-
-/* @media (max-width: 767px) {
-  .custom-container {
-    flex-direction: column;
-    height: auto;
-  }
-} */
-/* 
-.dropdown-toggle {
-  color: white;
-} */
 
 .dropdown-menu {
   background-color: rgba(0, 0, 0, 0.2);
@@ -216,26 +195,34 @@ video {
 /* 기본 footer 스타일 */
 .footer {
   background: linear-gradient(to right, #2277EE, #7722BB);
-  padding: 10px 0;
+  padding: 0 !important;
   text-align: center;
   position: fixed;
   bottom: 0;
   left: 0;
-  right: 0; /* 오른쪽 끝까지 확장되도록 설정 */
-  width: 100%; /* 너비를 100%로 설정 */
+  right: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
 }
 
+.icons {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+footer {
+  max-width: 100% !important;
+}
+
 .footer a {
-  color: red;
-  font-size: 1.5rem;
+  width: 10vw;
+  height: 10vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 5px; /* 마진 추가로 요소들 사이 간격 조정 */
   transition: all 0.3s ease;
 }
 
@@ -244,50 +231,42 @@ video {
 }
 
 .translator-not-available {
-  color: black;
+  color: gray !important;
 }
 .translator-clicked {
-  color: red;
+  color: blue !important;
 }
 
 /* 아이콘 스타일 */
 .footer .icon i {
   font-size: 24px; /* 아이콘 크기 */
+  color: white;
+  border: none;
 }
 
-/* 반응형 디자인 추가 */
+.icon {
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.footer-icon {
+  padding: 0;
+  font-size: 5.5vw;
+}
+
+@media (min-width: 768px) {
+  .footer a {
+    width: 77px;
+    height: 77px;
+  }
+}
+
 @media (max-width: 768px) {
-  .footer a {
-    font-size: 0.5rem; /* 폰트 크기 조정 */
-  }
-
-  .footer .icon i {
-    font-size: 18px; /* 아이콘 크기 조정 */
-    margin: 1vw; /* 아이콘 간격 줄임 */
-  }
-}
-
-/* 반응형 디자인 추가 */
-@media (max-width: 480px) {
-  .footer a {
-    font-size: 0.15rem; /* 텍스트 크기를 더 줄임 */
-    padding: 4px; /* 텍스트 주변 패딩 조정 */
-    margin: 2vw 1vw; /* 아이콘 간격을 조금 더 넓힘 */
-  }
-
-  .footer .icon i {
-    font-size: 12px; /* 아이콘 크기를 더 줄임 */
-    margin-right: 5px; /* 아이콘 오른쪽 마진 추가 */
-  }
-
   .footer {
-    padding: 8px 0; /* 푸터의 패딩 조정 */
+    height: 70px;
   }
 }
-
-
-
-/*========================*/
 
 .chat-form-container {
   display: flex;
@@ -325,6 +304,7 @@ input[type="text"], input[type="file"], button {
   width: 100%; /* 입력 필드와 버튼의 너비를 100%로 설정 */
   max-width: 100%; /* 최대 너비를 100%로 제한 */
   box-sizing: border-box; /* 패딩과 보더가 너비에 포함되도록 설정 */
+  margin: 0;
 }
 
 

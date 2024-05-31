@@ -25,6 +25,25 @@
         </button>
         <input type="text" name="copy roomid" id="share-url-input" readonly>
       </div>
+      <div class="container mt-4">
+        <div class="custom-container row justify-content-center">
+          <div class="col-12 col-md-3 mb-md-0 text-center">
+            <div class="dropdown">
+              <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                currentLang
+              </button>
+              <ul class="dropdown-menu currentLang" aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item" id="translate-en" data-value="English" data-language="en-US">English</a></li>
+                <!-- <li><a class="dropdown-item" id="translate-fr" data-value="Français" data-language="fr-FR">Français</a></li>
+                <li><a class="dropdown-item" id="translate-kr" data-value="한국어" data-language="ko-KR">한국어</a></li>
+                <li><a class="dropdown-item" id="translate-hant" data-value="繁體中文" data-language="zh-TW">繁體中文</a></li>
+                <li><a class="dropdown-item" id="translate-hans" data-value="简体中文" data-language="zh-CN">简体中文</a></li>
+                <li><a class="dropdown-item" id="translate-jp" data-value="日本語" data-language="ja-JP">日本語</a></li> -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="bo_v_btn_group" class="clearfix text-center py-4 px-3 en">
         <!--<div id="chat_controller" class="chat-controller" style="display: none;">
           <i id="translate" class="bi bi-translate"></i>
@@ -45,25 +64,7 @@
             </div>
           </div>
 
-          <div class="container mt-5">
-            <div class="custom-container row justify-content-center">
-              <div class="col-12 col-md-3 mb-md-0 text-center">
-                <div class="dropdown">
-                  <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    currentLang
-                  </button>
-                  <ul class="dropdown-menu currentLang" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item" id="translate-en" data-value="English" data-language="en-US">English</a></li>
-                    <!-- <li><a class="dropdown-item" id="translate-fr" data-value="Français" data-language="fr-FR">Français</a></li>
-                    <li><a class="dropdown-item" id="translate-kr" data-value="한국어" data-language="ko-KR">한국어</a></li>
-                    <li><a class="dropdown-item" id="translate-hant" data-value="繁體中文" data-language="zh-TW">繁體中文</a></li>
-                    <li><a class="dropdown-item" id="translate-hans" data-value="简体中文" data-language="zh-CN">简体中文</a></li>
-                    <li><a class="dropdown-item" id="translate-jp" data-value="日本語" data-language="ja-JP">日本語</a></li> -->
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </main>
       </div>
     </div>
@@ -140,6 +141,11 @@
           <div class="col-auto">
             <a href="#" class="icon" id="chat_icon">
               <i class="ri-chat-3-line"></i>
+            </a>
+          </div>
+          <div class="col-auto">
+            <a href="#" class="icon">
+              <i class="ri-align-justify" id="alignBtn"></i>
             </a>
           </div>
           <div class="col-auto">

@@ -23,8 +23,8 @@ export class SpeechToTextService {
     if (!env) {
       throw new Error('google env error');
     }
-    const credentialsFile = fs.readFileSync(path.join(__dirname, '../', env), 'utf-8');
-    const credentials = JSON.parse(credentialsFile);
+    // const credentialsFile = fs.readFileSync(path.join(__dirname, '../', env), 'utf-8');
+    const credentials = JSON.parse(env);
 
     const auth = new GoogleAuth({
       credentials: credentials,
@@ -46,7 +46,7 @@ export class SpeechToTextService {
       .streamingRecognize({
         config: {
           encoding: 'WEBM_OPUS',
-          sampleRateHertz: 48000,
+          sampleRateHertz: 48000,   
           languageCode: currentla,
           model: 'default',
         },
