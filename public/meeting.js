@@ -181,12 +181,14 @@ translator.addEventListener('click', (eve) => {
   if (!translation && initialAudioState === true) {
     socket.emit('start_recording', currentla, targetla);
     translation = true;
+    translator.classList.remove('translator-available');
     translator.classList.add('translator-clicked');
     const result = startRecording(myStream);
     mediaRecorder = result.mediaRecorder;
     stopRecording = result.stopRecording;
   } else {
     translator.classList.remove('translator-clicked');
+    translator.classList.add('translator-available');
     translation = false;
     socket.emit('stop_recording');
     if (stopRecording) {
@@ -522,25 +524,26 @@ async function initApplication() {
           stopRecording();
         }
       }
-      // #working
-      // if (isOn) {
-      //  translator.classList.add('translator-not-available');
-      // } else if (currentla !== undefined && targetla !== undefined) {
-      //   translator.classList.remove('translator-not-available');
-      //   translator.classList.remove('translator-clicked');
-      // if (stopRecording) {
-      //   stopRecording();
-      // }
-      const translator = document.querySelector("#translate");
-    const translateContainer = document.querySelector("#translate-container");
+      // #working1
       if (isOn) {
-        translator.classList.add('translator-not-available');
-       } else {
-         translator.classList.remove('translator-not-available');
-         translator.classList.remove('translator-clicked');
-       if (stopRecording) {
-         stopRecording();
-       }
+        console.log("toggle off");
+        if(translator.classList.contains('translator-clicked')){
+          console.log("toggle off and translator clicked");
+          translator.classList.remove('translator-clicked');
+          translator.classList.add('translator-not-available');
+          if (stopRecording) {
+            stopRecording();
+          }
+        }
+       translator.classList.add('translator-not-available');
+      } else {
+        console.log("toggle on");
+        translator.classList.remove('translator-not-available');
+        //translator.classList.remove('translator-clicked');
+        translator.classList.add('translator-available');
+      if (stopRecording) {
+        stopRecording();
+      }
     }
     });
 
@@ -737,7 +740,8 @@ document.querySelectorAll('.currentLang a').forEach(function(element) {
 
     currentla = currentLang;
     //#working2
-    // if (currentla && targetla !== undefined && mic.contains('ri-mic-fill')) {
+    // if (mic.contains('ri-mic-fill')) {
+    //   alert("1");
     //   translator.classList.remove('translator-not-available');
     // }
   });

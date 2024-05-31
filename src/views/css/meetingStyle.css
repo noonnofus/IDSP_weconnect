@@ -168,13 +168,7 @@ video {
   }
 }
 
-.translator-clicked {
-  color: blue;
-}
 
-.translator-not-available {
-  display: none;
-}
 
 
 
@@ -236,7 +230,7 @@ video {
 }
 
 .footer a {
-  color: white;
+  color: red;
   font-size: 1.5rem;
   display: flex;
   align-items: center;
@@ -245,10 +239,20 @@ video {
   transition: all 0.3s ease;
 }
 
+.translator-available {
+  color: green;
+}
+
+.translator-not-available {
+  color: black;
+}
+.translator-clicked {
+  color: red;
+}
+
 /* 아이콘 스타일 */
 .footer .icon i {
   font-size: 24px; /* 아이콘 크기 */
-  color: white;
 }
 
 /* 반응형 디자인 추가 */
