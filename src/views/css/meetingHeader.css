@@ -1,0 +1,52 @@
+div.setting,
+div.notification.me-3 {
+    display: inline-block;
+}
+
+.homepage-header {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.bg-custom {
+    background-color: rgba(118, 118, 128, 0.12) !important;
+}
+
+.input-group-text {
+    border: none !important;
+}
+
+.form-control {
+    border: none !important;
+}
+
+/* footer */
+.navbar {
+    background-color: white;
+}
+
+.navbar-nav .nav-link {
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    font-size: 12px;
+}
+
+.navbar-nav .nav-text {
+    font-size: 12px;
+}
+
+.navbar-nav .nav-item {
+    margin-right: 15px; /* 아이템 간격 조정 */
+    margin-left: 15px;
+}
+
+.home-footer {
+    border-top: 1px solid rgb(178, 178, 178, 0.5);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    padding-left: 2vw;
+    padding-right: 2vw;
+}
