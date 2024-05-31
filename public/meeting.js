@@ -217,6 +217,37 @@ function createRTCPeerConnection(peerId, peerNickname) {
     ],
   });
 
+  myRTCPeerConnection.oniceconnectionstatechange = () => {
+    console.log(`ICE connection state: ${myRTCPeerConnection.iceConnectionState}`);
+    if (myRTCPeerConnection.iceConnectionState === "failed" || 
+        myRTCPeerConnection.iceConnectionState === "disconnected" || 
+        myRTCPeerConnection.iceConnectionState === "closed") {
+      console.log(`ICE connection state2: ${myRTCPeerConnection.iceConnectionState}`);
+      if (isExternal) {
+        alert("어?");
+        window.location.href = "/home";
+      }
+    }
+  };
+
+  let isExternal = false;
+
+  myRTCPeerConnection.onicecandidate = (event) => {
+    if (event.candidate) {
+      const candidate = event.candidate.candidate;
+      const parts = candidate.split(' ');
+      const address = parts[4];
+      const type = parts[7];
+
+      console.log(`ICE candidate: ${address}, type: ${type}`);
+
+      // 로컬 네트워크 IP 확인
+      if (type === 'srflx' || type === 'relay') {
+        isExternal = true;
+      }
+    }
+  };
+
   if (myStream) {
     myStream
       .getTracks()
@@ -248,6 +279,7 @@ function createRTCPeerConnection(peerId, peerNickname) {
   myPeerFacePlayerBorder.appendChild(myPeerFacePlayerCaption);
 
   myRTCPeerConnection.ontrack = (event) => {
+    console.log("Track event: ", event);
     [myPeerFacePlayer.srcObject] = event.streams;
   };
 
@@ -257,6 +289,7 @@ function createRTCPeerConnection(peerId, peerNickname) {
 
   return myRTCPeerConnection;
 }
+
 
 function createDataChannel(myRTCPeerConnection, isOffer) {
   const onChatDataChannelMessage = (event) => {
