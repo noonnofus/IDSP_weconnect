@@ -19,7 +19,7 @@
     <div class="chat-room">
       <h1 id="app_title"></h1>
       <div class="btn-group btn-group-lg" role="group">
-        <button type="button" class="btn btn-basic" data-toggle="tooltip" data-placement="top" data-original-title="click to copy data to the Clipboard " id="share_url">
+        <button type="button" class="btn btn-basic copy" data-toggle="tooltip" data-placement="top" data-original-title="click to copy data to the Clipboard " id="share_url">
           <i class="fa fa-clipboard" aria-hidden="true"></i>
           <span class="sr-only">copy room ID</span>
         </button>
@@ -119,38 +119,39 @@
         </div>
       </div>
     </div>
-    <footer class="footer" id="meetingFooter">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-auto">
-            <a href="#" class="icon">
-              <i class="ri-mic-fill chat-controller-toggle" id="mic_on_off_button"></i>
-            </a>
-          </div>
-          <div class="col-auto" >
-            <a href="#" class="icon">
-              <i class="ri-translate" id="translate"></i>
-            </a>
-          </div>
-          <div class="col-auto">
-            <a href="#" class="icon">
-              <i class="ri-camera-fill chat-controller-toggle on" id="video_on_off_button"></i>
-            </a>
-          </div>
-          <div class="col-auto">
-            <a href="#" class="icon" id="chat_icon">
-              <i class="ri-chat-3-line"></i>
-            </a>
-          </div>
-          <div class="col-auto">
-            <a href="#" class="icon">
-              <i class="ri-logout-box-line" id="leaveButton"></i>
-            </a>
-          </div>
+
+  </div>
+  <footer class="footer" id="meetingFooter">
+    <div class="container">
+      <div class="row justify-content-center icons">
+        <div class="col-auto">
+          <a href="#" class="icon">
+            <i class="ri-mic-fill chat-controller-toggle footer-icon" id="mic_on_off_button"></i>
+          </a>
+        </div>
+        <div class="col-auto" >
+          <a href="#" class="icon">
+            <i class="ri-translate footer-icon" id="translate"></i>
+          </a>
+        </div>
+        <div class="col-auto">
+          <a href="#" class="icon">
+            <i class="ri-camera-fill chat-controller-toggle on footer-icon" id="video_on_off_button"></i>
+          </a>
+        </div>
+        <div class="col-auto">
+          <a href="#" class="icon" id="chat_icon">
+            <i class="ri-chat-3-line footer-icon"></i>
+          </a>
+        </div>
+        <div class="col-auto">
+          <a href="#" class="icon">
+            <i class="ri-logout-box-line footer-icon" id="leaveButton"></i>
+          </a>
         </div>
       </div>
-    </footer>
-  </div>
+    </div>
+  </footer>
   <script src="/socket.io/socket.io.js"></script>
   <script src="meeting.js"></script>
   <script src="meetingChat.js"></script>
