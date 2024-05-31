@@ -73,6 +73,12 @@ video {
   right: 1rem;
 }
 
+.chat-room h1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .chat-room-form,
 .nickname-form {
   display: flex;
@@ -152,6 +158,10 @@ video {
   border: none;
 }
 
+.copy {
+  width: 50px;
+}
+
 .img-container img {
   max-height: 100%;
   border-radius: 10px;
@@ -168,7 +178,7 @@ video {
 /* 기본 footer 스타일 */
 .footer {
   background: linear-gradient(to right, #2277EE, #7722BB);
-  padding: 10px 0;
+  padding: 0 !important;
   text-align: center;
   position: fixed;
   bottom: 0;
@@ -181,16 +191,21 @@ video {
   flex-wrap: wrap;
 }
 
+.icons {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
 footer {
   max-width: 100% !important;
 }
 
 .footer a {
-  font-size: 1.5rem;
+  width: 10vw;
+  height: 10vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 5px; /* 마진 추가로 요소들 사이 간격 조정 */
   transition: all 0.3s ease;
 }
 
@@ -199,10 +214,10 @@ footer {
 }
 
 .translator-not-available {
-  color: black;
+  color: gray !important;
 }
 .translator-clicked {
-  color: red;
+  color: blue !important;
 }
 
 /* 아이콘 스타일 */
@@ -218,39 +233,17 @@ footer {
   border-radius: 50%;
 }
 
-/* 반응형 디자인 추가 */
-@media (max-width: 768px) {
-  .footer a {
-    font-size: 0.5rem; /* 폰트 크기 조정 */
-  }
-
-  .footer .icon i {
-    font-size: 18px; /* 아이콘 크기 조정 */
-    margin: 1vw; /* 아이콘 간격 줄임 */
-  }
+.footer-icon {
+  padding: 0;
+  font-size: 5.5vw;
 }
 
-/* 반응형 디자인 추가 */
-@media (max-width: 480px) {
+@media (min-width: 768px) {
   .footer a {
-    font-size: 0.15rem; /* 텍스트 크기를 더 줄임 */
-    padding: 4px; /* 텍스트 주변 패딩 조정 */
-    margin: 2vw 1vw; /* 아이콘 간격을 조금 더 넓힘 */
-  }
-
-  .footer .icon i {
-    font-size: 12px; /* 아이콘 크기를 더 줄임 */
-    margin-right: 5px; /* 아이콘 오른쪽 마진 추가 */
-  }
-
-  .footer {
-    padding: 8px 0; /* 푸터의 패딩 조정 */
+    width: 77px;
+    height: 77px;
   }
 }
-
-
-
-/*========================*/
 
 .chat-form-container {
   display: flex;
@@ -288,6 +281,7 @@ input[type="text"], input[type="file"], button {
   width: 100%; /* 입력 필드와 버튼의 너비를 100%로 설정 */
   max-width: 100%; /* 최대 너비를 100%로 제한 */
   box-sizing: border-box; /* 패딩과 보더가 너비에 포함되도록 설정 */
+  margin: 0;
 }
 
 
