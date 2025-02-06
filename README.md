@@ -24,8 +24,8 @@
 ![image shows refactoring](https://t2informatik.de/en/wp-content/uploads/sites/2/2024/01/refactoring-1.jpg)
 
 ## 🛠️ Tech Stack  
-- **Frontend:** Javascript, EJS, CSS3
-- **Backend & Database:** Typescript, MySQL, Prisma ORM
-- **APIs:** OpenAI API
+- **Frontend:** JavaScript, EJS, CSS3
+- **Backend & Database:** TypeScript, Node.js, Express, Prisma ORM, MySQL
 - **Real-Time Communication:** WebRTC, WebSocket
+- **APIs:** OpenAI API
 
